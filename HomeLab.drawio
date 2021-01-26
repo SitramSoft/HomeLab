@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2021-01-26T12:54:12.956Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36" etag="Hp03W1BgHGyxIKPWl6-b" version="14.2.7" type="github">
+<mxfile host="app.diagrams.net" modified="2021-01-26T13:00:53.541Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36" etag="1wJw-sBK3o6DV4ByaK49" version="14.2.7" type="github">
   <diagram name="Page-1" id="e3a06f82-3646-2815-327d-82caf3d4e204">
-    <mxGraphModel dx="7221" dy="4293.5" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.5" pageWidth="1654" pageHeight="1169" background="none" math="0" shadow="0">
+    <mxGraphModel dx="4851" dy="3023.5" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.5" pageWidth="1654" pageHeight="1169" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" style=";html=1;" />
         <mxCell id="1" style=";html=1;" parent="0" />
@@ -71,11 +71,13 @@
         <mxCell id="fRbC1dXR_vOXh9SJx0cF-21" value="&lt;div&gt;TL-WA855RE&lt;/div&gt;&lt;div&gt;300Mbps Wi-Fi Range Extender&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;opacity=50;" parent="1" vertex="1">
           <mxGeometry x="315" y="360" width="180" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="oaq8cPLOEaYwkxw1FbMa-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.027;entryY=0.241;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;" edge="1" parent="1" source="fRbC1dXR_vOXh9SJx0cF-22" target="fRbC1dXR_vOXh9SJx0cF-4">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="oaq8cPLOEaYwkxw1FbMa-103" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;startArrow=none;startFill=0;endArrow=classic;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="fRbC1dXR_vOXh9SJx0cF-22" target="oaq8cPLOEaYwkxw1FbMa-20">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="oaq8cPLOEaYwkxw1FbMa-131" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=classic;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="fRbC1dXR_vOXh9SJx0cF-22">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="566.25" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <UserObject label="" link="https://www.tp-link.com/us/home-networking/wifi-router/archer-c80/" id="fRbC1dXR_vOXh9SJx0cF-22">
           <mxCell style="fontColor=#0066CC;verticalAlign=top;verticalLabelPosition=bottom;labelPosition=center;align=center;html=1;outlineConnect=0;fillColor=#CCCCCC;strokeColor=#6881B3;gradientColor=none;gradientDirection=north;strokeWidth=2;shape=mxgraph.networks.wireless_hub;opacity=50;" parent="1" vertex="1">
@@ -88,8 +90,8 @@
         <mxCell id="oaq8cPLOEaYwkxw1FbMa-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=classic;endFill=1;" edge="1" parent="1" source="fRbC1dXR_vOXh9SJx0cF-27" target="fRbC1dXR_vOXh9SJx0cF-4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="870" y="650" />
-              <mxPoint x="870" y="960" />
+              <mxPoint x="790" y="650" />
+              <mxPoint x="790" y="650" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -105,11 +107,11 @@
         <mxCell id="fRbC1dXR_vOXh9SJx0cF-29" value="" style="shadow=0;dashed=0;html=1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam.3d.network_card;fillColor=none;gradientColor=none;opacity=50;" parent="1" vertex="1">
           <mxGeometry x="1325" y="470" width="38" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="oaq8cPLOEaYwkxw1FbMa-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=classic;endFill=1;entryX=0.923;entryY=0.25;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="fRbC1dXR_vOXh9SJx0cF-30" target="fRbC1dXR_vOXh9SJx0cF-4">
+        <mxCell id="oaq8cPLOEaYwkxw1FbMa-128" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=classic;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="fRbC1dXR_vOXh9SJx0cF-30" target="fRbC1dXR_vOXh9SJx0cF-4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="870" y="540" />
-              <mxPoint x="870" y="580" />
+              <mxPoint x="820" y="540" />
+              <mxPoint x="820" y="540" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -341,8 +343,13 @@
         <mxCell id="oaq8cPLOEaYwkxw1FbMa-28" value="DHCP range for temporary clients&lt;br&gt;192.168.0.150 - 192.168.0.200" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;opacity=50;" vertex="1" parent="1">
           <mxGeometry x="-550" y="1245" width="270" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="oaq8cPLOEaYwkxw1FbMa-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.01;entryY=0.459;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;" edge="1" parent="1" source="oaq8cPLOEaYwkxw1FbMa-29" target="fRbC1dXR_vOXh9SJx0cF-4">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="oaq8cPLOEaYwkxw1FbMa-129" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=classic;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="oaq8cPLOEaYwkxw1FbMa-29" target="fRbC1dXR_vOXh9SJx0cF-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="560" y="898" />
+              <mxPoint x="560" y="898" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="oaq8cPLOEaYwkxw1FbMa-29" value="" style="shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#4495D1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam.2d.alarm;opacity=50;" vertex="1" parent="1">
           <mxGeometry x="376" y="879.4" width="52.8" height="37.6" as="geometry" />
@@ -373,7 +380,7 @@
         <mxCell id="oaq8cPLOEaYwkxw1FbMa-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.22;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;strokeColor=#EA6B66;" edge="1" parent="1" source="oaq8cPLOEaYwkxw1FbMa-38" target="oaq8cPLOEaYwkxw1FbMa-43">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="oaq8cPLOEaYwkxw1FbMa-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.007;entryY=0.348;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;" edge="1" parent="1" source="oaq8cPLOEaYwkxw1FbMa-38" target="fRbC1dXR_vOXh9SJx0cF-4">
+        <mxCell id="oaq8cPLOEaYwkxw1FbMa-130" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.016;entryY=0.297;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="oaq8cPLOEaYwkxw1FbMa-38" target="fRbC1dXR_vOXh9SJx0cF-4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="oaq8cPLOEaYwkxw1FbMa-38" value="" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn0.iconfinder.com/data/icons/google-material-design-3-0/48/ic_fiber_dvr_48px-128.png;fillColor=none;gradientColor=none;opacity=50;" vertex="1" parent="1">
