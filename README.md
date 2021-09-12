@@ -64,15 +64,15 @@ The third section contains a chapter for every VM I currently run. Inside each c
 ## General
 The following sections apply to all VM's. 
 
-Unless a server requires a dedicated OS, I prefer to use Ubuntu Server. 
+Unless the services running on the VM require a dedicated OS, I prefer to use Ubuntu Server. The sections in this chapter are tested on Ubuntu Server but might apply with slight modifications to other Linux based operating systems. For each VM I will specify which chapter from this section applies. 
 
-Every VM has user **sitram** configured during installation with the same password for convenience. The user has **sudo** privileges.
+Every VM has user **sitram** configured during installation. The user has **sudo** privileges.
 
 
 ### SSH configuration
-I use two keys for my entire HomeLab. One is used gor Guacamole, so I can access from any web browser my servers in case I don't have access trough a SSH client. The other is my personal key which I use for accessing trough SSH. 
+I use two keys for my entire HomeLab. One is used for Guacamole, so I can access from any web browser my servers in case I don't have access trough a SSH client. The other is my personal key which I use for accessing trough SSH clients. 
 
-I store these keys on every VM so that I can easily connect from one VM to another using ssh. A copy of each key is stored in a offline secure location, in case something happens with my main server.
+I store these keys on every VM so that I can easily connect from one VM to another using SSH. A copy of each key is stored in an offline secure location.
 
 Login to one of existing VM's and copy sshd config and various keys to the new VM.
  - sshd configuration
@@ -84,26 +84,26 @@ scp /etc/ssh/sshd_config sitram@192.168.0.xxx:/home/sitram
 scp guacamole sitram@192.168.0.xxx:~/.ssh/
 scp guacamole.pub sitram@192.168.0.xxx:~/.ssh/
 ```
- - Personal private and public keys for accessing the VM trough SSH
+ - Personal private and public keys for accessing the VM trough SSH and being able to access other servers on the network.
 ```
 scp id_rsa sitram@192.168.0.xxx:~/.ssh/
 scp id_rsa.pub sitram@192.168.0.xxx:~/.ssh/
 ```
- - The authorized keys which allows connection to the VM only using my Guacamole or personal key
+ - The authorized keys file which allows connection to the VM using only my Guacamole or personal key.
 ```
 scp authorized_keys sitram@192.168.0.xxx:~/.ssh/
 ```
 
 [TODO] Add details about sshd configuration
 
-Backup default sshd configuration in case something goes wrong.
+Backup default sshd configuration, in case something goes wrong. Replace the existing configuration with the new one.
 ```
 sudo mv /etc/ssh/sshd_config /etc/ssh/sshd_config.bkp
 sudo mv ~/sshd_config /etc/ssh/
 sudo chown root:root /etc/ssh/sshd_config
 ```
 
-Restart sshd to take into account the new configuration.
+Restart sshd to use the new configuration.
 ```
 sudo systemctl restart sshd
 ```
