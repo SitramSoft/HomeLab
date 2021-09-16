@@ -229,6 +229,7 @@ sudo make-ssl-cert generate-default-snakeoil -y
 Ensure that no relics from previous installations disrupt the operation of the webserver
 ```
 sudo apt remove nginx nginx-extras nginx-common nginx-full -y --allow-change-held-packages
+sudo apt autoremove
 ```
 
 Ensure the the counterpart (Apache2) of nginx web server is neither active or installed
@@ -315,6 +316,112 @@ sudo apt-update -q4
 sudo make-ssl-cert generate-default-snakeoil -y
 ```
 
+Install PHP8.0 and required modules
+```
+sudo apt install -y php8.0-{fpm,gd,mysql,curl,xml,zip,intl,mbstring,bz2,ldap,apcu,bcmath,gmp,imagick,igbinary,redis,smbclient,cli,common,opcache,readline} imagemagick ldap-utils nfs-common cifs-utils
+```
+
+Backup original configurations
+```
+sudo cp /etc/php/8.0/fpm/pool.d/www.conf /etc/php/8.0/fpm/pool.d/www.conf.bak
+sudo cp /etc/php/8.0/fpm/php-fpm.conf /etc/php/8.0/fpm/php-fpm.conf.bak
+sudo cp /etc/php/8.0/cli/php.ini /etc/php/8.0/cli/php.ini.bak
+sudo cp /etc/php/8.0/fpm/php.ini /etc/php/8.0/fpm/php.ini.bak
+sudo cp /etc/php/8.0/fpm/php-fpm.conf /etc/php/8.0/fpm/php-fpm.conf.bak
+sudo cp /etc/php/8.0/mods-available/apcu.ini /etc/php/8.0/mods-available/apcu.ini.bak
+sudo cp /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.bak
+```
+
+In order to adapt PHP to the configuration of the system, some parameters are calculated, using the lines below.
+```
+AvailableRAM=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
+echo AvailableRAM = $AvailableRAM
+
+AverageFPM=$(ps --no-headers -o 'rss,cmd' -C php-fpm8.0 | awk '{ sum+=$1 } END { printf ("%d\n", sum/NR/1024,"M") }')
+echo AverageFPM = $AverageFPM
+
+FPMS=$((AvailableRAM/AverageFPM))
+echo FPMS = $FPMS
+
+PMaxSS=$((FPMS*2/3))
+echo PMaxSS = $PMaxSS
+
+PMinSS=$((PMaxSS/2))
+echo PMinSS = $PMinSS
+
+PStartS=$(((PMaxSS+PMinSS)/2))
+echo PStartS = $PStartS
+```
+
+Perform the following optimizations
+```
+sudo sed -i "s/;env\[HOSTNAME\] = /env[HOSTNAME] = /" /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i "s/;env\[TMP\] = /env[TMP] = /" /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i "s/;env\[TMPDIR\] = /env[TMPDIR] = /" /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i "s/;env\[TEMP\] = /env[TEMP] = /" /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i "s/;env\[PATH\] = /env[PATH] = /" /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i 's/pm.max_children =.*/pm.max_children = '$FPMS'/' /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i 's/pm.start_servers =.*/pm.start_servers = '$PStartS'/' /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i 's/pm.min_spare_servers =.*/pm.min_spare_servers = '$PMinSS'/' /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i 's/pm.max_spare_servers =.*/pm.max_spare_servers = '$PMaxSS'/' /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i "s/;pm.max_requests =.*/pm.max_requests = 1000/" /etc/php/8.0/fpm/pool.d/www.conf
+sudo sed -i "s/allow_url_fopen =.*/allow_url_fopen = 1/" /etc/php/8.0/fpm/php.ini
+```
+
+```
+sudo sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/8.0/cli/php.ini
+sudo sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/8.0/cli/php.ini
+sudo sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/8.0/cli/php.ini
+sudo sed -i "s/post_max_size =.*/post_max_size = 10240M/" /etc/php/8.0/cli/php.ini
+sudo sed -i "s/upload_max_filesize =.*/upload_max_filesize = 10240M/" /etc/php/8.0/cli/php.ini
+sudo sed -i "s/;date.timezone.*/date.timezone = Europe\/\Bucharest/" /etc/php/8.0/cli/php.ini
+```
+
+```
+sudo sed -i "s/memory_limit = 128M/memory_limit = 1024M/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/post_max_size =.*/post_max_size = 10240M/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/upload_max_filesize =.*/upload_max_filesize = 10240M/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;date.timezone.*/date.timezone = Europe\/\Berlin/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;session.cookie_secure.*/session.cookie_secure = True/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;opcache.enable=.*/opcache.enable=1/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;opcache.enable_cli=.*/opcache.enable_cli=1/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;opcache.memory_consumption=.*/opcache.memory_consumption=128/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;opcache.interned_strings_buffer=.*/opcache.interned_strings_buffer=8/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;opcache.max_accelerated_files=.*/opcache.max_accelerated_files=10000/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;opcache.revalidate_freq=.*/opcache.revalidate_freq=1/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;opcache.save_comments=.*/opcache.save_comments=1/" /etc/php/8.0/fpm/php.ini
+```
+
+```
+sudo sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /etc/php/8.0/fpm/php-fpm.conf
+sudo sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/8.0/fpm/php-fpm.conf
+sudo sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/8.0/fpm/php-fpm.conf
+```
+
+```
+sudo sed -i '$aapc.enable_cli=1' /etc/php/8.0/mods-available/apcu.ini
+```
+
+```
+sudo sed -i "s/rights=\"none\" pattern=\"PS\"/rights=\"read|write\" pattern=\"PS\"/" /etc/ImageMagick-6/policy.xml
+sudo sed -i "s/rights=\"none\" pattern=\"EPS\"/rights=\"read|write\" pattern=\"EPS\"/" /etc/ImageMagick-6/policy.xml
+sudo sed -i "s/rights=\"none\" pattern=\"PDF\"/rights=\"read|write\" pattern=\"PDF\"/" /etc/ImageMagick-6/policy.xml
+sudo sed -i "s/rights=\"none\" pattern=\"XPS\"/rights=\"read|write\" pattern=\"XPS\"/" /etc/ImageMagick-6/policy.xml
+```
+
+Restart PHP and nginx and check that they are working correctly
+```
+sudo service php8.0-fpm restart
+sudo service nginx restart
+
+sudo service php8.0-fpm status
+sudo service nginx status
+```
+
+[TODO] For troubleshooting of php-fpm check [here](https://www.c-rieger.de/nextcloud-und-php-troubleshooting/)
 ### Nextcloud - Installation and configuration of MariaDB database
 Add software source
 ```
@@ -328,6 +435,146 @@ apt-key adv --recv-keys --keyserver hkps://keyserver.ubuntu.com:443 0xF1656F24C7
 sudo apt-update -q4
 sudo make-ssl-cert generate-default-snakeoil -y
 ```
+
+Install MariaDB
+```
+sudo apt install -y mariadb-server
+```
+
+Harden the database server using the supplied tool "mysql_secure_installation". When installing for the first time, there is no root password, so you can confirm the query with ENTER. It is recommended to set a password directly, the corresponding dialog appears automatically.
+
+```
+mysql_secure_installation
+```
+```
+Enter current password for root (enter for none): <ENTER> or type the password
+```
+```
+Switch to unix_socket authentication [Y/n] Y
+```
+```
+Set root password? [Y/n] Y
+```
+```
+Remove anonymous users? [Y/n] Y
+Disallow root login remotely? [Y/n] Y
+Remove test database and access to it? [Y/n] Y
+Reload privilege tables now? [Y/n] Y
+```
+
+Stop the database server and then save the standard configuration
+```
+sudo service mysql stop
+sudo mv /etc/mysql/my.cnf /etc/mysql/my.cnf.bak
+sudo nano /etc/mysql/my.cnf
+```
+
+Copy the following configuration
+```
+[client]
+    default-character-set = utf8mb4
+    port = 3306
+    socket = /var/run/mysqld/mysqld.sock
+
+[mysqld_safe]
+    log_error=/var/log/mysql/mysql_error.log
+    nice = 0
+    socket = /var/run/mysqld/mysqld.sock
+
+[mysqld]
+    basedir = /usr
+    bind-address = 127.0.0.1
+    binlog_format = ROW
+    bulk_insert_buffer_size = 16M
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_general_ci
+    concurrent_insert = 2
+    connect_timeout = 5
+    datadir = /var/lib/mysql
+    default_storage_engine = InnoDB
+    expire_logs_days = 2
+    general_log_file = /var/log/mysql/mysql.log
+    general_log = 0
+    innodb_buffer_pool_size = 1024M
+    innodb_buffer_pool_instances = 1
+    innodb_flush_log_at_trx_commit = 2
+    innodb_log_buffer_size = 32M
+    innodb_max_dirty_pages_pct = 90
+    innodb_file_per_table = 1
+    innodb_open_files = 400
+    innodb_io_capacity = 4000
+    innodb_flush_method = O_DIRECT
+    innodb_read_only_compressed=OFF
+    #Required from MariaDB 10.6, see [link](https://mariadb.com/kb/en/upgrading-from-mariadb-105-to-mariadb-106/#innodb-compressed-row-format)
+    key_buffer_size = 128M
+    lc_messages_dir = /usr/share/mysql
+    lc_messages = en_US
+    log_bin = /var/log/mysql/mariadb-bin
+    log_bin_index = /var/log/mysql/mariadb-bin.index
+    log_error = /var/log/mysql/mysql_error.log
+    log_slow_verbosity = query_plan
+    log_warnings = 2
+    long_query_time = 1
+    max_allowed_packet = 16M
+    max_binlog_size = 100M
+    max_connections = 200
+    max_heap_table_size = 64M
+    myisam_recover_options = BACKUP
+    myisam_sort_buffer_size = 512M
+    port = 3306
+    pid-file = /var/run/mysqld/mysqld.pid
+    query_cache_limit = 2M
+    query_cache_size = 64M
+    query_cache_type = 1
+    query_cache_min_res_unit = 2k
+    read_buffer_size = 2M
+    read_rnd_buffer_size = 1M
+    skip-external-locking
+    skip-name-resolve
+    slow_query_log_file = /var/log/mysql/mariadb-slow.log
+    slow-query-log = 1
+    socket = /var/run/mysqld/mysqld.sock
+    sort_buffer_size = 4M
+    table_open_cache = 400
+    thread_cache_size = 128
+    tmp_table_size = 64M
+    tmpdir = /tmp
+    transaction_isolation = READ-COMMITTED
+    #unix_socket=OFF
+    user = mysql
+    wait_timeout = 600
+
+[mysqldump]
+    max_allowed_packet = 16M
+    quick
+    quote-names
+
+[isamchk]
+    key_buffer = 16M
+```
+
+Save and close the file, then restart the database server
+```
+service mysql restart
+```
+
+Create Nextcloud database, user and password
+```
+mysql -uroot -p
+CREATE DATABASE nextclouddb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE USER nextclouddbuser@localhost identified by 'nextclouddbpassword';
+GRANT ALL PRIVILEGES on nextclouddb.* to nextclouddbuser@localhost;
+FLUSH privileges;
+quit;
+```
+
+Check whether the isolation level (read commit) and the charset (utf8mb4) have been set correctly
+```
+mysql -h localhost -uroot -p -e "SELECT @@TX_ISOLATION; SELECT SCHEMA_NAME 'database', default_character_set_name 'charset', DEFAULT_COLLATION_NAME 'collation' FROM information_schema.SCHEMATA WHERE SCHEMA_NAME='nextclouddb'"
+```
+
+If “ READ-COMMITTED ” and “ utf8mb4_general_c i” appear in the output (resultset) everything has been set up correctly.
+
 ### Nextcloud - Installation of Redis server
 ### Nextcloud - Installation and optimization of Nextcloud
 ## HomeLab services
