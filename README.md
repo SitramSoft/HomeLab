@@ -27,8 +27,13 @@ Summary:
     - [Update system timezone](#update-system-timezone)
     - [Correct DNS resolution](#correct-dns-resolution)
 - [Nextcloud server](#nextcloud-server)
-    - [Nextcloud VM configuration](#nextcloud-vm-configuration)
-    - [Nextcloud OS Configuration](#nextcloud-os-configuration)
+    - [Nextcloud - VM configuration](#nextcloud---vm-configuration)
+    - [Nextcloud - OS Configuration](#nextcloud---os-configuration)
+    - [Nextcloud - Installation and configuration of nginx web server](#nextcloud---installation-and-configuration-of-nginx-web-server)
+    - [Nextcloud - Installation and configuration of PHP 8.0](#nextcloud---installation-and-configuration-of-php-80)
+    - [Nextcloud - Installation and configuration of MariaDB database](#nextcloud---installation-and-configuration-of-mariadb-database)
+    - [Nextcloud - Installation of Redis server](#nextcloud---installation-of-redis-server)
+### Nextcloud - Installation and optimization of Nextcloud
 
 
 ## About my Homelab
@@ -173,7 +178,7 @@ sudo systemctl restart systemd-resolved.service
 ### Other plugins(TBD)
 
 ## Nextcloud server
-### Nextcloud VM configuration
+### Nextcloud - VM configuration
 - VM id: 106
 - HDD: 60GB
 - Sockets: 1
@@ -193,7 +198,7 @@ sudo systemctl restart systemd-resolved.service
     - Run guest-trim after a disk move or VM migration: enabled
  - OS: Ubuntu Server 21.04 amd64 
 
-### Nextcloud OS Configuration
+### Nextcloud - OS Configuration
 The following subsections from [General](#general) section should be peformed in this order:
  - [SSH configuration](#ssh-configuration)
  - [Ubuntu Server update](#ubuntu-server-update)
@@ -206,6 +211,125 @@ Install the following packages as necessary basis for server operation:
 sudo apt update -q4
 sudo apt install -y curl gnupg2 git lsb-release ssl-cert ca-certificates apt-transport-https tree locate software-properties-common dirmngr screen htop net-tools zip unzip bzip2 ffmpeg ghostscript libfile-fcntllock-perl libfontconfig1 libfuse2 socat
 ```
+
+### Nextcloud - Installation and configuration of nginx web server
+Add software source
+```
+cd /etc/apt/sources.list.d
+echo "deb http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" | tee nginx.list
+```
+
+In order to be able to trust the sources, use the corresponding keys:
+```
+sudo curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+sudo apt-update -q4
+sudo make-ssl-cert generate-default-snakeoil -y
+```
+
+Ensure that no relics from previous installations disrupt the operation of the webserver
+```
+sudo apt remove nginx nginx-extras nginx-common nginx-full -y --allow-change-held-packages
+```
+
+Ensure the the counterpart (Apache2) of nginx web server is neither active or installed
+```
+sudo systemctl stop apache2.service
+sudo systemctl disable apache2.service
+```
+
+Install the web server and configure the service for automatic start after a system restart
+```
+sudo apt install -y nginx
+sudo systemctl enable nginx.service
+```
+
+Backup standard configuration in case we need it for later, create and edit a blank one
+```
+sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+sudo touch /etc/nginx/nginx.conf
+sudo nano /etc/nginx/nginx.conf
+```
+
+Copy the following configuration in the text editor. 
+```
+user www-data;
+worker_processes auto;
+pid /var/run/nginx.pid;
+
+events {
+        worker_connections 1024;
+        multi_accept on;
+        use epoll;
+}
+
+http {
+        server_names_hash_bucket_size 64;
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log warn;
+        #either use 127.0.0.1 or own subnet
+        set_real_ip_from 192.168.2.0/24;
+        real_ip_header X-Forwarded-For;
+        real_ip_recursive on;
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        sendfile on;
+        send_timeout 3600;
+        tcp_nopush on;
+        tcp_nodelay on;
+        open_file_cache max=500 inactive=10m;
+        open_file_cache_errors on;
+        keepalive_timeout 65;
+        reset_timedout_connection on;
+        server_tokens off;
+        #either use 127.0.0.1 or own dns server
+        resolver 192.168.0.103 valid=30s;
+        resolver_timeout 5s;
+        include /etc/nginx/conf.d/*.conf;
+}
+```
+
+Save the file and close it. Restart the web server afterwards and check if the server has been successfully started.
+
+```
+sudo service nginx restart
+sudo service nginx status
+```
+
+Create folders and assign the right permissions
+```
+sudo mkdir -p /var/nc_data
+sudo chown -R www-data:www-data /var/nc_data /var/www
+```
+
+### Nextcloud - Installation and configuration of PHP 8.0
+Add software source
+```
+cd /etc/apt/sources.list.d
+echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | tee php.list
+```
+
+In order to be able to trust the sources, use the corresponding keys:
+```
+sudo apt-key adv --recv-keys --keyserver hkps://keyserver.ubuntu.com:443 4F4EA0AAE5267A6C
+sudo apt-update -q4
+sudo make-ssl-cert generate-default-snakeoil -y
+```
+
+### Nextcloud - Installation and configuration of MariaDB database
+Add software source
+```
+cd /etc/apt/sources.list.d
+echo "deb http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.6/ubuntu $(lsb_release -cs) main" | tee mariadb.list
+```
+
+In order to be able to trust the sources, use the corresponding keys:
+```
+apt-key adv --recv-keys --keyserver hkps://keyserver.ubuntu.com:443 0xF1656F24C74CD1D8
+sudo apt-update -q4
+sudo make-ssl-cert generate-default-snakeoil -y
+```
+### Nextcloud - Installation of Redis server
+### Nextcloud - Installation and optimization of Nextcloud
 ## HomeLab services
 ### Hercules VM configuration
 ### Docker installation and docker-compose
