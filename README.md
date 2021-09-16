@@ -34,6 +34,7 @@ Summary:
     - [Nextcloud - Installation and configuration of MariaDB database](#nextcloud---installation-and-configuration-of-mariadb-database)
     - [Nextcloud - Installation of Redis server](#nextcloud---installation-of-redis-server)
     - [Nextcloud - Optimize and update using a script](#nextcloud---optimize-and-update-using-a-script)
+    - [Nextcloud - Bash aliases for executing Nextcloud Toolset occ](#nextcloud---bash-aliases-for-executing-nextcloud-toolset-occ)
 ### Nextcloud - Installation and optimization of Nextcloud
 
 
@@ -1110,6 +1111,19 @@ chmod +x update.sh
 
 Execute it periodically.
 
+### Nextcloud - Bash aliases for executing Nextcloud Toolset occ
+Adjust file /home/sitram/.bash_aliases in order to be able to start the Nextcloud Toolset occ directly with nocc
+```
+if [ ! -f /home/sitram/.bash_aliases ]; then touch /home/sitram/.bash_aliases; fi
+```
+
+```
+cat <<EOF >> /home/sitram/.bash_aliases
+alias nocc="sudo -u www-data php /var/www/nextcloud/occ"
+EOF
+```
+
+Log out of the current session and then log back in again. Now you can run Nextcloud Toolset occ directly via "nocc ... ".
 ## HomeLab services
 ### Hercules VM configuration
 ### Docker installation and docker-compose
