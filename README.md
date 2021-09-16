@@ -1097,8 +1097,8 @@ sudo -u www-data php /var/www/nextcloud/occ files:scan-app-data
 sudo -u www-data php /var/www/nextcloud/occ app:update --all
 
 # Restart PHP and Web server
-/usr/sbin/service php8.0-fpm restart
-/usr/sbin/service nginx restart
+sudo /usr/sbin/service php8.0-fpm restart
+sudo /usr/sbin/service nginx restart
 
 exit 0
 ```
