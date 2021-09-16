@@ -1058,14 +1058,21 @@ nano update.sh
 ```
 ```
 #!/bin/bash
-apt update -q4
-apt upgrade -V
-apt autoremove -y
-apt autoclean -y
-chown -R www-data:www-data /var/www/nextcloud
-find /var/www/nextcloud/ -type d -exec chmod 750 {} \;
-find /var/www/nextcloud/ -type f -exec chmod 640 {} \;
-/usr/sbin/service nginx stop
+# Update OS
+sudo apt update -q4
+sudo apt upgrade -V
+sudo apt autoremove -y
+sudo apt autoclean -y
+
+# Reset folder permissions
+sudo chown -R www-data:www-data /var/www/nextcloud
+sudo find /var/www/nextcloud/ -type d -exec sudo chmod 750 {} \;
+sudo find /var/www/nextcloud/ -type f -exec sudo chmod 640 {} \;
+
+# Stop web server
+sudo /usr/sbin/service nginx stop
+
+# Update Nextcloud
 sudo -u www-data php /var/www/nextcloud/updater/updater.phar
 sudo -u www-data php /var/www/nextcloud/occ status
 sudo -u www-data php /var/www/nextcloud/occ -V
@@ -1073,19 +1080,35 @@ sudo -u www-data php /var/www/nextcloud/occ db:add-missing-primary-keys
 sudo -u www-data php /var/www/nextcloud/occ db:add-missing-indices
 sudo -u www-data php /var/www/nextcloud/occ db:add-missing-columns
 sudo -u www-data php /var/www/nextcloud/occ db:convert-filecache-bigint
-sed -i "s/output_buffering=.*/output_buffering=0/" /var/www/nextcloud/.user.ini
-chown -R www-data:www-data /var/www/nextcloud
-redis-cli -s /var/run/redis/redis-server.sock <<EOF
+
+# Make sure the user.ini has the needed modification
+sudo sed -i "s/output_buffering=.*/output_buffering=0/" /var/www/nextcloud/.user.ini
+sudo chown -R www-data:www-data /var/www/nextcloud
+
+# Flush Redis server
+redis-cli -h 192.168.0.101 -p 6379 <<EOF
 FLUSHALL
 quit
 EOF
+
+# Perform Nextcloud maintenance
 sudo -u www-data php /var/www/nextcloud/occ files:scan --all
 sudo -u www-data php /var/www/nextcloud/occ files:scan-app-data
 sudo -u www-data php /var/www/nextcloud/occ app:update --all
+
+# Restart PHP and Web server
 /usr/sbin/service php8.0-fpm restart
 /usr/sbin/service nginx restart
+
 exit 0
 ```
+
+Make the script executable
+```
+chmod +x update.sh
+```
+
+Execute it periodically.
 
 ## HomeLab services
 ### Hercules VM configuration
