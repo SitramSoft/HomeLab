@@ -28,6 +28,7 @@ Summary:
     - [Correct DNS resolution](#correct-dns-resolution)
 - [Nextcloud server](#nextcloud-server)
     - [Nextcloud VM configuration](#nextcloud-vm-configuration)
+    - [Nextcloud OS Configuration](#nextcloud-os-configuration)
 
 
 ## About my Homelab
@@ -191,6 +192,20 @@ sudo systemctl restart systemd-resolved.service
     - QEMU Guest agent: enabled
     - Run guest-trim after a disk move or VM migration: enabled
  - OS: Ubuntu Server 21.04 amd64 
+
+### Nextcloud OS Configuration
+The following subsections from [General](#general) section should be peformed in this order:
+ - [SSH configuration](#ssh-configuration)
+ - [Ubuntu Server update](#ubuntu-server-update)
+ - [Update timeserver](#update-timeserver)
+ - [Update system timezone](#update-system-timezone)
+ - [Correct DNS resolution](#correct-dns-resolution)
+
+Install the following packages as necessary basis for server operation:
+```
+sudo apt update -q4
+sudo apt install -y curl gnupg2 git lsb-release ssl-cert ca-certificates apt-transport-https tree locate software-properties-common dirmngr screen htop net-tools zip unzip bzip2 ffmpeg ghostscript libfile-fcntllock-perl libfontconfig1 libfuse2 socat
+```
 ## HomeLab services
 ### Hercules VM configuration
 ### Docker installation and docker-compose
