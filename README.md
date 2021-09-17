@@ -27,7 +27,23 @@ Summary:
     - [Update system timezone](#update-system-timezone)
     - [Correct DNS resolution](#correct-dns-resolution)
     - [Qemu-guest-agent](#qemu-guest-agent)
-- [Nextcloud server](#nextcloud-server)
+- [pfSense - Firewall, DHCP and NTP server](#pfsense---firewall-dhcp-and-ntp-server)
+    - [pfSense - VM configuration](#pfsense---vm-configuration)
+    - [pfSense - Setup](#pfsense---setup)
+    - [pfSense - DHCP server setup](#pfsense---dhcp-server-setup)
+    - [pfSense - NTP server setup](#pfsense---ntp-server-setup)
+    - [pfSense - OpenVPN setup ](#pfsense---openvpn-setup-)
+- [piHole - All-around DNS solution server](#pihole---all-around-dns-solution-server)
+    - [piHole - OS Configuration](#pihole---os-configuration)
+    - [piHole - VM configuration](#pihole---vm-configuration)
+    - [piHole - Setup](#pihole---setup)
+    - [piHole - Ubound as a recursive DNS server](#pihole---ubound-as-a-recursive-dns-server)
+    - [piHole - Local DNS configuration](#pihole---local-dns-configuration)
+- [HomeAssistant - Home automation server](#homeassistant---home-automation-server)
+    - [HomeAssistant - VM configuration](#homeassistant---vm-configuration)
+    - [HomeAssistant - Installation and setup](#homeassistant---installation-and-setup)
+    - [HomeAssistant - Other plugins](#homeassistant---other-plugins)
+- [Nextcloud - Content collaboration server](#nextcloud---content-collaboration-server)
     - [Nextcloud - VM configuration](#nextcloud---vm-configuration)
     - [Nextcloud - OS Configuration](#nextcloud---os-configuration)
     - [Nextcloud - Installation and configuration of nginx web server](#nextcloud---installation-and-configuration-of-nginx-web-server)
@@ -36,6 +52,44 @@ Summary:
     - [Nextcloud - Installation of Redis server](#nextcloud---installation-of-redis-server)
     - [Nextcloud - Optimize and update using a script](#nextcloud---optimize-and-update-using-a-script)
     - [Nextcloud - Bash aliases for executing Nextcloud Toolset occ](#nextcloud---bash-aliases-for-executing-nextcloud-toolset-occ)
+- [Hercules - HomeLab services VM](#hercules---homelab-services-vm)
+    - [Hercules - VM configuration](#hercules---vm-configuration)
+    - [Hercules - OS Configuration](#hercules---os-configuration)
+    - [Hercules - Docker installation and docker-compose](#hercules---docker-installation-and-docker-compose)
+    - [Hercules - Portainer docker container](#hercules---portainer-docker-container)
+    - [Hercules - Guacamole docker container](#hercules---guacamole-docker-container)
+    - [Hercules - Watchtower docker container](#hercules---watchtower-docker-container)
+    - [Hercules - Heimdall docker container](#hercules---heimdall-docker-container)
+    - [Hercules - Plex docker container](#hercules---plex-docker-container)
+    - [Hercules - Radarr docker container](#hercules---radarr-docker-container)
+    - [Hercules - Sonarr docker container](#hercules---sonarr-docker-container)
+    - [Hercules - Bazarr docker container](#hercules---bazarr-docker-container)
+    - [Hercules - Lidarr docker container](#hercules---lidarr-docker-container)
+    - [Hercules - Jackett docker container](#hercules---jackett-docker-container)
+    - [Hercules - Transmission docker container](#hercules---transmission-docker-container)
+    - [Hercules - DuckDNS docker container](#hercules---duckdns-docker-container)
+    - [Hercules - SWAG - Secure Web Application Gateway docker container](#hercules---swag---secure-web-application-gateway-docker-container)
+    - [Hercules - Calibre docker container](#hercules---calibre-docker-container)
+    - [Hercules - Calibre-web docker container](#hercules---calibre-web-docker-container)
+    - [Hercules - Adminer docker container](#hercules---adminer-docker-container)
+    - [Hercules - PGAdmin docker container](#hercules---pgadmin-docker-container)
+    - [Hercules - PostgressSQL database docker container](#hercules---postgresssql-database-docker-container)
+    - [Hercules - MySQL database docker container](#hercules---mysql-database-docker-container)
+    - [Hercules - Redis docker container](#hercules---redis-docker-container)
+    - [Hercules - Collabora docker container](#hercules---collabora-docker-container)
+    - [Hercules - WordPress docker container](#hercules---wordpress-docker-container)
+    - [Hercules - Jenkins CI docker container](#hercules---jenkins-ci-docker-container)
+    - [Hercules - LibreSpeed docker container](#hercules---librespeed-docker-container)
+- [Windows10 - Virtual Windows Desktop VM](#windows10---virtual-windows-desktop-vm)
+    - [Windows10 - VM configuration](#windows10---vm-configuration)
+    - [Windows10 - Windows installation](#windows10---windows-installation)
+    - [Windows10 - Remote Desktop Connection configuration](#windows10---remote-desktop-connection-configuration)
+- [Code - coding CM](#code---coding-cm)
+    - [Code - CodeServer VM configuration](#code---codeserver-vm-configuration)
+    - [Code - OS Configuration](#code---os-configuration)
+    - [Code - CodeServer installation and configuration](#code---codeserver-installation-and-configuration)
+    - [Code - Accessing CodeServer from outside local network](#code---accessing-codeserver-from-outside-local-network)
+
 ### Nextcloud - Installation and optimization of Nextcloud
 
 
@@ -173,25 +227,26 @@ guest-agent has to be installed in ech VM and enabled in Proxmox VE GUI or via C
  - GUI: On the VM Options tab, set option 'Enabled' on 'QEMU Guest Agent
   - CLI: ```qm set VMID --agent 1```
 
-## Firewall DHCP and NTP server
-### pfSense VM configuration
-### PfSense setup
-### DHCP server setup
-### NTP server setup
-### OpenVPN setup 
+## pfSense - Firewall, DHCP and NTP server
+### pfSense - VM configuration
+### pfSense - Setup
+### pfSense - DHCP server setup
+### pfSense - NTP server setup
+### pfSense - OpenVPN setup 
 
-## All-around DNS solution
-### piHole VM configuration
-### piHole setup
-### Ubound as a recursive DNS server
-### Local DNS configuration
+## piHole - All-around DNS solution server
+### piHole - OS Configuration
+### piHole - VM configuration
+### piHole - Setup
+### piHole - Ubound as a recursive DNS server
+### piHole - Local DNS configuration
 
-## Home automation with HomeAssistant
-### HomeAssistant VM configuration
-### HomeAssistant installation and setup
-### Other plugins(TBD)
+## HomeAssistant - Home automation server
+### HomeAssistant - VM configuration
+### HomeAssistant - Installation and setup
+### HomeAssistant - Other plugins
 
-## Nextcloud server
+## Nextcloud - Content collaboration server
 ### Nextcloud - VM configuration
 - VM id: 106
 - HDD: 60GB
@@ -1136,42 +1191,42 @@ EOF
 ```
 
 Log out of the current session and then log back in again. Now you can run Nextcloud Toolset occ directly via "nocc ... ".
-## HomeLab services
-### Hercules VM configuration
-### Docker installation and docker-compose
-### Portainer docker container
-### Guacamole docker container
-### Watchtower docker container
-### Heimdall docker container
-### Plex docker container
-### Tautulli docker container
-### Radarr docker container
-### Sonarr docker container
-### Bazarr docker container
-### Lidarr docker container
-### Jackett docker container
-### Transmission docker container
-### DuckDNS docker container
-### Secure Web Application Gateway docker container
-### Calibre docker container
-### Calibre-web docker container
-### Adminer docker container
-### PGAdmin docker container
-### PostgressSQL database docker container
-### MySQL database docker container
-### Redis docker container
-### NextCloud docker container
-### Collabora docker container
-### WordPress docker container
-### Jenkins CI docker container
-### LibreSpeed docker container
+## Hercules - HomeLab services VM
+### Hercules - VM configuration
+### Hercules - OS Configuration
+### Hercules - Docker installation and docker-compose
+### Hercules - Portainer docker container
+### Hercules - Guacamole docker container
+### Hercules - Watchtower docker container
+### Hercules - Heimdall docker container
+### Hercules - Plex docker container
+### Hercules - Radarr docker container
+### Hercules - Sonarr docker container
+### Hercules - Bazarr docker container
+### Hercules - Lidarr docker container
+### Hercules - Jackett docker container
+### Hercules - Transmission docker container
+### Hercules - DuckDNS docker container
+### Hercules - SWAG - Secure Web Application Gateway docker container
+### Hercules - Calibre docker container
+### Hercules - Calibre-web docker container
+### Hercules - Adminer docker container
+### Hercules - PGAdmin docker container
+### Hercules - PostgressSQL database docker container
+### Hercules - MySQL database docker container
+### Hercules - Redis docker container
+### Hercules - Collabora docker container
+### Hercules - WordPress docker container
+### Hercules - Jenkins CI docker container
+### Hercules - LibreSpeed docker container
 
-## Virtual Windows Desktop
-### Windows10 VM configuration
-### Windows installation
-### Remote Desktop Connection configuration
+## Windows10 - Virtual Windows Desktop VM
+### Windows10 - VM configuration
+### Windows10 - Windows installation
+### Windows10 - Remote Desktop Connection configuration
 
-## Virtual coding IDE
-### CodeServer VM configuration
-### CodeServer installation and configuration
-### Accessing CodeServer from outside local network
+## Code - coding CM
+### Code - CodeServer VM configuration
+### Code - OS Configuration
+### Code - CodeServer installation and configuration
+### Code - Accessing CodeServer from outside local network
