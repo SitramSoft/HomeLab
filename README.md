@@ -26,6 +26,7 @@ Summary:
     - [Update timeserver](#update-timeserver)
     - [Update system timezone](#update-system-timezone)
     - [Correct DNS resolution](#correct-dns-resolution)
+    - [Qemu-guest-agent](#qemu-guest-agent)
 - [Nextcloud server](#nextcloud-server)
     - [Nextcloud - VM configuration](#nextcloud---vm-configuration)
     - [Nextcloud - OS Configuration](#nextcloud---os-configuration)
@@ -160,6 +161,17 @@ sudo rm -f /etc/resolv.conf
 sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 sudo systemctl restart systemd-resolved.service
 ```
+### Qemu-guest-agent
+The qemu-guest-agent is a helper daemon, which is installed in the guest VM. It is used to exchange information between the host and guest, and to execute command in the guest.
+
+According to Proxmox VE [wiki](https://pve.proxmox.com/wiki/Qemu-guest-agent), the qemu-guest-agent is used for mainly two things:
+
+1. To properly shutdown the guest, instead of relying on ACPI commands or windows policies
+2. To freeze the guest file system when making a backup (on windows, use the volume shadow copy service VSS).
+
+guest-agent has to be installed in ech VM and enabled in Proxmox VE GUI or via CLI
+ - GUI: On the VM Options tab, set option 'Enabled' on 'QEMU Guest Agent
+  - CLI: ```qm set VMID --agent 1```
 
 ## Firewall DHCP and NTP server
 ### pfSense VM configuration
@@ -196,7 +208,7 @@ sudo systemctl restart systemd-resolved.service
  - Options:
     - Start at boot: enabled
     - Start/Shutdown order: 6
-    - QEMU Guest agent: enabled
+    - QEMU Guest agent: enabled - [Qemu-guest-agent](#qemu-guest-agent)
     - Run guest-trim after a disk move or VM migration: enabled
  - OS: Ubuntu Server 21.04 amd64 
 
