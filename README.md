@@ -382,6 +382,11 @@ while true; do cp loadfile loadfile1; done
 ```
 ## Proxmox - Virtualization server
 ### Proxmox - OS configuration
+The following subsections from [General](#general) section should be performed in this order:
+ - [SSH configuration](#ssh-configuration)
+ - [Ubuntu Server update](#ubuntu-server-update)
+ - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
+ - [Update system timezone](#update-system-timezone)
 ### Proxmox - PCI Passthrough configuration
 Enable IOMMU
 ```
@@ -708,7 +713,7 @@ The configuration is done trough web interface in section **Services / NTP / ACL
 
 ## piHole - All-around DNS solution server
 ### piHole - OS Configuration
-The following subsections from [General](#general) section should be peformed in this order:
+The following subsections from [General](#general) section should be performed in this order:
  - [SSH configuration](#ssh-configuration)
  - [Ubuntu Server update](#ubuntu-server-update)
  - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
@@ -746,7 +751,7 @@ The following subsections from [General](#general) section should be peformed in
  - OS: Ubuntu Server 21.04 amd64 
 
 ### Nextcloud - OS Configuration
-The following subsections from [General](#general) section should be peformed in this order:
+The following subsections from [General](#general) section should be performed in this order:
  - [SSH configuration](#ssh-configuration)
  - [Ubuntu Server update](#ubuntu-server-update)
  - [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
@@ -1706,7 +1711,7 @@ Log out of the current session and then log back in again. Now you can run Nextc
 ## Code - coding CM
 ### Code - CodeServer VM configuration
 ### Code - OS Configuration
-The following subsections from [General](#general) section should be peformed in this order:
+The following subsections from [General](#general) section should be performed in this order:
  - [SSH configuration](#ssh-configuration)
  - [Ubuntu Server update](#ubuntu-server-update)
  - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
