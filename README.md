@@ -187,6 +187,11 @@ sudo apt upgrade
 ### Synchronize time with systemd-timesyncd
 I have a dedicated timeserver which servers all the clients in my HomeLab. Whenever it is possible, I configure each server to use the internal timeserver.
 
+Make sure NTP is not installed
+```
+sudo apt purge ntp
+```
+
 Edit file **timesyncd.conf**
 ```
 sudo nano /etc/systemd/timesyncd.conf
@@ -206,14 +211,28 @@ or
 ```
 sudo timedatectl set-ntp off
 sudo timedatectl set-ntp on
-systemctl status systemd-timesyncd
+timedatectl timesync-status
 ```
 
+Check newly configured NTP servers are used by looking in the journal
+```
+journalctl --since -1h -u systemd-timesyncd
+```
+
+Configuration used can be checked using
+```
+sudo timedatectl show-timesync --all
+```
+
+To start troubleshooting, check the logs using the command
+```
+sudo grep systemd-timesyncd /var/log/syslog | tail
+```
 ### Synchronize time with ntpd
-Install NTP server and verify the version
+Install NTP server and ntpdate. Verify the version of NTP server to make sure it is correctly installed
 ```
 sudo apt-get update
-sudo apt-get install ntp
+sudo apt-get install ntp ntpdate
 sntp --version
 ```
 
@@ -230,6 +249,11 @@ Restart NTP server and verify that it's running correctly
 ```
 sudo service ntp restart
 sudo service ntp status
+```
+
+Check newly configured NTP servers are used by looking in the journal
+```
+journalctl --since -1h -u ntpd
 ```
 
 Disable systemd timesyncd service
@@ -251,10 +275,15 @@ sudo service ntp start
 date
 ntpq -pn
 ```
+Update time with NTP service daemon
+```
+date ; sudo service ntp stop ; sudo ntpdate -s 192.168.0.1 ; sudo service ntp start ; date
+```
 
-# Update time with NTP service daemon
-
- date ; sudo service ntp stop ; sudo ntpdate -s firewall.local ; sudo service ntp start ; date
+To start troubleshooting, check the logs using the command
+```
+sudo grep ntpd /var/log/syslog | tail
+```
 ### Update system timezone
 In order to list all available timezones, the following command can be used
 ```
