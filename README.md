@@ -23,7 +23,8 @@ Summary:
 - [General](#general)
     - [SSH configuration](#ssh-configuration)
     - [Ubuntu Server update](#ubuntu-server-update)
-    - [Update timeserver](#update-timeserver)
+    - [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
+    - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
     - [Update system timezone](#update-system-timezone)
     - [Correct DNS resolution](#correct-dns-resolution)
     - [Qemu-guest-agent](#qemu-guest-agent)
@@ -182,7 +183,7 @@ sudo apt list --upgradable
 sudo apt upgrade
 ```
 
-### Update timeserver
+### Synchronize time with systemd-timesyncd
 I have a dedicated timeserver which servers all the clients in my HomeLab. Whenever it is possible, I configure each server to use the internal timeserver.
 
 Edit file **timesyncd.conf**
@@ -201,7 +202,47 @@ Restart the timesync daemon to use the internal timserver
 ```
 sudo systemctl restart systemd-timesyncd
 ```
+### Synchronize time with ntpd
+Install NTP server and verify the version
+```
+sudo apt-get update
+sudo apt-get install ntp
+sntp --version
+```
 
+Configure the NTP server pool either to a server closest to own location or local NTP server.
+```
+sudo nano /etc/ntp.conf
+```
+Comment the lines starting with **pool** and add the line
+```
+server 192.168.0.1
+```
+
+Restart NTP server and verify that it's running correctly
+```
+sudo service ntp restart
+sudo service ntp status
+```
+
+In order to verify time synchronization status with each defined server or pool look for **\*** near the servers listed by command below. Any server which is not marked with **\*** is not syncronized. 
+```
+ntpq -pn
+```
+
+In order to force a time synchronization and check the impact on the system time and ntpd, n the following commands can be used
+```
+date
+sudo service ntp stop
+sudo ntpdate -s firewall.local
+sudo service ntp start
+date
+ntpq -pn
+```
+
+# Update time with NTP service daemon
+
+ date ; sudo service ntp stop ; sudo ntpdate -s firewall.local ; sudo service ntp start ; date
 ### Update system timezone
 In order to list all available timezones, the following command can be used
 ```
@@ -535,7 +576,7 @@ b2:4e:26:0d:b1:02	192.168.0.246	clima_masterbedroom			Clima dormitor mare - Daik
 ```
 
 ### pfSense - NTP server setup
-pfSense acts as a NTP server for all clients in my local network which gives the posibility to have this configuration.
+pfSense acts as a NTP server for all clients in my local network which gives the posibility to have this configuration. Server configuration has been done based on instructions [here](https://kifarunix.com/how-to-configure-ntp-server-on-pfsense/) and summarized below.
 
 The configuration is done trough web interface in section **Services / NTP / Settings**
 
@@ -598,7 +639,7 @@ The configuration is done trough web interface in section **Services / NTP / ACL
 The following subsections from [General](#general) section should be peformed in this order:
  - [SSH configuration](#ssh-configuration)
  - [Ubuntu Server update](#ubuntu-server-update)
- - [Update timeserver](#update-timeserver)
+ - [Synchronize time with systemd-timesyncd](#Synchronize-time-with-systemd-timesyncd)
  - [Update system timezone](#update-system-timezone)
  - [Correct DNS resolution](#correct-dns-resolution)
 
