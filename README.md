@@ -203,7 +203,12 @@ sudo systemctl restart systemd-timesyncd
 ```
 
 ### Update system timezone
-Set system timezone to my local timezone.
+In order to list all available timezones, the following command can be used
+```
+timedatectl list-timezones
+```
+
+Once the correct timezone from the above list has been chosen, system timezone can be changed using the command
 ```
 sudo timedatectl set-timezone Europe/Bucharest
 ```
