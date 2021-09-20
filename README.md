@@ -191,17 +191,23 @@ Edit file **timesyncd.conf**
 sudo nano /etc/systemd/timesyncd.conf
 ```
 
-
 Uncomment and modify the lines starting with **NTP** and **FallbackNTP**
 ```
 NTP=192.168.0.1
 FallbackNTP=pool.ntp.org
 ```
 
-Restart the timesync daemon to use the internal timserver
+Restart the timesync daemon to use the internal timeserver
 ```
 sudo systemctl restart systemd-timesyncd
 ```
+or
+```
+sudo timedatectl set-ntp off
+sudo timedatectl set-ntp on
+systemctl status systemd-timesyncd
+```
+
 ### Synchronize time with ntpd
 Install NTP server and verify the version
 ```
@@ -223,6 +229,11 @@ Restart NTP server and verify that it's running correctly
 ```
 sudo service ntp restart
 sudo service ntp status
+```
+
+Disable systemd timesyncd service
+```
+sudo timedatectl set-ntp off
 ```
 
 In order to verify time synchronization status with each defined server or pool look for **\*** near the servers listed by command below. Any server which is not marked with **\*** is not syncronized. 
@@ -604,6 +615,12 @@ The configuration is done trough web interface in section **Services / NTP / ACL
 
 ## piHole - All-around DNS solution server
 ### piHole - OS Configuration
+The following subsections from [General](#general) section should be peformed in this order:
+ - [SSH configuration](#ssh-configuration)
+ - [Ubuntu Server update](#ubuntu-server-update)
+ - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
+ - [Update system timezone](#update-system-timezone)
+ - [Correct DNS resolution](#correct-dns-resolution)
 ### piHole - VM configuration
 ### piHole - Setup
 ### piHole - Ubound as a recursive DNS server
@@ -639,7 +656,7 @@ The configuration is done trough web interface in section **Services / NTP / ACL
 The following subsections from [General](#general) section should be peformed in this order:
  - [SSH configuration](#ssh-configuration)
  - [Ubuntu Server update](#ubuntu-server-update)
- - [Synchronize time with systemd-timesyncd](#Synchronize-time-with-systemd-timesyncd)
+ - [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
  - [Update system timezone](#update-system-timezone)
  - [Correct DNS resolution](#correct-dns-resolution)
 
@@ -1596,5 +1613,11 @@ Log out of the current session and then log back in again. Now you can run Nextc
 ## Code - coding CM
 ### Code - CodeServer VM configuration
 ### Code - OS Configuration
+The following subsections from [General](#general) section should be peformed in this order:
+ - [SSH configuration](#ssh-configuration)
+ - [Ubuntu Server update](#ubuntu-server-update)
+ - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
+ - [Update system timezone](#update-system-timezone)
+ - [Correct DNS resolution](#correct-dns-resolution)
 ### Code - CodeServer installation and configuration
 ### Code - Accessing CodeServer from outside local network
