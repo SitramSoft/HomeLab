@@ -787,8 +787,8 @@ Download the latest [MIB](https://www.cyberpowersystems.com/products/software/mi
 
 Download and install a MIB browser to edit the file.
 - Free MIB Browser
-- MIB Browse](https://www.ireasoning.com/mibbrowser.shtml
-- SNMP Browser. 1
+- [MIB Browser](https://www.ireasoning.com/mibbrowser.shtml)
+- SNMP Browser.
 
 
 Choose **File -> Open** and go to the folder where you stored the CyberPower MIB file and select it. Start by selecting your ip address or localhost as the address in the top right box.
