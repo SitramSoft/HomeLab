@@ -787,7 +787,7 @@ Download the latest [MIB](https://www.cyberpowersystems.com/products/software/mi
 
 Download and install a MIB browser to edit the file.
 - Free MIB Browser
-- MIB Browse](https://www.ireasoning.com/mibbrowser.shtml
+- [MIB Browser](https://www.ireasoning.com/mibbrowser.shtml)
 - SNMP Browser. 1
 
 
