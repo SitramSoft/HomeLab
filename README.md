@@ -32,6 +32,7 @@ Summary:
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
     - [Proxmox - OS configuration](#proxmox---os-configuration)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
+    - [Proxmox - UPS monitoring software](#proxmox---ups-monitoring-software)
 - [pfSense - Firewall, DHCP and NTP server](#pfsense---firewall-dhcp-and-ntp-server)
     - [pfSense - VM configuration](#pfsense---vm-configuration)
     - [pfSense - Setup](#pfsense---setup)
@@ -49,6 +50,7 @@ Summary:
     - [HomeAssistant - VM configuration](#homeassistant---vm-configuration)
     - [HomeAssistant - Installation and setup](#homeassistant---installation-and-setup)
     - [HomeAssistant - Other plugins](#homeassistant---other-plugins)
+    - [HomeAssistant - UPS integration](#homeassistant---ups-integration)
 - [Nextcloud - Content collaboration server](#nextcloud---content-collaboration-server)
     - [Nextcloud - VM configuration](#nextcloud---vm-configuration)
     - [Nextcloud - OS Configuration](#nextcloud---os-configuration)
@@ -419,6 +421,54 @@ vfio_virqfd
 ```
 
 Check if IOMMU Interrupt remapping is needed by executing `sudo dmesg | grep 'remapping'`. If it shows `DMAR-IR: Enabled IRQ remapping in x2apic mode` it means that IOMMU Interrupt remapping is not needed.
+
+### Proxmox - UPS monitoring software
+In order to communicate with existing [ups](https://www.cyberpower.com/eu/ro/product/sku/cp1500epfclcd) I use the business version of the monitoring software offered by CyberPower called **CyberPower Panel Business V4**.
+
+Download and install the latest 64bit version for Linux of [CyberPower Panel Business V4](https://www.cyberpowersystems.com/products/software/power-panel-business/). At the time this document was written the latest version was 4.7.0. The download link and the name of the script might change.
+
+```
+wget https://dl4jz3rbrsfum.cloudfront.net/software/ppb470-linux-x86_x64.sh
+```
+
+Make the script executable.
+```
+chmod +x ppb470-linux-x86_x64.sh
+```
+
+Execute the script in order to install the software.
+```
+sudo ./ppb470-linux-x86_x64.sh
+```
+
+Choose **5** or press **Enter** to select English as language. Confirm installation by pressing **o**.
+
+
+In case the software is already installed on the system, the installer will detect this and will ask to to choose to update existing installation( option**1**) or make a new one(option **2**). 
+
+After agreeing with license, make sure to select local(option **1**) not remote version.
+
+After finishing the installation, access the [web page](http://192.168.0.2:3052/local/login), login with default credentials and continue the configuration on the web interface. As long as the UPS is connected via the USB port to the server, it should be detected automatically by the application.
+ - user: admin
+ - pass: admin
+
+**SETTING -> NOTIFICATION CHANNELS**
+  - Enable notification by email
+  - **Provider:** Other
+  - **SMTP server:** smtp.gmail.com
+  - **Connection Security:** SSL
+  - **Service port:** 465
+  - **Sender name:** UPS Serenity
+  - **Sender email:** personal email address
+  - **User name:** personal email address
+  - **Pass:** generated password for accesing Gmail by external 3rd party apps.
+
+**SETTING -> SNMP SETTINGS**
+Enable **SNMPv1** settings and make sure **SNMP Local Port** is 161.
+
+Create the public and private groups under SNP v1 profiles. Link them to IP address 0.0.0.0 and set them to read/write. 
+
+This means any computer on the network can query using SNMP protocol information from the UPS. It is usefull for integrating the UPS in [HomeAssistant - Home automation server](#homeassistant---home-automation-server). 
 ## pfSense - Firewall, DHCP and NTP server
 ### pfSense - VM configuration
 - VM id: 100
@@ -728,6 +778,186 @@ The following subsections from [General](#general) section should be performed i
 ### HomeAssistant - VM configuration
 ### HomeAssistant - Installation and setup
 ### HomeAssistant - Other plugins
+### HomeAssistant - UPS integration
+In order to access different parameters of the UPS using the SNMP protocol, certain stepts need to be taken to identify the corresponding OID's. 
+
+Download the latest [MIB](https://www.cyberpowersystems.com/products/software/mib-files/
+) file from CyberPower.
+
+
+Download and install a MIB browser to edit the file.
+- Free MIB Browser
+- MIB Browse](https://www.ireasoning.com/mibbrowser.shtml
+- SNMP Browser. 1
+
+
+Choose **File -> Open** and go to the folder where you stored the CyberPower MIB file and select it. Start by selecting your ip address or localhost as the address in the top right box.
+
+
+Select from the tree explorer **private -> enterprises -> cps -> products -> ups** and double click a **leaf** on the tree to query the OID and return a value. The OID is listed at the bottom left. When double click on the OID, the values are shown on the right hand panel.
+
+
+The OIDs from CyberPower need the **.0** at the end when used in another application. The values from viewer cannot be copied as they are.
+
+
+In order to understand the units of an OID, look at the response data. It might be 
+ - an integer
+ - ticks - e.g. time remaining in my example below
+ - a series of strings, e.g the 'Status', which  can then be used to develop the value_template in configuration.yaml.
+
+Add the following code in configurations.yaml file to be able to monitor some usefull parameters.
+```
+sensor:
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid: .1.3.6.1.4.1.3808.1.1.1.4.2.1.0
+    community: public
+    port: 161
+    name: UPS Output Voltage
+    value_template: '{{ (value | int / 10 ) }}'
+    unit_of_measurement: "V"
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid: .1.3.6.1.4.1.3808.1.1.1.4.2.3.0
+    community: public
+    port: 161
+    name: UPS Output Load
+    value_template: '{{ (value | float) }}'
+    unit_of_measurement: "%"
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid: .1.3.6.1.4.1.3808.1.1.1.1.1.1.0
+    community: public
+    port: 161
+    name: UPS Model
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid: .1.3.6.1.4.1.3808.1.1.1.4.1.1.0
+    community: public
+    port: 161
+    name: UPS Status
+    value_template: >
+      {% set vals = {'1': 'unknown', '2':'onLine', '3':'onBattery', '4':'onBoost', '5':'sleep', '6':'off', '7':'rebooting'} %}
+      {{vals[value]}}
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid:  .1.3.6.1.4.1.3808.1.1.1.3.2.6.0
+    community: public
+    port: 161
+    name: UPS Advanced Status
+    value_template: >
+      {% set vals = {'1': 'normal', '2':'Over Voltage', '3':'Under Voltage', '4':'Frequency failure', '5':'Blackout'} %}
+      {{vals[value]}}
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid: .1.3.6.1.4.1.3808.1.1.1.2.1.1.0
+    community: public
+    port: 161
+    name: UPS Battery Status
+    value_template: >
+      {% set vals = {'1': 'unknown', '2':'Normal', '3':'Battery Low', '4':'Battery Not Present'} %}
+      {{vals[value]}}
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid: .1.3.6.1.4.1.3808.1.1.1.2.2.1.0
+    community: public
+    port: 161
+    name: UPS Battery Capacity Raw
+    value_template: '{{ (value | float) }}'
+    unit_of_measurement: "%"
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid:  .1.3.6.1.4.1.3808.1.1.1.2.2.2.0
+    community: public
+    port: 161
+    name: UPS Battery Voltage
+    value_template: '{{ (value | int / 10 ) }}'
+    unit_of_measurement: "V"
+  - platform: snmp
+    host: 192.168.0.2
+    baseoid: .1.3.6.1.4.1.3808.1.1.1.2.2.4.0
+    community: public
+    port: 161
+    name: UPS Run Time Remaining
+    value_template: >-
+      {% set time = (value | int) | int %}
+      {% set minutes = ((time % 360000) / 6000) | int%}
+      {% set hours = ((time % 8640000) / 360000) | int %}
+      {% set days = (time / 8640000) | int %}
+      {%- if time < 60 -%}
+        Less then 1 min
+        {%- else -%}
+        {%- if days > 0 -%}
+          {{ days }}d
+        {%- endif -%}
+        {%- if hours > 0 -%}
+          {%- if days > 0 -%}
+            {{ ' ' }}
+          {%- endif -%}
+          {{ hours }}hr
+        {%- endif -%}
+        {%- if minutes > 0 -%}
+          {%- if days > 0 or hours > 0 -%}
+            {{ ' ' }}
+          {%- endif -%}
+          {{ minutes }}min
+        {%- endif -%}
+      {%- endif -%}
+  - platform: template
+    sensors:
+      ups_battery_capacity:
+        unit_of_measurement: "%"
+        value_template: "{{ states('sensor.ups_battery_capacity_raw') }}"
+        friendly_name: "Battery Capacity"
+        icon_template: >
+          {% set level = states('sensor.ups_battery_capacity_raw') | float | multiply(0.1) | round(0,"floor") | multiply(10)| round(0) %}
+          {% if is_state('sensor.ups_status', 'onLine') and is_state('sensor.ups_battery_capacity_raw' , '100.0' ) %}
+            mdi:battery
+          {% elif is_state('sensor.ups_status', 'onLine')  %}
+            mdi:battery-charging-{{level}}
+          {% else %}
+            mdi:battery-{{level}}
+          {% endif %}
+```
+
+Create a new tab in the **Overview** section called **UPS** and add a new **Entities Card** to it with the code below. Make sure an appropiate image with name **ups.png** is loaded in `/config/www/ups`
+
+```
+type: entities
+entities:
+  - entity: sensor.ups_model
+    name: Model
+    icon: mdi:power-plug
+  - entity: sensor.ups_status
+    name: Status
+    icon: mdi:power
+  - entity: sensor.ups_battery_capacity
+    name: Battery Capacity
+  - entity: sensor.ups_run_time_remaining
+    name: Run time remaining
+    icon: mdi:av-timer
+  - entity: sensor.ups_battery_status
+    name: Battery Status
+    icon: mdi:car-battery
+  - entity: sensor.ups_battery_voltage
+    name: Battery Voltage
+    icon: mdi:car-battery
+  - entity: sensor.ups_output_voltage
+    name: Output Volts
+    icon: mdi:power-socket-au
+  - entity: sensor.ups_output_load
+    name: Output Load
+    icon: mdi:power-socket-au
+  - entity: sensor.ups_advanced_status
+    name: Advanced status
+header:
+  type: picture
+  image: /local/ups/ups.png
+  tap_action:
+    action: none
+  hold_action:
+    action: none
+```
 
 ## Nextcloud - Content collaboration server
 ### Nextcloud - VM configuration
