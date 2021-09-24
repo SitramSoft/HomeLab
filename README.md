@@ -30,6 +30,7 @@ Summary:
     - [Qemu-guest-agent](#qemu-guest-agent)
     - [Simulate server load](#simulate-server-load)
     - [Generate Gmail App Password](#generate-gmail-app-password)
+    - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
     - [Proxmox - OS configuration](#proxmox---os-configuration)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
@@ -396,6 +397,82 @@ When Two-Factor Authentication (2FA) is enabled, Gmail is preconfigured to refus
 4. Click the **Select app** dropdown and choose *Other (custom name)*. Enter name of the service of app for which you want to generate a password and click **Generate**.
 
 5. The newly generated password will appear. Write it down or save it somewhere secure that you’ll be able to find easily in the next steps, then click **Done**:
+
+### Configure Postfix Server to send email through Gmail
+Postfix is a Mail Transfer Agent (MTA) that can act as an SMTP server or client to send or receive email. I chose to use this method to avoid getting my mail to be flagged as spam if my current server’s IP has been added to a block list.
+
+Install Postfix and libsasl2, a package which helps manage the Simple Authentication and Security Layer (SASL)
+```
+sudo apt-get update
+sudo apt-get install libsasl2-modules postfix
+```
+
+When prompted, select **Internet Site** as the type of mail server the Postfix installer should configure. In the next screen, the *System Mail Name* should be set to the domain you’d like to send and receive email through.
+
+Once the installation is complete, confirm that the **myhostname** parameter is configured with your server’s FQDN in ```/etc/postfix/main.cf```
+
+Generate an Gmail password as described in subsection [Generate Gmail App Password](#generate-gmail-app-password).
+
+Usernames and passwords are stored in sasl_passwd in the ```/etc/postfix/sasl/``` directory. In this section, you’ll add your email login credentials to this file and to Postfix.
+
+Open or create the ```/etc/postfix/sasl/sasl_passwd``` file and add the SMTP Host, username, and password information. The SMTP server address configuration *smtp.gmail.com* supports message submission over port 587(StartTLS) and port 465(SSL). Whichever protocol you choose, be sure the port number is the same in ```/etc/postfix/sasl/sasl\\_passwd``` and ```/etc/postfix/main.cf```
+```
+sudo nano /etc/postfix/sasl/sasl_passwd
+```
+```
+[smtp.gmail.com]:587 username@gmail.com:password
+```
+
+Create the hash db file for Postfix by running the postmap command.
+```
+sudo postmap /etc/postfix/sasl/sasl_passwd
+```
+If all went well, a new file named **sasl_passwd.db** in the ```/etc/postfix/sasl/``` directory.
+
+Secure Postfix has database and email password files by changing persmissions of ```/etc/postfix/sasl/sasl_passwd``` and the ```/etc/postfix/sasl/sasl_passwd.db``` so that only root user cand read from or write to them.
+```
+sudo chown root:root /etc/postfix/sasl/sasl_passwd /etc/postfix/sasl/sasl_passwd.db
+sudo chmod 0600 /etc/postfix/sasl/sasl_passwd /etc/postfix/sasl/sasl_passwd.db
+```
+
+Next step is to configure the Postfix Relay Server to use Gmail's SMTP server.
+
+
+Add or modify if exists the following parameters to Postfix configuration file ```/etc/postfix/main.cf```
+```
+# make sure the port number is matching the one from /etc/postfix/sasl/sasl\\_passwd
+relayhost = [smtp.gmail.com]:587
+
+# Enable SASL authentication
+smtp_sasl_auth_enable = yes
+# Disallow methods that allow anonymous authentication
+smtp_sasl_security_options = noanonymous
+# Location of sasl_passwd
+smtp_sasl_password_maps = hash:/etc/postfix/sasl/sasl_passwd
+# Enable STARTTLS encryption
+smtp_tls_security_level = encrypt
+# Location of CA certificates
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+```
+
+Save changes and restart Postfix server.
+```
+sudo systemctl restart postfix
+```
+
+Use Postfix’s sendmail implementation to send a test email. Enter lines similar to those shown below, and note that there is no prompt between lines until the . ends the process.
+```
+sudo sendmail recipient@elsewhere.com
+From: you@example.com
+Subject: Test mail
+This is a test email
+.
+```
+
+Check in a separate sesion the changes as they appear live with command below. Use **CRTL + C** to exit the log.
+```
+sudo tail -f /var/log/syslog
+```
 ## Proxmox - Virtualization server
 ### Proxmox - OS configuration
 The following subsections from [General](#general) section should be performed in this order:
@@ -403,6 +480,8 @@ The following subsections from [General](#general) section should be performed i
  - [Ubuntu Server update](#ubuntu-server-update)
  - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
  - [Update system timezone](#update-system-timezone)
+ - [Generate Gmail App Password](#generate-gmail-app-password)
+ - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
 ### Proxmox - PCI Passthrough configuration
 Enable IOMMU
 ```
@@ -783,6 +862,8 @@ The following subsections from [General](#general) section should be performed i
  - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
  - [Update system timezone](#update-system-timezone)
  - [Correct DNS resolution](#correct-dns-resolution)
+ - [Generate Gmail App Password](#generate-gmail-app-password)
+ - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
 ### piHole - VM configuration
 ### piHole - Setup
 ### piHole - Ubound as a recursive DNS server
@@ -1001,6 +1082,8 @@ The following subsections from [General](#general) section should be performed i
  - [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
  - [Update system timezone](#update-system-timezone)
  - [Correct DNS resolution](#correct-dns-resolution)
+ - [Generate Gmail App Password](#generate-gmail-app-password)
+ - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
 
 Install the following packages as necessary basis for server operation:
 ```
@@ -1921,6 +2004,15 @@ Log out of the current session and then log back in again. Now you can run Nextc
 ## Hercules - HomeLab services VM
 ### Hercules - VM configuration
 ### Hercules - OS Configuration
+The following subsections from [General](#general) section should be performed in this order:
+ - [SSH configuration](#ssh-configuration)
+ - [Ubuntu Server update](#ubuntu-server-update)
+ - [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
+ - [Update system timezone](#update-system-timezone)
+ - [Correct DNS resolution](#correct-dns-resolution)
+ - [Generate Gmail App Password](#generate-gmail-app-password)
+ - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
+
 ### Hercules - Docker installation and docker-compose
 ### Hercules - Portainer docker container
 ### Hercules - Guacamole docker container
@@ -1961,5 +2053,6 @@ The following subsections from [General](#general) section should be performed i
  - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
  - [Update system timezone](#update-system-timezone)
  - [Correct DNS resolution](#correct-dns-resolution)
+- [Generate Gmail App Password](#generate-gmail-app-password)
 ### Code - CodeServer installation and configuration
 ### Code - Accessing CodeServer from outside local network
