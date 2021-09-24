@@ -95,7 +95,7 @@ Summary:
     - [Windows10 - VM configuration](#windows10---vm-configuration)
     - [Windows10 - Windows installation](#windows10---windows-installation)
     - [Windows10 - Remote Desktop Connection configuration](#windows10---remote-desktop-connection-configuration)
-- [Code - coding CM](#code---coding-cm)
+- [Code - coding VM](#code---coding-vm)
     - [Code - CodeServer VM configuration](#code---codeserver-vm-configuration)
     - [Code - OS Configuration](#code---os-configuration)
     - [Code - CodeServer installation and configuration](#code---codeserver-installation-and-configuration)
@@ -2075,7 +2075,7 @@ The following subsections from [General](#general) section should be performed i
 ### Windows10 - Windows installation
 ### Windows10 - Remote Desktop Connection configuration
 
-## Code - coding CM
+## Code - coding VM
 ### Code - CodeServer VM configuration
 ### Code - OS Configuration
 The following subsections from [General](#general) section should be performed in this order:
@@ -2086,4 +2086,32 @@ The following subsections from [General](#general) section should be performed i
  - [Correct DNS resolution](#correct-dns-resolution)
 - [Generate Gmail App Password](#generate-gmail-app-password)
 ### Code - CodeServer installation and configuration
+Preview what occurs during the install process using
+```
+curl -fsSL https://code-server.dev/install.sh | sh -s -- --dry-run
+```
+
+
+To install CodeServer using the command below. The same command can be used to update to a newer version
+```
+curl -fsSL https://code-server.dev/install.sh | sh
+```
+
+
+To have **systemd** start code-server now and restart on boot:
+```
+sudo systemctl enable --now code-server@$USER
+```
+
+Edit configuration file with ```nano /home/sitram/.config/code-server/config.yaml``` and add the parameters below.
+```
+bind-addr: 0.0.0.0:8080
+auth: none
+cert: false
+```
+
+Restart code-server service.
+```
+sudo systemctl restart code-server@$USER
+```
 ### Code - Accessing CodeServer from outside local network
