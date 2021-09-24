@@ -29,6 +29,7 @@ Summary:
     - [Correct DNS resolution](#correct-dns-resolution)
     - [Qemu-guest-agent](#qemu-guest-agent)
     - [Simulate server load](#simulate-server-load)
+    - [Generate Gmail App Password](#generate-gmail-app-password)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
     - [Proxmox - OS configuration](#proxmox---os-configuration)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
@@ -382,6 +383,19 @@ If you prefer the process to run forever until you kill it with CTRL+C use the f
 ```
 while true; do cp loadfile loadfile1; done
 ```
+
+### Generate Gmail App Password
+When Two-Factor Authentication (2FA) is enabled, Gmail is preconfigured to refuse connections from applications that don’t provide the second step of authentication. While this is an important security measure that is designed to restrict unauthorized users from accessing your account, it hinders sending mail through some SMTP clients as you’re doing here. Follow these steps to configure Gmail to create a Postfix-specific password:
+
+1. Log in to your Google Account and navigate to the [Manage your account access and security settings](https://myaccount.google.com/security) page.
+
+2. Scroll down to **Signing in to Google** section and enable **2-Step Verification**. You may be asked for your password and a verification code before continuing.
+
+3. In that same section, click on [App passwords](https://security.google.com/settings/security/apppasswords) to generate a unique password that can be used with your application.
+
+4. Click the **Select app** dropdown and choose *Other (custom name)*. Enter name of the service of app for which you want to generate a password and click **Generate**.
+
+5. The newly generated password will appear. Write it down or save it somewhere secure that you’ll be able to find easily in the next steps, then click **Done**:
 ## Proxmox - Virtualization server
 ### Proxmox - OS configuration
 The following subsections from [General](#general) section should be performed in this order:
@@ -461,7 +475,7 @@ After finishing the installation, access the [web page](http://192.168.0.2:3052/
   - **Sender name:** UPS Serenity
   - **Sender email:** personal email address
   - **User name:** personal email address
-  - **Pass:** generated password for accesing Gmail by external 3rd party apps.
+  - **Pass:** Gmail password. See [Generate Gmail App Password](#generate-gmail-app-password) subsection for details.
 
 **SETTING -> SNMP SETTINGS**
 Enable **SNMPv1** settings and make sure **SNMP Local Port** is 161.
