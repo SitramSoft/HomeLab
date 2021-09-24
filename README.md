@@ -35,6 +35,7 @@ Summary:
     - [Proxmox - OS configuration](#proxmox---os-configuration)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
     - [Proxmox - UPS monitoring software](#proxmox---ups-monitoring-software)
+    - [Proxmox - VNC client access configuration](#proxmox---vnc-client-access-configuration)
 - [pfSense - Firewall, DHCP and NTP server](#pfsense---firewall-dhcp-and-ntp-server)
     - [pfSense - VM configuration](#pfsense---vm-configuration)
     - [pfSense - Setup](#pfsense---setup)
@@ -561,7 +562,37 @@ Enable **SNMPv1** settings and make sure **SNMP Local Port** is 161.
 
 Create the public and private groups under SNP v1 profiles. Link them to IP address 0.0.0.0 and set them to read/write. 
 
-This means any computer on the network can query using SNMP protocol information from the UPS. It is usefull for integrating the UPS in [HomeAssistant - Home automation server](#homeassistant---home-automation-server). 
+This means any computer on the network can query using SNMP protocol information from the UPS. It is usefull for integrating the UPS in [HomeAssistant - Home automation server](#homeassistant---home-automation-server).
+
+### Proxmox - VNC client access configuration
+It is possible to enable the VNC access for use with usual VNC clients as [RealVNC](https://www.realvnc.com/), [TightVNC](https://www.tightvnc.com/) or [Remmina](https://remmina.org/) Detailed information can be found [here](https://pve.proxmox.com/wiki/VNC_Client_Access)
+
+
+VNC service for each vm can be accessed using ```serenity.local:5900+display_number```. I use the following schema to determine the port for each VM: ***6000+last 3 digits of IP***
+
+
+Add in the VM´s configuration file ```/etc/pve/local/qemu-server/<KVM ID>.conf``` a line which specifies the VNC display number. 
+
+```
+pfSense(firewall.local): args: -vnc 0.0.0.0:101
+PiHole (pihole.local): args: -vnc 0.0.0.0:203
+HomeAssistant (ha.local): args: -vnc 0.0.0.0:200
+Hercules (hercules.local): args: -vnc 0.0.0.0:201
+Nextcloud (nextcloud.local): args: -vnc 0.0.0.0:202
+Windows10 (win10.local): args: -vnc 0.0.0.0:204
+ArchLinux (archlinux.local): args: -vnc 0.0.0.0:205
+DebianWorkstation (linux.local): args: -vnc 0.0.0.0:206
+test-server1 (test-server1.local): args: -vnc 0.0.0.0:207
+test-server2 (test-server2.local): args: -vnc 0.0.0.0:208
+test-server3 (test-server3.local): args: -vnc 0.0.0.0:209
+LinuxMint (mint.local): args: -vnc 0.0.0.0:210
+Android-x86 (android.local): args: -vnc 0.0.0.0:211
+KaliLinux (kali.local): args: -vnc 0.0.0.0:212
+CodeServer (code.local): args: -vnc 0.0.0.0:213
+```
+
+Reboot the VM to take into account the new configuration.
+
 ## pfSense - Firewall, DHCP and NTP server
 ### pfSense - VM configuration
 - VM id: 100
