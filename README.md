@@ -477,6 +477,12 @@ sudo tail -f /var/log/syslog
 ```
 
 ### Mail notifications for SSH dial-in
+Install mail client
+```
+sudo apt-get update
+sudo apt-get install mailutils
+```
+
 Edit sustem-wide **.profile** for Bourne compative shells
 ```
 sudo nano /etc/profile
@@ -2102,6 +2108,7 @@ The following subsections from [General](#general) section should be performed i
  - [Update system timezone](#update-system-timezone)
  - [Correct DNS resolution](#correct-dns-resolution)
  - [Generate Gmail App Password](#generate-gmail-app-password)
+ - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
  - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
 ### Code - CodeServer installation and configuration
 Preview what occurs during the install process using
