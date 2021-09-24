@@ -31,6 +31,7 @@ Summary:
     - [Simulate server load](#simulate-server-load)
     - [Generate Gmail App Password](#generate-gmail-app-password)
     - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
+    - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
     - [Proxmox - OS configuration](#proxmox---os-configuration)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
@@ -474,6 +475,18 @@ Check in a separate sesion the changes as they appear live with command below. U
 ```
 sudo tail -f /var/log/syslog
 ```
+
+### Mail notifications for SSH dial-in
+Edit sustem-wide **.profile** for Bourne compative shells
+```
+sudo nano /etc/profile
+```
+Add the following text at the end of the file
+```
+if [ -n "$SSH_CLIENT" ]; then
+        echo -e 'Login details:\n  - Hostname:'  `hostname -f` '\n  - Date:' "`date`" '\n  - User:' "`who -m`" | mail -s "Login on `hostname` from `echo $SSH_CLIENT | awk '{print $1}'`" adrian.martis@gmail.com
+fi
+```
 ## Proxmox - Virtualization server
 ### Proxmox - OS configuration
 The following subsections from [General](#general) section should be performed in this order:
@@ -483,6 +496,7 @@ The following subsections from [General](#general) section should be performed i
  - [Update system timezone](#update-system-timezone)
  - [Generate Gmail App Password](#generate-gmail-app-password)
  - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
+ - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
 ### Proxmox - PCI Passthrough configuration
 Enable IOMMU
 ```
@@ -895,6 +909,7 @@ The following subsections from [General](#general) section should be performed i
  - [Correct DNS resolution](#correct-dns-resolution)
  - [Generate Gmail App Password](#generate-gmail-app-password)
  - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
+ - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
 ### piHole - VM configuration
 ### piHole - Setup
 ### piHole - Ubound as a recursive DNS server
@@ -1115,6 +1130,7 @@ The following subsections from [General](#general) section should be performed i
  - [Correct DNS resolution](#correct-dns-resolution)
  - [Generate Gmail App Password](#generate-gmail-app-password)
  - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
+ - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
 
 Install the following packages as necessary basis for server operation:
 ```
@@ -2043,6 +2059,7 @@ The following subsections from [General](#general) section should be performed i
  - [Correct DNS resolution](#correct-dns-resolution)
  - [Generate Gmail App Password](#generate-gmail-app-password)
  - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
+ - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
 
 ### Hercules - Docker installation and docker-compose
 ### Hercules - Portainer docker container
@@ -2084,7 +2101,8 @@ The following subsections from [General](#general) section should be performed i
  - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
  - [Update system timezone](#update-system-timezone)
  - [Correct DNS resolution](#correct-dns-resolution)
-- [Generate Gmail App Password](#generate-gmail-app-password)
+ - [Generate Gmail App Password](#generate-gmail-app-password)
+ - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
 ### Code - CodeServer installation and configuration
 Preview what occurs during the install process using
 ```
