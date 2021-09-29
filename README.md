@@ -919,10 +919,7 @@ The configuration is done trough web interface in section **Services / NTP / Set
  - localhost
 
 **Time servers:**
- - pool.ntp.org - Is a Pool
  - time.google.com - Prefer / Is a Pool
- - time.nist.gov - Prefer / Is a Pool
- - time.windows.com - Is a Pool
 
  **NTP Graphs:** enabled
 
