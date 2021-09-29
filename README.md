@@ -33,7 +33,7 @@ Summary:
     - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
     - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
     - [Execute commands using SSH](#execute-commands-using-ssh)
-    -[How to fix warning about ECDSA host key](#how-to-fix-warning-about-ecdsa-host-key)
+    - [How to fix warning about ECDSA host key](#how-to-fix-warning-about-ecdsa-host-key)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
     - [Proxmox - OS configuration](#proxmox---os-configuration)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
