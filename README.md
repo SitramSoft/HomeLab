@@ -32,6 +32,7 @@ Summary:
     - [Generate Gmail App Password](#generate-gmail-app-password)
     - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
     - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
+    - [Execute commands using SSH](#execute-commands-using-ssh)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
     - [Proxmox - OS configuration](#proxmox---os-configuration)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
@@ -493,6 +494,29 @@ Add the following text at the end of the file
 if [ -n "$SSH_CLIENT" ]; then
         echo -e 'Login details:\n  - Hostname:'  `hostname -f` '\n  - Date:' "`date`" '\n  - User:' "`who -m`" | mail -s "Login on `hostname` from `echo $SSH_CLIENT | awk '{print $1}'`" adrian.martis@gmail.com
 fi
+```
+### Execute commands using SSH
+The SSH client program can be used for logging into a remote machine or server and for executing commands on a remote machine. When command is specified, it is executed on the remote host/server instead of a login shell.
+
+
+The syntax is as follows for executing commands
+```
+ssh user1@server1 command1
+ssh user1@server1 'command2'
+
+# pipe
+ssh user1@server1 'command1 | command2'
+
+# multiple commands (must enclose in quotes
+ssh user@hostname "command1; command2; command3"
+
+## sudo syntax
+ssh -t user@hostname sudo command
+ssh -t user@hostname 'sudo command1 arg1 arg2'
+ 
+ 
+## su syntax
+ssh user@hostname su -c "/path/to/command1 arg1 arg2"
 ```
 ## Proxmox - Virtualization server
 ### Proxmox - OS configuration
