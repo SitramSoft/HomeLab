@@ -264,31 +264,17 @@ Check newly configured NTP servers are used by looking in the journal
 journalctl --since -1h -u ntpd
 ```
 
-Disable systemd timesyncd service
-```
-sudo timedatectl set-ntp off
-```
-
 In order to verify time synchronization status with each defined server or pool look for **\*** near the servers listed by command below. Any server which is not marked with **\*** is not syncronized. 
 ```
 ntpq -pn
 ```
 
-In order to force a time synchronization and check the impact on the system time and ntpd, n the following commands can be used
+Force update time with NTP service daemon and check that the communication with the ntp server is successfully.
 ```
-date
-sudo service ntp stop
-sudo ntpdate -s firewall.local
-sudo service ntp start
-date
-ntpq -pn
-```
-Update time with NTP service daemon
-```
-date ; sudo service ntp stop ; sudo ntpdate -s 192.168.0.1 ; sudo service ntp start ; date
+date ; sudo service ntp stop ; sudo ntpdate -d 192.168.0.1 ; sudo service ntp start ; date
 ```
 
-To start troubleshooting, check the logs using the command
+Logs can be checked using the command below
 ```
 sudo grep ntpd /var/log/syslog | tail
 ```
