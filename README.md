@@ -33,6 +33,7 @@ Summary:
     - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
     - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
     - [Execute commands using SSH](#execute-commands-using-ssh)
+    -[How to fix warning about ECDSA host key](#how-to-fix-warning-about-ecdsa-host-key)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
     - [Proxmox - OS configuration](#proxmox---os-configuration)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
@@ -503,6 +504,16 @@ ssh -t user@hostname 'sudo command1 arg1 arg2'
  
 ## su syntax
 ssh user@hostname su -c "/path/to/command1 arg1 arg2"
+```
+
+### How to fix warning about ECDSA host key
+When connecting with SSH the following warning could be displayed in case the IP is reused for a different VM.
+```
+Warning: the ECDSA host key for 'myserver' differs from the key for the IP address '192.168.0.xxx'
+```
+In order to get rid of the warning, remove the cached key for ```192.168.1.xxx``` on the local machine:
+```
+ssh-keygen -R 192.168.1.xxx
 ```
 ## Proxmox - Virtualization server
 ### Proxmox - OS configuration
