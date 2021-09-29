@@ -1161,7 +1161,7 @@ header:
 The following subsections from [General](#general) section should be performed in this order:
  - [SSH configuration](#ssh-configuration)
  - [Ubuntu Server update](#ubuntu-server-update)
- - [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
+ - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
  - [Update system timezone](#update-system-timezone)
  - [Correct DNS resolution](#correct-dns-resolution)
  - [Generate Gmail App Password](#generate-gmail-app-password)
