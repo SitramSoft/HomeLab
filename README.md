@@ -36,6 +36,7 @@ Summary:
     - [How to fix warning about ECDSA host key](#how-to-fix-warning-about-ecdsa-host-key)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
     - [Proxmox - OS configuration](#proxmox---os-configuration)
+    - [Proxmox - NTP time server](#proxmox---ntp-time-server)
     - [Proxmox - PCI Passthrough configuration](#proxmox---pci-passthrough-configuration)
     - [Proxmox - UPS monitoring software](#proxmox---ups-monitoring-software)
     - [Proxmox - VNC client access configuration](#proxmox---vnc-client-access-configuration)
@@ -45,7 +46,6 @@ Summary:
     - [Firewall / NAT / Port Forward](#firewall--nat--port-forward)
     - [Firewall / NAT / Outbound](#firewall--nat--outbound)
     - [pfSense - DHCP server setup](#pfsense---dhcp-server-setup)
-    - [pfSense - NTP server setup](#pfsense---ntp-server-setup)
     - [pfSense - OpenVPN setup ](#pfsense---openvpn-setup-)
 - [piHole - All-around DNS solution server](#pihole---all-around-dns-solution-server)
     - [piHole - OS Configuration](#pihole---os-configuration)
@@ -251,12 +251,13 @@ sudo nano /etc/ntp.conf
 ```
 Comment the lines starting with **pool** and add the line
 ```
-server 192.168.0.1
+server 192.168.0.2 prefer iburst
 ```
 
 Restart NTP server and verify that it's running correctly
 ```
-sudo service ntp restart
+sudo service ntp stop
+sudo service ntp start
 sudo service ntp status
 ```
 
@@ -272,7 +273,7 @@ ntpq -pn
 
 Force update time with NTP service daemon and check that the communication with the ntp server is successfully.
 ```
-date ; sudo service ntp stop ; sudo ntpdate -d 192.168.0.1 ; sudo service ntp start ; date
+date ; sudo service ntp stop ; sudo ntpdate -d 192.168.0.2 ; sudo service ntp start ; date
 ```
 
 Logs can be checked using the command below
@@ -520,11 +521,45 @@ ssh-keygen -R 192.168.1.xxx
 The following subsections from [General](#general) section should be performed in this order:
  - [SSH configuration](#ssh-configuration)
  - [Ubuntu Server update](#ubuntu-server-update)
- - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
  - [Update system timezone](#update-system-timezone)
  - [Generate Gmail App Password](#generate-gmail-app-password)
  - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
  - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
+
+### Proxmox - NTP time server
+Because clock accuracy within a VM is still really bad, I chose the barebone server where the virtualization server is running as my local NTP server. It's not ideal but until I decide to move the firewall from a VM to a dedicated HW this will have to do. I tried running NTP server on the pfSense VM but it acted strange.
+
+
+Follow the instructions from subsection [Synchronize time with ntpd](#synchronize-time-with-ntpd) to install NTP server then make the modifications below.
+
+Edit NTP server configuration file
+```
+sudo nano /etc/ntp.conf
+```
+
+Replace line
+```
+server 192.168.0.2 prefer iburst
+```
+with lines below.
+```
+server time1.google.com iburst
+server time2.google.com iburst
+server time3.google.com iburst
+server time4.google.com iburst
+```
+
+Restart NTP server and verify that it's running correctly
+```
+sudo service ntp stop
+sudo service ntp start
+sudo service ntp status
+```
+
+Verify time synchronization status with each defined server or pool and look for * near the servers listed by command below. Any server which is not marked with * is not syncronized.
+```
+ntpq -pn
+```
 ### Proxmox - PCI Passthrough configuration
 Enable IOMMU
 ```
@@ -918,29 +953,6 @@ b2:4e:26:0d:b1:02	192.168.0.246	clima_masterbedroom			Clima dormitor mare - Daik
 70:66:55:0d:86:f5	192.168.0.248	clima_living				Clima living - Daikin BRP069B43	 
 40:31:3c:ab:e0:69	192.168.0.249	vacuum						Aspirator - Xiaomi Roborock S50
 ```
-
-### pfSense - NTP server setup
-pfSense acts as a NTP server for all clients in my local network which gives the posibility to have this configuration. Server configuration has been done based on instructions [here](https://kifarunix.com/how-to-configure-ntp-server-on-pfsense/) and summarized below.
-
-The configuration is done trough web interface in section **Services / NTP / Settings**
-
-**Interface:**
- - LAN
- - VPN
- - localhost
-
-**Time servers:**
- - time.google.com - Prefer / Is a Pool
-
- **NTP Graphs:** enabled
-
-**Logging:** both options enabled
-
-The configuration is done trough web interface in section **Services / NTP / ACLs**
-
- **Default Access Restrictions:** all default access restrictions deactivated
-
-**Custom Access Restrictions:** Networks: 192.168.0.0/24 with no options checked.
 ### pfSense - OpenVPN setup 
 
 ## piHole - All-around DNS solution server
