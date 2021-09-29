@@ -41,6 +41,7 @@ Summary:
     - [pfSense - VM configuration](#pfsense---vm-configuration)
     - [pfSense - Setup](#pfsense---setup)
     - [Firewall / NAT / Port Forward](#firewall--nat--port-forward)
+    - [Firewall / NAT / Outbound](#firewall--nat--outbound)
     - [pfSense - DHCP server setup](#pfsense---dhcp-server-setup)
     - [pfSense - NTP server setup](#pfsense---ntp-server-setup)
     - [pfSense - OpenVPN setup ](#pfsense---openvpn-setup-)
@@ -677,6 +678,25 @@ Download [pfSense Community Edition](https://www.pfsense.org/download/), connect
 - Status_Traffic_Totals
 - Wireguard
 
+### Firewall / NAT / Outbound
+he configuration is done trough web interface in section **Firewall / NAT / Outbound**.
+
+
+Select mode **Hybrid Outbound NAT rule generation**  in **Outbound NAT Mode** section.
+
+
+- Rule for NAT anything out from firewall itself
+  - Disabled: Unchecked
+  - Do not NAT: Unchecked
+  - Interface: WAN (make one of these rules for each WAN)
+  - Protocol: any
+  - Source: This Firewall (self)
+  - Destination: any
+  - Not: Unchecked
+  - Translation Address: Interface Address
+  - Port or Range: Blank
+  - Description: NAT anything out from the firewall itself
+
 ### Firewall / NAT / Port Forward
 The following NAT rules have been configured in pfSense. The rules marked with italic are disabled. The rules marked with normal font are active.
 
@@ -889,10 +909,10 @@ The configuration is done trough web interface in section **Services / NTP / Set
  - localhost
 
 * Time servers:*
- - 0.europe.pool.ntp.org - Prefer / Is a Pool
- - 1.europe.pool.ntp.org - Is a Pool
- - 2.europe.pool.ntp.org - Is a Pool
- - 3.europe.pool.ntp.org - Is a Pool
+ - pool.ntp.org - Prefer / Is a Pool
+ - time.google.com - Is a Pool
+ - time.nist.gov - Is a Pool
+ - time.windows.com - Is a Pool
 
  **NTP Graphs:** enabled
 
