@@ -91,7 +91,6 @@ Summary:
     - [Hercules - PostgressSQL database docker container](#hercules---postgresssql-database-docker-container)
     - [Hercules - MySQL database docker container](#hercules---mysql-database-docker-container)
     - [Hercules - Redis docker container](#hercules---redis-docker-container)
-    - [Hercules - Collabora docker container](#hercules---collabora-docker-container)
     - [Hercules - WordPress docker container](#hercules---wordpress-docker-container)
     - [Hercules - Jenkins CI docker container](#hercules---jenkins-ci-docker-container)
     - [Hercules - LibreSpeed docker container](#hercules---librespeed-docker-container)
@@ -253,6 +252,7 @@ Comment the lines starting with **pool** and add the line
 ```
 server 192.168.0.2 prefer iburst
 ```
+The **iburst** option is recommended, and sends a burst of packets only if it cannot obtain a connection with the first attempt. The **burst** option always does this, even on the first attempt, and should never be used without explicit permission and may result in blacklisting.
 
 Restart NTP server and verify that it's running correctly
 ```
@@ -549,6 +549,18 @@ server time3.google.com iburst
 server time4.google.com iburst
 ```
 
+Add the following lines to provide your current local time as a default should you temporarily lose Internet connectivity.
+```
+server 127.127.1.0
+fudge 127.127.1.0 stratum 10
+```
+
+Configure NTP to act as time server for local LAN and VPN
+```
+# Allow LAN machines to synchronize with this ntp server
+restrict 192.168.0.0 mask 255.255.255.0 nomodify notrap
+restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap
+```
 Restart NTP server and verify that it's running correctly
 ```
 sudo service ntp stop
@@ -2138,7 +2150,6 @@ The following subsections from [General](#general) section should be performed i
 ### Hercules - PostgressSQL database docker container
 ### Hercules - MySQL database docker container
 ### Hercules - Redis docker container
-### Hercules - Collabora docker container
 ### Hercules - WordPress docker container
 ### Hercules - Jenkins CI docker container
 ### Hercules - LibreSpeed docker container
