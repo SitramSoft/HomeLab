@@ -48,15 +48,22 @@ Summary:
     - [pfSense - DHCP server setup](#pfsense---dhcp-server-setup)
     - [pfSense - OpenVPN setup ](#pfsense---openvpn-setup-)
 - [piHole - All-around DNS solution server](#pihole---all-around-dns-solution-server)
-    - [piHole - OS Configuration](#pihole---os-configuration)
     - [piHole - VM configuration](#pihole---vm-configuration)
+    - [piHole - OS Configuration](#pihole---os-configuration)
     - [piHole - Setup](#pihole---setup)
     - [piHole - Ubound as a recursive DNS server](#pihole---ubound-as-a-recursive-dns-server)
     - [piHole - Local DNS configuration](#pihole---local-dns-configuration)
+- [TrueNAS - Storage management server](#truenas---storage-management-server)
+    - [TrueNAS - VM configuration](#truenas---vm-configuration)
+    - [TrueNAS - HDD passtrough](#truenas---hdd-passtrough)
+    - [TrueNAS - OS Configuration](#truenas---os-configuration)
+    - [TrueNAS - Setup](#truenas---setup)
 - [HomeAssistant - Home automation server](#homeassistant---home-automation-server)
     - [HomeAssistant - VM configuration](#homeassistant---vm-configuration)
     - [HomeAssistant - Installation and setup](#homeassistant---installation-and-setup)
     - [HomeAssistant - Other plugins](#homeassistant---other-plugins)
+    - [HomeAssistant - Mosquitto broker(MQTT)](#homeassistant---mosquitto-brokermqtt)
+    - [HomeAssistant - Paradox Alarm integration](#homeassistant---paradox-alarm-integration)
     - [HomeAssistant - UPS integration](#homeassistant---ups-integration)
 - [Nextcloud - Content collaboration server](#nextcloud---content-collaboration-server)
     - [Nextcloud - VM configuration](#nextcloud---vm-configuration)
@@ -207,7 +214,7 @@ sudo nano /etc/systemd/timesyncd.conf
 
 Uncomment and modify the lines starting with **NTP** and **FallbackNTP**
 ```
-NTP=192.168.0.1
+NTP=192.168.0.2
 FallbackNTP=pool.ntp.org
 ```
 
@@ -915,59 +922,58 @@ The configuration is done trough web interface in section **Services / DHCP Serv
 
  **Domain name:** local
 
- **NTP Server 1:** 192.168.0.1
+ **NTP Server 1:** 192.168.0.2
 
 **DHCP Static Mapping:**
 ```
-MAC address			IP address		Hostname					Description
-34:97:f6:5a:be:cb	192.168.0.2		serenity					Proxmox server	 
-00:19:ba:0d:80:50	192.168.0.3		paradox						IP150 - Modul access internet de la centrala alarma Paradox	 
-54:a0:50:89:84:e8	192.168.0.4		personal_adi_wired			Laptop personal Adi - ASUS ROG - Interfata wired	 
-80:19:34:a3:3e:e6	192.168.0.5		personal_adi_wireless		Laptop personal Adi - ASUS ROG - interfata wireless	 
-d4:3b:04:67:e2:4c	192.168.0.6		work_adi_wireless			Laptop work Adi - Dell Precision 7530 - Interfata wireless	 
-c8:f7:50:38:3c:ac	192.168.0.7		work_adi_wired				Laptop work Adi - Dell Precision 7530 - Interfata wired	 
-14:a7:8b:d3:89:c5	192.168.0.8		ispy						iSpy - Sistemul video exterior	 
-c0:ee:fb:29:ff:31	192.168.0.9		adi_phone					Telefon mobil Adi - OnePlus 6t	 
-b2:4e:26:29:ff:31	192.168.0.10	adi_phone_extender			Telefon mobil Adi - OnePlus 6t(mac de pe wireless extender)	 
-30:ab:6a:57:e3:41	192.168.0.11	oli_phone					Telefon mobil Oli - Samsung Galaxy S10	 
-b2:4e:26:57:e3:41	192.168.0.12	oli_phone_extender			Telefon mobil Oli - Samsung Galaxy S10(mac de pe wireless extender)	 
-f0:27:65:f0:e7:05	192.168.0.13	baby_monitor				Telefon cu Baby Monitor - Samsung Galaxy S3(android-7ccd62ee773e55ec)	 
-b2:4e:26:f0:e7:05	192.168.0.14	baby_monitor_extender		Telefon cu Baby Monitor - Samsung Galaxy S3(android-7ccd62ee773e55ec)(map de pe wireless extender)	 
-bc:7a:bf:96:8a:7c	192.168.0.15	adi_father_phone			Telefon mobil Tata Adi - Samsung Galaxy A51	 
-b2:4e:26:96:8a:7c	192.168.0.16	adi_father_phone_extender	Telefon mobil Tata Adi - Samsung Galaxy A51(mac de pe wireless extender)	 
-d8:47:32:f5:dc:e6	192.168.0.36	router						Router wireless - Tp Link Archer C80	 
-b2:4e:26:eb:8d:8c	192.168.0.37	repeater					Repeater mansarda - Tp Link TL-WA855RE	 
-d8:0f:99:12:7b:b3	192.168.0.38	tv_living_wireless			TV Living - Sony LED Bravia 138.8cm, 55XE8577 - wireless interface	 
-f4:f5:d8:05:d2:98	192.168.0.39	chromecast					TV Dormitor Alb - Chromecast	 
-c4:73:1e:ab:1a:12	192.168.0.40	tv_alb						TV Dormitor Alb - Samsung UE40H5030AW	 
-04:5d:4b:a0:8d:cd	192.168.0.41	tv_living_wired				TV Living - Sony LED Bravia 138.8cm, 55XE8577 - wired interface	 
-66:bf:df:c9:61:cd	192.168.0.46	work_oli					Laptop work Oli - Interfata wireless	 
-b8:70:f4:a4:f3:bd	192.168.0.99	acer_laptop					Laptop Acer Aspire - wired interface	 
-de:5c:a6:b6:4a:aa	192.168.0.100	ha							Home Assistant VM	 
-c2:32:6d:99:f9:76	192.168.0.101	hercules					Ubuntu Server VM - used for running services in Docker	 
-86:11:99:9f:ff:b9	192.168.0.102	nextcloud					Ubuntu Server VM - used for hosting Nextcloud	 
-62:1b:ea:05:7f:1c	192.168.0.103	pihole						PhiHole VM - ad blocking filter, local DNS and DNS resolver	 
-02:d0:7f:f8:61:1c	192.168.0.104	win10						VM running Windows 10	 
-92:4b:cc:81:96:83	192.168.0.105	archlinux					VM running ArchLinux	 
-9a:ce:ab:cb:03:43	192.168.0.106	linux						VM running Ubuntu 20.10 Desktop	 
-d6:3d:c3:76:fc:ed	192.168.0.107	test-server1				Test server 1 running Ubuntu server 20.10	 
-6e:91:2f:17:b3:8d	192.168.0.108	test-server2				Test server 2 running Ubuntu server 20.10	 
-82:36:62:1f:59:2f	192.168.0.109	test-server3				Test server 3 running Ubuntu server 20.10	 
-7a:0d:69:93:42:6c	192.168.0.110	mint						VM running LinuxMint Desktop	 
-26:8d:6e:7b:b6:b3	192.168.0.111	android						VM running Android X86 VM for development testing purposes	 
-ae:88:40:3c:fb:ce	192.168.0.112	kali						VM running Kali Linux Desktop	 
-0e:04:4b:34:47:c4	192.168.0.113	code						VM running Ubuntu server 20.10 used for remote code development	 
-70:ee:50:55:0e:58	192.168.0.234	termostat					Termonstat Netatmo - NTH01-EN-EU	 
-b2:4e:26:15:7d:d0	192.168.0.244	sonoff_living				Switch Sonoff ESP_157DD0 - Lampa canapea living(mac real b4:e6:2d:0f:5b:7c)	 
-b2:4e:26:0f:5b:7c	192.168.0.245	sonoff_dormitor				Switch Sonoff ESP_0F5B7C - Lampi dormitor mare(mac real bc:dd:c2:0f:5b:7c)	 
-b2:4e:26:0d:b1:02	192.168.0.246	clima_masterbedroom			Clima dormitor mare - Daikin BRP069B43 (mac real 70:66:55:0d:b1:02)	 
-70:66:55:0d:5e:6a	192.168.0.247	clima_dormitor				Clima dormitor alb - Daikin BRP069B43	 
-70:66:55:0d:86:f5	192.168.0.248	clima_living				Clima living - Daikin BRP069B43	 
-40:31:3c:ab:e0:69	192.168.0.249	vacuum						Aspirator - Xiaomi Roborock S50
+MAC address			  IP address		Hostname					    Description
+34:97:f6:5a:be:cb	192.168.0.2	  serenity	            Proxmox server	 
+00:19:ba:0d:80:50	192.168.0.3	  paradox	              IP150 - Modul access internet de la centrala alarma Paradox	 
+54:a0:50:89:84:e8	192.168.0.4	  personal_adi_wired	  Laptop personal Adi - ASUS ROG - Interfata wired	 
+80:19:34:a3:3e:e6	192.168.0.5	  personal_adi_wireless	Laptop personal Adi - ASUS ROG - interfata wireless	 
+d4:3b:04:67:e2:4c	192.168.0.6	  work_adi_wireless	    Laptop work Adi - Dell Precision 7530 - Interfata wireless	 
+c8:f7:50:38:3c:ac	192.168.0.7	  work_adi_wired	      Laptop work Adi - Dell Precision 7530 - Interfata wired	 
+14:a7:8b:d3:89:c5	192.168.0.8	  ispy	                iSpy - Sistemul video exterior	 
+ac:d6:18:42:5d:63	192.168.0.9	  adi_phone	            Telefon mobil Adi - OnePlus 9 Pro	 
+64:a2:f9:ea:da:8b	192.168.0.10	adi_phone_6t	        Telefon mobil Adi - OnePlus 6t	 
+30:ab:6a:57:e3:41	192.168.0.11	oli_phone	            Telefon mobil Oli - Samsung Galaxy S10	 
+bc:7a:bf:96:8a:7c	192.168.0.15	adi_father_phone	    Telefon mobil Tata Adi - Samsung Galaxy A51	 
+d8:47:32:f5:dc:e6	192.168.0.36	router	              Router wireless - Tp Link Archer C80	 
+b0:4e:26:eb:8d:8c	192.168.0.37	repeater	            Repeater mansarda - Tp Link TL-WA855RE	 
+d8:0f:99:12:7b:b3	192.168.0.38	tv_living_wireless	  TV Living - Sony LED Bravia 138.8cm, 55XE8577 - wireless interface	 
+f4:f5:d8:05:d2:98	192.168.0.39	chromecast	          TV Dormitor Alb - Chromecast	 
+c4:73:1e:ab:1a:12	192.168.0.40	tv_alb	              TV Dormitor Alb - Samsung UE40H5030AW	 
+04:5d:4b:a0:8d:cd	192.168.0.41	tv_living_wired	      TV Living - Sony LED Bravia 138.8cm, 55XE8577 - wired interface	 
+10:3d:1c:c1:bf:ec	192.168.0.46	work_oli	            Laptop work Oli - Interfata wireless	 
+b8:70:f4:a4:f3:bd	192.168.0.99	acer_laptop	          Laptop Acer Aspire - wired interface	 
+de:5c:a6:b6:4a:aa	192.168.0.100	ha	                  Home Assistant VM	 
+c2:32:6d:99:f9:76	192.168.0.101	hercules	            Ubuntu Server VM - used for running services in Docker	 
+86:11:99:9f:ff:b9	192.168.0.102	nextcloud	            Ubuntu Server VM - used for hosting Nextcloud	 
+62:1b:ea:05:7f:1c	192.168.0.103	pihole	              PhiHole VM - ad blocking filter, local DNS and DNS resolver	 
+02:d0:7f:f8:61:1c	192.168.0.104	win10	                VM running Windows 10	 
+92:4b:cc:81:96:83	192.168.0.105	archlinux	            VM running ArchLinux	 
+9a:ce:ab:cb:03:43	192.168.0.106	linux	                VM running Ubuntu 20.10 Desktop	 
+d6:3d:c3:76:fc:ed	192.168.0.107	test-server1	        Test server 1 running Ubuntu server 20.10	 
+6e:91:2f:17:b3:8d	192.168.0.108	test-server2	        Test server 2 running Ubuntu server 20.10	 
+82:36:62:1f:59:2f	192.168.0.109	test-server3	        Test server 3 running Ubuntu server 20.10	 
+7a:0d:69:93:42:6c	192.168.0.110	mint	                VM running LinuxMint Desktop	 
+26:8d:6e:7b:b6:b3	192.168.0.111	android	              VM running Android X86 VM for development testing purposes	 
+ae:88:40:3c:fb:ce	192.168.0.112	kali	                VM running Kali Linux Desktop	 
+0e:04:4b:34:47:c4	192.168.0.113	code	                VM running Ubuntu server 20.10 used for remote code development	 
+fe:17:d2:92:c8:74	192.168.0.114	storage	              VM used for storage management running TrueNAS Scale	 
+70:ee:50:55:0e:58	192.168.0.234	termostat	            Termonstat Netatmo - NTH01-EN-EU	 
+70:03:9f:47:4d:4e	192.168.0.243	gate	                Switch Sonoff ESP_474D4E - poarta auto	 
+b4:e6:2d:15:7d:d0	192.168.0.244	sonoff_living	        Switch  Sonoff ESP_157DD0 - Lampa canapea living	 
+bc:dd:c2:0f:5b:7c	192.168.0.245	sonoff_dormitor	      Switch Sonoff ESP_0F5B7C - Lampi dormitor mare	 
+70:66:55:0d:b1:02	192.168.0.246	clima_masterbedroom	  Clima dormitor mare - Daikin BRP069B43	 
+70:66:55:0d:5e:6a	192.168.0.247	clima_dormitor	      Clima dormitor alb - Daikin BRP069B43	 
+70:66:55:0d:86:f5	192.168.0.248	clima_living	        Clima living - Daikin BRP069B43	 
+40:31:3c:ab:e0:69	192.168.0.249	vacuum	              Aspirator - Xiaomi Roborock S50
 ```
 ### pfSense - OpenVPN setup 
 
 ## piHole - All-around DNS solution server
+### piHole - VM configuration
 ### piHole - OS Configuration
 The following subsections from [General](#general) section should be performed in this order:
  - [SSH configuration](#ssh-configuration)
@@ -978,15 +984,307 @@ The following subsections from [General](#general) section should be performed i
  - [Generate Gmail App Password](#generate-gmail-app-password)
  - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
  - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
-### piHole - VM configuration
 ### piHole - Setup
 ### piHole - Ubound as a recursive DNS server
 ### piHole - Local DNS configuration
+## TrueNAS - Storage management server
+### TrueNAS - OS Configuration
+### TrueNAS - VM configuration
+- VM id: 102
+- HDD: 32GB
+- Sockets: 1
+- Cores: 2
+- RAM: 
+    - Min: 8192
+    - Max: 16384
+    - Ballooning Devices: enabled
+- Machine: q35
+- SCSI Controller: VirtIO SCSI
+- Network
+    - LAN MAC address: fe:17:d2:92:c8:74
+    - Static ip assigned in pfSense: 192.168.0.114
+    - Local domain record in piHole: storage.localdomain
+- Options:
+    - Start at boot: enabled
+    - Start/Shutdown order: oder=3,up=60
+- OS: [TrueNAS Scale](https://www.truenas.com/download-tn-scale/)
+### TrueNAS - HDD passtrough
+It is not recommended to passtrough disks by they `sdax` name becaus the operating system can change it. The safest approach is to passtrough the disks by their id. Use following command to list the id of each disk.
+```
+ls -l /dev/disk/by-id/
+```
 
+Find the links that matches each drive
+
+```
+/dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825 -> ../../sdc
+/dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF -> ../../sda
+/dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF -> ../../sdb
+```
+
+Add the disk to VM by executing the commands below in Proxmox host shell
+```
+sudo qm set 102 -scsi1 /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825
+sudo qm set 102 -scsi2 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF
+sudo qm set 102 -scsi3 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF
+```
+
+The outpot of each commands should be
+```
+update VM 102: -scsi1 /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825
+update VM 102: -scsi2 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF
+update VM 102: -scsi3 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF
+```
+Check if each disk has been attached succesfully
+```
+sudo grep WX91A61Y1825 /etc/pve/qemu-server/102.conf
+sudo grep JR10006P0VSENF /etc/pve/qemu-server/102.conf
+sudo grep JR10006P0VSMXF /etc/pve/qemu-server/102.conf
+```
+Output of each of the above command should be
+```
+scsi1: /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825,size=732574584K
+scsi2: /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF,size=976762584K
+scsi3: /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF,size=976762584K
+```
+
+Make sure to reboot the host server if the HDD's were previously managed by it otherwise you will not be able to add the new NFS shares from TrueNAS
+### TrueNAS - Setup
+Follow the installation guide from [here](https://www.truenas.com/docs/scale/).
+
+Once the installation is completed, open the web interface and continue the rest of the configuration there - [https://192.168.0.114/](https://192.168.0.114/)
+
+Make the following configuration in each page below.
+
+**System Settings -> General**
+
+Remove existing NTP servers and add local NPT server(192.168.0.2) with only option selected `iBurst` and Min/Max Pool set to 6/10.
+
+Change `Timezone` in `Localication` to `Europe/Bucharest`
+
+**System Settings -> Services**
+
+Activate **SSH** service and make sure it is marked to be started automatically. Press the configure button and make sure `Log in as Root with Password` and `Allow Password Authentication` are unckeched.
+
+**Credentials -> Local Users**
+
+Add a new user called `sitram` with UID `1000`
+
+Add my personal public key to user `root` so that I can log is with SSH securely.
+
+**Credentials -> Local Users**
+
+Add a new group called `sitram` with GID `1000`
+
+**Network**
+
+In `Global Configuration` section change 
+ - Hostname: `storage`
+ - Domain: `local`
+ - DNS: `192.168.0.101` and `8.8.8.8`
+ - Default Gateway: `192.168.0.1`
+
+**Shares**
+
+ - Windows (SMB) Shares
+    - Share 1
+      - Name: `data`
+      - Path: `/mnt/tank1/data`
+      - Description: `Storage for critical data`
+    - Share 2
+      - Name: `media`
+      - Path: `/mnt/tank2/media`
+      - Description: `Storage for various media files(movies, tv series, music, torrents etc)`
+ - Unix (NFS) Shares
+    - Share 1
+      - Path: `/mnt/tank1/backup`
+      - Description: `Backup for HomeLab VM's and CT's`
+      - Maproot User: `root`
+      - Maproot Group: `root`
+    - Share 2
+      - Path: `/mnt/tank1/data`
+      - Description: `Storage for critical data`
+      - Maproot User: `root`
+      - Maproot Group: `root`
+      - Authorized Hosts and IP address: `192.168.0.101` and `192.168.0.2` and `192.168.0.102`
+    - Share 3
+      - Path: `/mnt/tank2/media`
+      - Description: `Storage for various media files(movies, tv series, music, torrents etc)`
+      - Maproot User: `root`
+      - Maproot Group: `root`
+      - Authorized Hosts and IP address: ``
+    - Share 4
+      - Path: `/mnt/tank2/proxmox`
+      - Description: `Storage for ISO and CT for Proxmox`
+      - Maproot User: `root`
+      - Maproot Group: `root`
+      - Authorized Hosts and IP address: `192.168.0.2`
 ## HomeAssistant - Home automation server
 ### HomeAssistant - VM configuration
+- VM id: 104
+- HDD: 
+   - don’t make any changes because it will be changed later with the Home Assistant QCOW2 installation file
+- Sockets: 1
+- Cores: 2
+- RAM: 
+    - Min: 4084
+    - Max: 4084
+    - Ballooning Devices: enabled
+- Machine: i440fx
+- BIOS OVMF (UEFI)
+- SCSI Controller: VirtIO SCSI
+- Network
+    - LAN MAC address: DE:5C:A6:B6:4A:AA
+    - Static ip assigned in pfSense: 192.168.0.100
+    - Local domain record in piHole: ha.localdomain
+- Options:
+    - Start at boot: enabled
+    - Start/Shutdown order: oder=6
+- OS: [Home Assistant Operating System](https://www.home-assistant.io/installation/linux)
 ### HomeAssistant - Installation and setup
+Download the QCOW2 image file from [Home Assistant Operating System](https://www.home-assistant.io/installation/linux) and upload it to Proxmox host via SSH in the `/root` home folder.
+
+After the transfer completes, go back into the Proxmox web interface, click on the Proxmox server, and then Shell. To import the Home Assistant installation file to the VM that was created, enter the following command:
+```
+qm importdisk 104 /root/[hassos_file_name] local-lvm --format qcow2
+```
+
+When the import finishes, it should show that it was successfully imported as an unused disk.
+```
+Successfully imported disk as 'unused0:local-lvm:vm-104-disk-2'
+```
+Go back into the Home Assistant VM and then go into `Hardware`. The unused disk with the installation file would be at the bottom as `Unused Disk 0`. Click on the current active Hard Disk, `Hard Disk (scsi0)`, then click on `Detach`, and on the pop up click on `Yes`. That hard disk would then show up at the bottom as `unused disk 1`. Select that disk, then click on `Remove` and then click on `Yes`. Now, the `Unused Disk 0`, which is the one with the Home Assistant installation, double click it, and on the pop-up, click on Add.
+
+The hard disk, by default, would only have 6GB available. So, to make it larger (32GB Recommended), click on `Resize disk` and add the additional amount that you want to add to the 6GB already available.
+
+The configuration is now completed After powering on the Home Assistant VM, go into **Console** to verify that the installation is working as expected. The process can take several minutes. After the installation is finalized, go to `ha.local:8123`, and the Home Assistant initial configuration would come up.
+
 ### HomeAssistant - Other plugins
+### HomeAssistant - Mosquitto broker(MQTT)
+Open **Supervisor -> Add-on Store** and search for **Mosquitto broker** addon and install it.
+
+Click **Mosquitto broker** and continue configuration there
+  - Info tab
+    - Make sure `Start on boot`, `Watchdog` and `Auto update` options are active
+  - Configuration tab 
+    - add the following configuration
+    ```
+    logins:
+      - username: ha_mqtt
+        password: HaMqttPass_123
+    customize:
+      active: false
+      folder: mosquitto
+    certfile: fullchain.pem
+    keyfile: privkey.pem
+    require_certificate: false
+    ```
+    - Normal MQTT TCP port - `1833`
+    - MQTT over WebSocker port - `1884`
+    - Normal MQTT with SSL port - `8883`
+    - MQTT over WEbSocker with SSL - `8884`
+
+Press the **Start** button on the info page of the integration and check the **Log** section to make sure HomeAssistant connects succesfully to Paradox Alarm.
+
+Add the following code in `configurations.yam`l file to be able to monitor some usefull parameters.
+```
+# Configuration for connection to mqtt server on home server
+mqtt:
+  discovery: true
+  discovery_prefix: homeassistant
+  broker: !secret mqtt_host
+  port: 1883
+  client_id: home-assistant-1
+  keepalive: 60
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+```
+
+### HomeAssistant - Paradox Alarm integration
+In order to communicated with Paradox Alarm you need the following preconditions:
+ - Pannels PC password
+ - IP150 connection connected to the Alarm interface
+ - Mosquitto broker addon installed and configured as described in section 
+[HomeAssistant - Mosquitto broker(MQTT)](#homeassistant---mosquitto-brokermqtt)
+ - Install an additional
+
+Open **Supervisor -> Add-on Store** and click the three dots in the upper right corner. Select **Repositories** and add repository for **Paradox Alarm Interface Hass.io** from `https://github.com/ParadoxAlarmInterface/hassio-repository`
+
+There should be 3 new integrations available in **Supervisor -> Add-on Store** section at the bottom of the page.
+
+Click **Paradox Alarm Interface** and continue configuration there
+  - Info tab
+    - Make sure `Start on boot`, `Watchdog` and `Auto update` options are active
+  - Configuration tab - add the following configuration. The configuration was made using the wiki from [here](https://github.com/ParadoxAlarmInterface/pai/wiki)
+    ```
+    LOGGING_LEVEL_CONSOLE: 20
+    LOGGING_LEVEL_FILE: 40
+    CONNECTION_TYPE: IP
+    SERIAL_PORT: /dev/ttyUSB0
+    SERIAL_BAUD: 9600
+    IP_CONNECTION_HOST: 192.168.0.3
+    IP_CONNECTION_PORT: 10000
+    IP_CONNECTION_PASSWORD: paradox
+    KEEP_ALIVE_INTERVAL: 10
+    LIMITS:
+      zone: auto
+      user: 1-10
+      door: ''
+      pgm: ''
+      partition: '1'
+      module: ''
+      repeater: ''
+      keypad: ''
+      key-switch: ''
+    SYNC_TIME: true
+    SYNC_TIME_MIN_DRIFT: 120
+    PASSWORD: '2153'
+    MQTT_ENABLE: true
+    MQTT_HOST: 192.168.0.100
+    MQTT_PORT: 1883
+    MQTT_KEEPALIVE: 60
+    MQTT_USERNAME: ha_mqtt
+    MQTT_PASSWORD: HaMqttPass_123
+    MQTT_HOMEASSISTANT_AUTODISCOVERY_ENABLE: true
+    COMMAND_ALIAS:
+      arm: partition all arm
+      disarm: partition all disarm
+    MQTT_COMMAND_ALIAS:
+      armed_home: arm_stay
+      armed_night: arm_sleep
+      armed_away: arm
+      disarmed: disarm
+    HOMEASSISTANT_NOTIFICATIONS_EVENT_FILTERS:
+      - live,alarm,-restore
+      - live,trouble,-clock
+      - live,tamper
+    PUSHBULLET_CONTACTS: []
+    PUSHBULLET_EVENT_FILTERS:
+      - live,alarm,-restore
+      - live,trouble,-clock
+      - live,tamper
+    PUSHOVER_EVENT_FILTERS:
+      - live,alarm,-restore
+      - live,trouble,-clock
+      - live,tamper
+    PUSHOVER_BROADCAST_KEYS: []
+    SIGNAL_CONTACTS: []
+    SIGNAL_EVENT_FILTERS:
+      - live,alarm,-restore
+      - live,trouble,-clock
+      - live,tamper
+    GSM_CONTACTS: []
+    GSM_EVENT_FILTERS:
+      - live,alarm,-restore
+      - live,trouble,-clock
+      - live,tamper
+    IP_INTERFACE_ENABLE: false
+    IP_INTERFACE_PASSWORD: paradox
+    DUMMY_EVENT_FILTERS: []
+    ```
+  - host TCP port - `10000`.
+
+Press the **Start** button on the info page of the integration and check the **Log** section to make sure HomeAssistant connects succesfully to Paradox Alarm.
 ### HomeAssistant - UPS integration
 In order to access different parameters of the UPS using the SNMP protocol, certain stepts need to be taken to identify the corresponding OID's. 
 
@@ -1014,7 +1312,7 @@ In order to understand the units of an OID, look at the response data. It might 
  - ticks - e.g. time remaining in my example below
  - a series of strings, e.g the 'Status', which  can then be used to develop the value_template in configuration.yaml.
 
-Add the following code in configurations.yaml file to be able to monitor some usefull parameters.
+Add the following code in `configurations.yam`l file to be able to monitor some usefull parameters.
 ```
 sensor:
   - platform: snmp
@@ -1204,6 +1502,11 @@ Install the following packages as necessary basis for server operation:
 ```
 sudo apt update -q4
 sudo apt install -y curl gnupg2 git lsb-release ssl-cert ca-certificates apt-transport-https tree locate software-properties-common dirmngr screen htop net-tools zip unzip bzip2 ffmpeg ghostscript libfile-fcntllock-perl libfontconfig1 libfuse2 socat
+```
+
+Add the following mounting points to `/etc/fstab/`
+```
+192.168.0.114:/mnt/tank1/data /home/sitram/data nfs rw 0 0
 ```
 
 ### Nextcloud - Installation and configuration of nginx web server
@@ -2129,6 +2432,11 @@ The following subsections from [General](#general) section should be performed i
  - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
  - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
 
+Add the following mounting points to `/etc/fstab/`
+```
+192.168.0.114:/mnt/tank1/data /home/sitram/data nfs rw 0 0
+192.168.0.114:/mnt/tank2/media /home/sitram/media nfs rw 0 0
+```
 ### Hercules - Docker installation and docker-compose
 ### Hercules - Portainer docker container
 ### Hercules - Guacamole docker container
