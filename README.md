@@ -66,6 +66,7 @@ Summary:
     - [HomeAssistant - Paradox Alarm integration](#homeassistant---paradox-alarm-integration)
     - [HomeAssistant - UPS integration](#homeassistant---ups-integration)
     - [HomeAssistant - Integration of CCTV cameras](#homeassistant---integration-of-cctv-cameras)
+    - [HomeAssistant - Recorder integration](#homeassistant---recorder-integration)
 - [Nextcloud - Content collaboration server](#nextcloud---content-collaboration-server)
     - [Nextcloud - VM configuration](#nextcloud---vm-configuration)
     - [Nextcloud - OS Configuration](#nextcloud---os-configuration)
@@ -1517,6 +1518,107 @@ Open the **Overview** tab and add a new view with the followint configuration:
   - Entity: `camera.camera_laterala`
   - Entity: `camera.camera_fata_stanga`
   - Entity: `camera.camera_spate`
+
+### HomeAssistant - Recorder integration
+In order to reduce the size of the database the make the following changes to the Recorder configuration in `configuration.yaml`. Additional information can be found [here](https://community.home-assistant.io/t/how-to-reduce-your-database-size-and-extend-the-life-of-your-sd-card/205299).
+
+Make sure that all the integration are configured before this step is done.
+
+Only use includes or excludes for history or logbook. Do not use a mix of both in the one integration. The logic is completely busted. The recorder seems ok to mix includes and excludes.
+
+Every time a new integration is added, review the recorder integration and decide if it's worth beeing added to the exclude or include list.
+
+```
+# Settings for recorder integration in order to reduce the size of the database
+# configuration was done based in information fron https://community.home-assistant.io/t/how-to-reduce-your-database-size-and-extend-the-life-of-your-sd-card/205299
+recorder:
+  purge_keep_days: 30
+  exclude:
+    domains:
+      - automation
+      - binary_sensor
+      - camera
+      - group
+      - sensor
+      - sun
+      - switch
+      - weather
+      - zone
+  include:
+    domains:
+      - climate
+      - device_tracker
+      - light
+      - media_player
+      - person
+      - vacuum
+    entities:
+      - alarm_control_panel.toata_casa
+      - binary_sensor.oneplus_a6013_is_charging
+      - binary_sensor.samsung_s10_is_charging
+      - sensor.oneplus_a6013_geocoded_location
+      - sensor.samsung_s10_geocoded_location
+      - sensor.ac_dormitor_alb_inside_temperature
+      - sensor.ac_dormitor_inside_temperature
+      - sensor.ac_living_inside_temperature
+      - sensor.run_status
+      - sensor.speedtest_download
+      - sensor.speedtest_ping
+      - sensor.speedtest_upload
+      - sensor.ups_status
+      - switch.sonoff_100111e4eb
+
+history:
+  include:
+    domains:
+      - climate
+      - device_tracker
+      - light
+      - media_player
+      - person
+      - vacuum
+    entities:
+      - alarm_control_panel.toata_casa
+      - binary_sensor.oneplus_a6013_is_charging
+      - binary_sensor.samsung_s10_is_charging
+      - sensor.oneplus_a6013_geocoded_location
+      - sensor.samsung_s10_geocoded_location
+      - sensor.ac_dormitor_alb_inside_temperature
+      - sensor.ac_dormitor_inside_temperature
+      - sensor.ac_living_inside_temperature
+      - sensor.run_status
+      - sensor.speedtest_download
+      - sensor.speedtest_ping
+      - sensor.speedtest_upload
+      - sensor.ups_status
+      - switch.sonoff_100111e4eb
+
+logbook:
+  include:
+    domains:
+      - climate
+      - device_tracker
+      - light
+      - media_player
+      - person
+      - vacuum
+    entities:
+      - alarm_control_panel.toata_casa
+      - binary_sensor.oneplus_a6013_is_charging
+      - binary_sensor.samsung_s10_is_charging
+      - sensor.oneplus_a6013_geocoded_location
+      - sensor.samsung_s10_geocoded_location
+      - sensor.ac_dormitor_alb_inside_temperature
+      - sensor.ac_dormitor_inside_temperature
+      - sensor.ac_living_inside_temperature
+      - sensor.run_status
+      - sensor.speedtest_download
+      - sensor.speedtest_ping
+      - sensor.speedtest_upload
+      - sensor.ups_status
+      - switch.sonoff_100111e4eb
+```
+
 ## Nextcloud - Content collaboration server
 ### Nextcloud - VM configuration
 - VM id: 106
