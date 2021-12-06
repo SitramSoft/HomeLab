@@ -66,6 +66,7 @@ Summary:
     - [HomeAssistant - Paradox Alarm integration](#homeassistant---paradox-alarm-integration)
     - [HomeAssistant - UPS integration](#homeassistant---ups-integration)
     - [HomeAssistant - Integration of CCTV cameras](#homeassistant---integration-of-cctv-cameras)
+    - [HomeAssistant - Google Assistant integration](#homeassistant---google-assistant-integration)
     - [HomeAssistant - Recorder integration](#homeassistant---recorder-integration)
 - [Nextcloud - Content collaboration server](#nextcloud---content-collaboration-server)
     - [Nextcloud - VM configuration](#nextcloud---vm-configuration)
@@ -1468,7 +1469,7 @@ header:
     action: none
 ```
 ### HomeAssistant - Integration of CCTV cameras
-Add the following code in `configurations.yam`l file to be able to access the CCTV cameras connected to the Dahua DVR. Sensitive information is located in a separate file called `secrets.yaml`.
+Add the following code in `configurations.yaml` file to be able to access the CCTV cameras connected to the Dahua DVR. Sensitive information is located in a separate file called `secrets.yaml`.
 ```
 # Configuration for CCTV camera with Dahua DVR
 camera laterala:
@@ -1518,6 +1519,115 @@ Open the **Overview** tab and add a new view with the followint configuration:
   - Entity: `camera.camera_laterala`
   - Entity: `camera.camera_fata_stanga`
   - Entity: `camera.camera_spate`
+
+### HomeAssistant - Google Assistant integration
+To use Google Assistant, your Home Assistant configuration has to be externally accessible with a hostname and SSL certificate.
+
+ 1. Create a new project in the Actions on Google console.
+    - Click `New Project` and give your project a name.
+    - Click on the `Smart Home card`, then click the `Start Building` button.
+    - Click `Name your Smart Home` action under Q`uick Setup` to give your Action a name - Home Assistant will appear in the Google Home app as `[test] <Action Name>`
+    - Click on the Over`view tab at the top of the page to go back.
+    - Click `Build your Action`, then click `Add Action(s)`.
+    - Add Home Assistant URL: `https://ha.sitram.duckdns.org/api/google_assistant` in the `Fulfillment URL` box.
+    - Click `Save`.
+    - Click the three little dots (more) icon in the upper right corner, select `Project settings`
+    - Make note of the `Project ID` that are listed on the `GENERAL` tab of the `Settings` page.
+2. `Account linking` is required for your app to interact with Home Assistant.
+    - Start by going back to the `Overview` tab.
+    - Click on `Setup account linking` under the `Quick Setup` section of the `Overview` page.
+    - If asked, leave options as they default `No, I only want to allow account creation on my website` and select `Next`.
+    - Then if asked, for the `Linking type` select `OAuth` and `Authorization Code`. Click `Next`
+    - Enter the following:
+      - Client ID: `https://oauth-redirect.googleusercontent.com/r/[YOUR_PROJECT_ID]`. (Replace [`YOUR_PROJECT_ID]` with your project ID from above)
+      - Client Secret: Anything you like, Home Assistant doesn’t need this field.
+      - Authorization URL: `https://[YOUR HOME ASSISTANT URL:PORT]/auth/authorize.` (Replace [`YOUR HOME ASSISTANT URL:PORT] `with your values.)
+      - Token URL (replace with your actual URL): `https://[YOUR HOME ASSISTANT URL:PORT]/auth/token`. (Replace `[YOUR HOME ASSISTANT URL:PORT]` with your values.) Click `Next`, then `Next` again.
+    - In the `Configure` your client `Scopes` textbox, type email and click `Add scope`, then type name and click `Add scope` again.
+    - Do **NOT** check `Google to transmit clientID and secret via HTTP basic auth header`.
+    - Click `Next`, then click `Save`
+ 3. Select the `Develop` tab at the top of the page, then in the upper right hand corner select the `Test` button to generate the draft version Test App. If you don’t see this option, go to the `Test` tab instead, click on the `Settings` button in the top right below the header, and ensure `On device testing` is enabled (if it isn’t, enable it).
+ 4. Add the `google_assistant` integration configuration to your `configuration.yaml` file and restart Home Assistant .
+ 5. Add services in the Google Home App (Note that app versions may be slightly different.)
+    - Open the Google Home app.
+    - Click the `+` button on the top left corner, click `Set up device`, in the “Set up a device” screen click “Works with Google”. You should have `[test] <Action Name>` listed under ‘Add new’. Selecting that should lead you to a browser to login your Home Assistant instance, then redirect back to a screen where you can set rooms and nicknames for your devices if you wish.
+ 6. If you want to allow other household users to control the devices:
+    - Open the project you created in the [Actions on Google console](https://console.actions.google.com/).
+    - Click `Test` on the top of the page, then click Simulator located to the page left, then click the three little dots (more) icon in the upper right corner of the console.
+    - Click `Manage user access`. This redirects you to the Google Cloud Platform IAM permissions page.
+    - Click `ADD` at the top of the page.
+    - Enter the email address of the user you want to add.
+    - Click `Select a role` and choose `Project < Viewer`.
+    - Click `SAVE`
+    - Copy and share the Actions project link `(https://console.actions.google.com/project/YOUR_PROJECT_ID/simulator)` with the new user.
+    - Have the new user open the link with their own Google account, agree to the Terms of Service popup, then select `Start Testing`, select `VERSION - Draft` in the dropdown, and click `Done`.
+    - Have the new user go to their `Google Assistant` app to add `[test] your app name` to their account.
+ 7. Enable Device sync
+    - If you want to support active reporting of state to Google’s server (configuration option `report_state`) and synchronize Home Assistant devices with the Google Home app (`google_assistant.request_sync service`), you will need to create a service account. It is recommended to set up this configuration key as it also allows the usage of the following command, “Ok Google, sync my devices”. Once you have set up this component, you will need to call this service (or command) each time you add a new device in Home Assistant that you wish to control via the Google Assistant integration. This allows you to update devices without unlinking and relinking an account.
+    - Service Account
+        - In the Google Cloud Platform Console, go to the [Create Service account key](https://console.cloud.google.com/apis/credentials/serviceaccountkey) page.
+        - At the top left of the page next to `Google Cloud Platform logo`, select your project created in the Actions on Google console. Confirm this by reviewing the project ID and it ensure it matches.
+        - From the Service account list, select `CREATE SERVICE ACCOUNT`.
+        - In the Service account name field, enter a name.
+        - In the Service account ID field, enter an ID.
+        - From the Role list, select `Service Accounts` > `Service Account Token Creator`.
+        - Click `CONTINUE` and then `DONE`. You are returned to the service account list, and your new account is shown.
+        - Click the three dots menu under `Actions` next to your new account, and click `Manage keys`. You are taken to a `Keys` page.
+        - Click `ADD KEY` then `Create new key`. Leave the `key type` as `JSON` and click `CREATE`. A JSON file that contains your key downloads to your computer.
+        - Use the information in this file or the file directly to add to the service_account key in the configuration.
+        - Click   .
+      - HomeGraph API
+        - Go to the [Google API Console](https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview).
+        - At the top left of the page next to `Google Cloud Platform` logo, select your project created in the `Actions` on Google console. Confirm this by reviewing the project ID and it ensure it matches.
+        - Click `Enable HomeGraph API`.
+        - Try `OK Google, sync my devices` - the Google Home app should import your exposed Home Assistant devices and prompt you to assign them to rooms.
+
+Add the following code in `configurations.yaml` file with the devices in Home Assistant that you wish to control via the Google Assistant integration.
+```
+# Google assistant integration
+google_assistant:
+  project_id: smart-home-e8da1
+  service_account: !include service_account_google_assistant.json
+  report_state: true
+  secure_devices_pin: "2153"
+  exposed_domains:
+    - alarm_control_panel
+    - camera
+    - climate
+  entity_config:
+    # Entities exposed to Google Assistant from the alarm_control_panel domain
+    alarm_control_panel.toata_casa:
+      name: House alarm
+      room: Entryway
+    # Entities exposed to Google Assistant from camera domain
+    camera.camera_fata_dreapta:
+      name: Security camera front right
+      room: Frontyard
+    camera.camera_fata_stanga:
+      name: Security camera front left
+      room: Frontyard
+    camera.camera_laterala:
+      name: Security camera lateral
+      room: Frontyard
+    camera.camera_spate:
+      name: Security camera backyard
+      room: Back yard
+    # Entities exposed to Google Assistant from climate domain
+    climate.ac_dormitor_alb:
+      name: Guest bedroom AC
+      room: Bedroom
+    climate.ac_dormitor:
+      name: Master Bedroom AC
+      room: Master Bedroom
+    climate.ac_living:
+      name: Living Room AC
+      room: Living Room
+    climate.netatmo_smart_thermostat:
+      name: Thermostat
+      room: Living Room
+```
+
+Reload HomeAssistant configuration and test that the devices are visible in Home App on your mobile phone.
 
 ### HomeAssistant - Recorder integration
 In order to reduce the size of the database the make the following changes to the Recorder configuration in `configuration.yaml`. Additional information can be found [here](https://community.home-assistant.io/t/how-to-reduce-your-database-size-and-extend-the-life-of-your-sd-card/205299).
