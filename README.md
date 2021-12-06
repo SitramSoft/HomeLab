@@ -65,6 +65,7 @@ Summary:
     - [HomeAssistant - Mosquitto broker(MQTT)](#homeassistant---mosquitto-brokermqtt)
     - [HomeAssistant - Paradox Alarm integration](#homeassistant---paradox-alarm-integration)
     - [HomeAssistant - UPS integration](#homeassistant---ups-integration)
+    - [HomeAssistant - Integration of CCTV cameras](#homeassistant---integration-of-cctv-cameras)
 - [Nextcloud - Content collaboration server](#nextcloud---content-collaboration-server)
     - [Nextcloud - VM configuration](#nextcloud---vm-configuration)
     - [Nextcloud - OS Configuration](#nextcloud---os-configuration)
@@ -1186,7 +1187,7 @@ Click **Mosquitto broker** and continue configuration there
 
 Press the **Start** button on the info page of the integration and check the **Log** section to make sure HomeAssistant connects succesfully to Paradox Alarm.
 
-Add the following code in `configurations.yam`l file to be able to monitor some usefull parameters.
+Add the following code in `configurations.yam`l file. Sensitive information is located in a separate file called `secrets.yaml`.
 ```
 # Configuration for connection to mqtt server on home server
 mqtt:
@@ -1465,7 +1466,57 @@ header:
   hold_action:
     action: none
 ```
+### HomeAssistant - Integration of CCTV cameras
+Add the following code in `configurations.yam`l file to be able to access the CCTV cameras connected to the Dahua DVR. Sensitive information is located in a separate file called `secrets.yaml`.
+```
+# Configuration for CCTV camera with Dahua DVR
+camera laterala:
+  - platform: generic
+    name: Camera laterala
+    still_image_url: http://192.168.0.8:8000/cgi-bin/snapshot.cgi?channel=1
+    stream_source: rtsp://admin:Darksourcer123@192.168.0.8:554/cam/realmonitor?channel=1&subtype=0
+    username: !secret cctv_user
+    password: !secret cctv_password
+    authentication: digest
+    verify_ssl: false
+camera spate:
+  - platform: generic
+    name: Camera spate
+    still_image_url: http://192.168.0.8:8000/cgi-bin/snapshot.cgi?channel=2
+    stream_source: rtsp://admin:Darksourcer123@192.168.0.8:554/cam/realmonitor?channel=2&subtype=0
+    username: !secret cctv_user
+    password: !secret cctv_password
+    authentication: digest
+    verify_ssl: false
+camera fata dreapta:
+  - platform: generic
+    name: Camera fata dreapta
+    still_image_url: http://192.168.0.8:8000/cgi-bin/snapshot.cgi?channel=3
+    stream_source: rtsp://admin:Darksourcer123@192.168.0.8:554/cam/realmonitor?channel=3&subtype=0
+    username: !secret cctv_user
+    password: !secret cctv_password
+    authentication: digest
+    verify_ssl: false
+camera fata stanga:
+  - platform: generic
+    name: Camera fata stanga
+    still_image_url: http://192.168.0.8:8000/cgi-bin/snapshot.cgi?channel=4
+    stream_source: rtsp://admin:Darksourcer123@192.168.0.8:554/cam/realmonitor?channel=4&subtype=0
+    username: !secret cctv_user
+    password: !secret cctv_password
+    authentication: digest
+    verify_ssl: false
+```
 
+Open the **Overview** tab and add a new view with the followint configuration:
+ - Title: `Camere`
+ - Icon: `mdi:cctv`
+
+ Add 4 **Picture Entity Card** with the following configuration:
+  - Entity: `camera.camera_fata_dreapta`
+  - Entity: `camera.camera_laterala`
+  - Entity: `camera.camera_fata_stanga`
+  - Entity: `camera.camera_spate`
 ## Nextcloud - Content collaboration server
 ### Nextcloud - VM configuration
 - VM id: 106
