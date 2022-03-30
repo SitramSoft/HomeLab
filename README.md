@@ -3036,7 +3036,26 @@ Add the following mounting points to `/etc/fstab/`
 
 ## Code - coding VM
 
-### Code - CodeServer VM configuration
+### Code - VM configuration
+
+- VM id: 159
+- HDD: 32GB
+- Sockets: 1
+- Cores: 30
+- RAM:
+  - Min: 2048
+  - Max: 16384
+  - Ballooning Devices: enabled
+- Machine: i440fx
+- Network
+  - LAN MAC address: 0E:04:4B:34:47:C4
+  - Static ip assigned in pfSense: 192.168.0.113
+  - Local domain record in piHole: code.localdomain
+- Options:
+  - Start at boot: enabled
+  - Start/Shutdown order: order=9
+  - QEMU Guest Agent: enabled, guest trim
+- OS: [Ubuntu Server](https://ubuntu.com/download/server)
 
 ### Code - OS Configuration
 
