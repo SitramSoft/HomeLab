@@ -113,10 +113,14 @@ Summary:
   - [Windows10 - Windows installation](#windows10---windows-installation)
   - [Windows10 - Remote Desktop Connection configuration](#windows10---remote-desktop-connection-configuration)
 - [Code - coding VM](#code---coding-vm)
-  - [Code - CodeServer VM configuration](#code---codeserver-vm-configuration)
+  - [Code - VM configuration](#code---vm-configuration)
   - [Code - OS Configuration](#code---os-configuration)
   - [Code - CodeServer installation and configuration](#code---codeserver-installation-and-configuration)
   - [Code - Accessing CodeServer from outside local network](#code---accessing-codeserver-from-outside-local-network)
+- [ArchLinux - Desktop VM](#archlinux---desktop-vm)
+  - [ArchLinux - VM configuration](#archlinux---vm-configuration)
+  - [ArchLinux - OS Configuration](#archlinux---os-configuration)
+  - [ArchLinux - Troubleshoot sound issues](#archlinux---troubleshoot-sound-issues)
 
 ## About my Homelab
 
@@ -826,7 +830,7 @@ Reboot the VM to take into account the new configuration.
 - Options:
   - Start at boot: enabled
     - Start/Shutdown order: oder=1,up=55
-- OS: [pfSense Community Edition](https://www.pfsense.org/download/)
+- OS: [pfSense+](https://www.pfsense.org/download/)
 
 ### pfSense - Setup
 
@@ -837,7 +841,7 @@ The server has a dedicated Intel Corporation I350 Gigabit Network adaptor with t
 
 The LAN interface is physically located on the board near the text written on the metal plate.
 
-Download [pfSense Community Edition](https://www.pfsense.org/download/), connect it to a CD-ROM on the VM and follow the installation procedure. Below are several parameters which I have customized during the installation procedure.
+Download [pfSense+](https://www.pfsense.org/download/), connect it to a CD-ROM on the VM and follow the installation procedure. Below are several parameters which I have customized during the installation procedure.
 
 **Interface assignment:**
 
@@ -2733,8 +2737,6 @@ Set up the Nextcloud using the following "silent" installation command with data
 sudo -u www-data php /var/www/nextcloud/occ maintenance:install --database "mysql" --database-name "nextcloud_test" --database-user "root" --database-pass "rootpw" --admin-user "sitram" --admin-pass "YourNextcloudAdminPasssword" --data-dir "/var/nc_data"
 ```
 
-Set up the Nextcloud using the following "silent" installation command with the database on a remote docker instance
-
 ```bash
 sudo -u www-data php /var/www/nextcloud/occ maintenance:install --database "mysql" --database-host=192.168.0.101:3306 --database-name "nextclouddb" --database-user "sitram" --database-pass "sitram" --admin-user "sitram" --admin-pass "YourNextcloudAdminPasssword" --data-dir "/var/nc_data"
 ```
@@ -3084,3 +3086,130 @@ sudo systemctl restart code-server@$USER
 ```
 
 ### Code - Accessing CodeServer from outside local network
+
+## ArchLinux - Desktop VM
+
+### ArchLinux - VM configuration
+
+- VM id: 151
+- HDD: 60GB
+- Sockets: 1
+- Cores: 12
+- RAM:
+  - Min: 2048
+  - Max: 32768
+  - Ballooning Devices: enabled
+- Machine: i440fx
+- Audio Device
+  - Audio Device: AC97
+  - Backend Driver: SPICE
+- Network
+  - LAN MAC address: 92:4B:CC:81:96:83
+  - Static ip assigned in pfSense: 192.168.0.105
+  - Local domain record in piHole: archlinux.localdomain
+- Options:
+  - Start at boot: enabled
+  - QEMU Guest Agent: enabled, guest trim
+  - SPICE Enhancements:
+    - Folder Sharing: enabled
+    - Video Streaming: off
+- OS: [ArchLinux](https://archlinux.org/)
+
+### ArchLinux - OS Configuration
+
+Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
+
+```bash
+reflactor -c Romania -a 6 --sort rate --save /etc/pacman/d/mirrorlist
+```
+
+Refresh the servers
+
+```bash
+sudo pacman -Syyy
+```
+
+Uninstall graphics driver for intel because it interferes with cinnamon
+
+```bash
+sudo pacman -R xf86-video-intel
+```
+
+Disable bluetooth service and remove the existing package
+
+```bash
+sudo systemctl disable bluetooth
+sudo pacman -R bluez bluez-utils pulseaudio-bluetooth
+```
+
+Install display server, display manager, greeter, desktop environment, window manager used by cinnamon as fallback in case cinnamon fails, terminal because gnome doesn't come with one, password manager for Gnome, bluetooth configuration tool, screenshot tool, CUPS printer configuration tool and status applet and office suite.
+
+```bash
+sudo pacman -S xorg lightdm lightdm-webkit2-greeter cinnamon metacity gnome-terminal gnome-keyring blueberry flameshot system-config-printer libreoffice
+```
+
+Enable bluetoot
+
+```bash
+sudo systemctl enable bluetooth
+```
+
+Enable greeter and change display output
+
+```bash
+sudo nano /etc/lightdm/lightdm.conf
+greeter-session = lightdm-webkit2-greeter
+display-setup-script=xrandr --output Virtual-1 --mode 1920x1080
+```
+
+Install yay AUR Helper
+
+```bash
+sudo pacman -S git
+cd /home/Downloads
+sudo git clone https://aur.archlinux.org/yay-git.git
+cd yay-git
+makepkg -si
+```
+
+Install icons and themes
+
+```bash
+yay -S tela-icon-theme
+yay -S mint-themes
+sudo pacman -S papirus-icon-theme arc-gtk-theme
+
+#install walpapers
+
+```bash
+sudo pacman -S archlinux-wallpaper
+```
+
+Install greeter theme
+
+```bash
+yay -S lightdm-webkit2-theme-aether
+```
+
+Install **spice-vdagent**: Spice agent xorg client that enables copy and paste between client and X-session and more.
+
+```bash
+sudo pacman -S spice-vdagent
+```
+
+Install Google Chrome
+
+```bash
+yay -S google-chrome
+```
+
+### ArchLinux - Troubleshoot sound issues
+
+```bash
+dmesg | grep snd
+#FWIW to properly debug pulse
+systemctl --user mask pulseaudio.socket
+pulseaudio -k
+pulseaudio -vvv
+systemctl --user mask pulseaudio.socket
+```
