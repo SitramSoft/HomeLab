@@ -121,6 +121,9 @@ Summary:
   - [ArchLinux - VM configuration](#archlinux---vm-configuration)
   - [ArchLinux - OS Configuration](#archlinux---os-configuration)
   - [ArchLinux - Troubleshoot sound issues](#archlinux---troubleshoot-sound-issues)
+- [WordPress - WorPress server VM](#wordpress---worpress-server-vm)
+  - [WordPress - VM configuration](#wordpress---vm-configuration)
+  - [WordPress - OS Configuration](#wordpress---os-configuration)
 
 ## About my Homelab
 
@@ -826,7 +829,7 @@ Reboot the VM to take into account the new configuration.
   - LAN MAC address: e4:11:5b:97:04:B9
   - WAN: connected to Internet provider
   - Static ip assigned in pfSense: 192.168.0.1
-  - Local domain record in piHole: pfsense.localdomain
+  - Local domain record in piHole: pfsense .local
 - Options:
   - Start at boot: enabled
     - Start/Shutdown order: oder=1,up=55
@@ -1142,7 +1145,7 @@ The following subsections from [General](#general) section should be performed i
 - Network
   - LAN MAC address: fe:17:d2:92:c8:74
   - Static ip assigned in pfSense: 192.168.0.114
-  - Local domain record in piHole: storage.localdomain
+  - Local domain record in piHole: storage .local
 - Options:
   - Start at boot: enabled
   - Start/Shutdown order: oder=3,up=60
@@ -1290,7 +1293,7 @@ In `Global Configuration` section change
 - Network
   - LAN MAC address: DE:5C:A6:B6:4A:AA
   - Static ip assigned in pfSense: 192.168.0.100
-  - Local domain record in piHole: ha.localdomain
+  - Local domain record in piHole: ha .local
 - Options:
   - Start at boot: enabled
   - Start/Shutdown order: oder=6
@@ -3050,7 +3053,7 @@ Add the following mounting points to `/etc/fstab/`
 - Network
   - LAN MAC address: 0E:04:4B:34:47:C4
   - Static ip assigned in pfSense: 192.168.0.113
-  - Local domain record in piHole: code.localdomain
+  - Local domain record in piHole: code .local
 - Options:
   - Start at boot: enabled
   - Start/Shutdown order: order=9
@@ -3125,7 +3128,7 @@ sudo systemctl restart code-server@$USER
 - Network
   - LAN MAC address: 92:4B:CC:81:96:83
   - Static ip assigned in pfSense: 192.168.0.105
-  - Local domain record in piHole: archlinux.localdomain
+  - Local domain record in piHole: archlinux .local
 - Options:
   - Start at boot: enabled
   - QEMU Guest Agent: enabled, guest trim
@@ -3232,3 +3235,27 @@ pulseaudio -k
 pulseaudio -vvv
 systemctl --user mask pulseaudio.socket
 ```
+
+## WordPress - WorPress server VM
+
+### WordPress - VM configuration
+
+- VM id: 160
+- HDD: 16GB
+- Sockets: 1
+- Cores: 12
+- RAM:
+  - Min: 512
+  - Max: 4096
+  - Ballooning Devices: enabled
+- Machine: i440fx
+- Network
+  - LAN MAC address: 2A:56:F4:07:5D:3D
+  - Static ip assigned in pfSense: 192.168.0.115
+  - Local domain record in piHole: wordpress .local
+- Options:
+  - Start at boot: disabled
+  - QEMU Guest Agent: enabled, guest trim
+- OS: [Ubuntu Server](https://ubuntu.com/download/server)
+
+### WordPress - OS Configuration
