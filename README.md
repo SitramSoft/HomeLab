@@ -3886,7 +3886,7 @@ sudo tar -xzf latest.tar.gz -C /home/sitram/data/wordpress/myblog
 sudo mv /home/sitram/data/wordpress/myblog/wordpress/* /home/sitram/data/wordpress/myblog
 sudo chown -R www-data:www-data /home/sitram/data/wordpress/myblog
 sudo rm -f latest.tar.gz 
-sudo rm -f /home/sitram/data/wordpress/myblog/wordpress/*
+sudo rm -R /home/sitram/data/wordpress/myblog/wordpress
 ```
 
 [OPTIONAL] Creationg an update of Let's Encrypt certificates is mandatory via http and port 80 so make sure the server can be reached from outside.
