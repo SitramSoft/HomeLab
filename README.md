@@ -372,6 +372,7 @@ sudo systemctl restart systemd-resolved.service
 ```
 
 ### Qemu-guest-agent
+
 The qemu-guest-agent is a helper daemon, which is installed in the guest VM. It is used to exchange information between the host and guest, and to execute command in the guest.
 
 According to Proxmox VE [wiki](https://pve.proxmox.com/wiki/Qemu-guest-agent), the qemu-guest-agent is used for mainly two things:
@@ -3159,16 +3160,39 @@ Add the following mounting points to `/etc/fstab/`
 192.168.0.114:/mnt/tank2/media /home/sitram/mounts/media nfs rw 0 0
 ```
 
+Install iNet Wireless Wireless daemon and set a delay for iwd service start
+
+```bash
+sudo pacman -S iwd
+sudo systemctl enable iwd
+sudo systemctl edit iwd
+#add the following text
+[Service]
+ExecStartPre=sleep 3
+```
+
 Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
 
 ```bash
-reflactor -c Romania -a 6 --sort rate --save /etc/pacman/d/mirrorlist
+sudo pacman -S reflector rsync
+sudo reflector -c Romania -a 6 --sort rate --save /etc/pacman.d/mirrorlist
 ```
 
 Refresh the servers
 
 ```bash
 sudo pacman -Syyy
+```
+
+Install yay AUR Helper
+
+```bash
+sudo pacman -S git
+sudo pacman -S --needed base-devel 
+cd /home/Downloads
+git clone https://aur.archlinux.org/yay-git.git
+cd yay-git
+makepkg -si
 ```
 
 Uninstall graphics driver for intel because it interferes with cinnamon
@@ -3184,10 +3208,67 @@ sudo systemctl disable bluetooth
 sudo pacman -R bluez bluez-utils pulseaudio-bluetooth
 ```
 
-Install display server, display manager, greeter, desktop environment, window manager used by cinnamon as fallback in case cinnamon fails, terminal because gnome doesn't come with one, password manager for Gnome, bluetooth configuration tool, screenshot tool, CUPS printer configuration tool and status applet and office suite.
+To enable multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`:
 
 ```bash
-sudo pacman -S xorg lightdm lightdm-webkit2-greeter cinnamon metacity gnome-terminal gnome-keyring blueberry flameshot system-config-printer libreoffice
+/etc/pacman.conf
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+```
+
+List of installed software:
+
+- **display server**: xorg-server
+- **display manager**: lightdm
+- **greeter**: lightdm-webkit2-greeter
+- **desktop environment**: cinnamon
+- **window manager(used by cinnamon as fallback in case cinnamon fails)**: metacity
+- **terminal(gnome doesn't come with one)**: gnome-terminal
+- **password manager**: gnome-keyring
+- **bluetooth configuration tool**: blueberry
+- **screenshot tool**: flameshot
+- **CUPS printer configuration tool**: system-config-printer
+- **status applet**:
+- **office suite**: libreoffice
+- **file manager**: thunar
+- **PDF viewer**: okular
+- **calculator**: qalculate-gtk
+- **utils for accesing nfs shares**: nfs-utils
+- **image editing**: gimp
+- **vide player**: vlc
+- **video editing software**: shotcut
+- **video transcoder software**: handbrake
+- **Nvidia driver**: nvidia
+- **Nvidia settings applet**: nvidia-settings
+- **wallpapers**: archlinux-wallpaper
+- **wine**: wine
+- **wine packages for applications that depend on Internet Explorer and .NET**: wine-geko wine-mono
+- **steam**: steam
+
+```bash
+sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter cinnamon metacity gnome-terminal gnome-keyring blueberry flameshot system-config-printer libreoffice thunar okular qalculate-gtk nfs-utils gimp vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam
+```
+
+Check what graphics driver is used with `nvidia-smi`
+
+Enable greeter and change display output for VM's only
+
+```bash
+sudo nano /etc/lightdm/lightdm.conf
+greeter-session = lightdm-webkit2-greeter
+display-setup-script=xrandr --output Virtual-1 --mode 1920x1080
+```
+
+Install greeter theme
+
+```bash
+yay -S lightdm-webkit-theme-aether
+```
+
+Enable display manager
+
+```bash
+sudo systemctl enable lightdm
 ```
 
 Enable bluetoot
@@ -3196,22 +3277,18 @@ Enable bluetoot
 sudo systemctl enable bluetooth
 ```
 
-Enable greeter and change display output
+Enable NetworkManager daemon
 
 ```bash
-sudo nano /etc/lightdm/lightdm.conf
-greeter-session = lightdm-webkit2-greeter
-display-setup-script=xrandr --output Virtual-1 --mode 1920x1080
+sudo systemctl enable NetworkManager
 ```
 
-Install yay AUR Helper
+Install a tool to help manage "well knownw" directories
 
 ```bash
-sudo pacman -S git
-cd /home/Downloads
-sudo git clone https://aur.archlinux.org/yay-git.git
-cd yay-git
-makepkg -si
+sudo pacman -S xdg-user-dirs
+xdg-user-dirs-update
+ls ~
 ```
 
 Install icons and themes
@@ -3220,17 +3297,6 @@ Install icons and themes
 yay -S tela-icon-theme
 yay -S mint-themes
 sudo pacman -S papirus-icon-theme arc-gtk-theme
-
-#install walpapers
-
-```bash
-sudo pacman -S archlinux-wallpaper
-```
-
-Install greeter theme
-
-```bash
-yay -S lightdm-webkit2-theme-aether
 ```
 
 Install **spice-vdagent**: Spice agent xorg client that enables copy and paste between client and X-session and more.
@@ -3243,6 +3309,18 @@ Install Google Chrome
 
 ```bash
 yay -S google-chrome
+```
+
+Install Visual Studio Code and sublime
+
+```bash
+yay -S visual-studio-code-bin sublime-text-4
+```
+
+List AUR installed packages
+
+```bash
+pacman -Qm
 ```
 
 ### ArchLinux - Troubleshoot sound issues
