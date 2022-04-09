@@ -3153,13 +3153,6 @@ sudo systemctl restart code-server@$USER
 
 ### ArchLinux - OS Configuration
 
-Add the following mounting points to `/etc/fstab/`
-
-```bash
-192.168.0.114:/mnt/tank1/data /home/sitram/mounts/data nfs rw 0 0
-192.168.0.114:/mnt/tank2/media /home/sitram/mounts/media nfs rw 0 0
-```
-
 Install iNet Wireless Wireless daemon and set a delay for iwd service start
 
 ```bash
@@ -3169,6 +3162,34 @@ sudo systemctl edit iwd
 #add the following text
 [Service]
 ExecStartPre=sleep 3
+```
+
+To enable multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`:
+
+```bash
+/etc/pacman.conf
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+```
+
+Base software installation after running `arch-chroot`
+
+- **GRUB bootloader**: grub
+- **OS Prober**: os-prober
+- **Program for detection and configuration of networks**: network-manager
+- **Packages used for building apps**: base-devel linux-headers
+- **utils for accesing nfs shares**: nfs-utils
+- **bash auto completion**: bash-completion
+- **tool to help manage "well knownw" directories**: xdg-user-dirs
+- **utilities for managing default applications**: xdg-utils
+- **ssh server**: openssh
+- **reflector**: reflector
+- **git**: git
+- **rsync**: rsync
+- **Daemon for delivering ACPI events**: acpi acpi_call
+
+```bash
+sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync
 ```
 
 Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
@@ -3184,15 +3205,24 @@ Refresh the servers
 sudo pacman -Syyy
 ```
 
+Add the following mounting points to `/etc/fstab/`
+
+```bash
+192.168.0.114:/mnt/tank1/data /home/sitram/mounts/data nfs rw 0 0
+192.168.0.114:/mnt/tank2/media /home/sitram/mounts/media nfs rw 0 0
+```
+
 Install yay AUR Helper
 
 ```bash
 sudo pacman -S git
 sudo pacman -S --needed base-devel 
-cd /home/Downloads
+cd /tmp
 git clone https://aur.archlinux.org/yay-git.git
 cd yay-git
 makepkg -si
+cd /
+sudo rm -r /tmp/yay-git
 ```
 
 Uninstall graphics driver for intel because it interferes with cinnamon
@@ -3208,33 +3238,60 @@ sudo systemctl disable bluetooth
 sudo pacman -R bluez bluez-utils pulseaudio-bluetooth
 ```
 
-To enable multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`:
-
-```bash
-/etc/pacman.conf
-[multilib]
-Include = /etc/pacman.d/mirrorlist
-```
-
-List of installed software:
+Desktop environment installation(Cinnamon)
 
 - **display server**: xorg-server
 - **display manager**: lightdm
 - **greeter**: lightdm-webkit2-greeter
+- **greeter settings editor**: lightdm-gtk-greeter-settings
 - **desktop environment**: cinnamon
 - **window manager(used by cinnamon as fallback in case cinnamon fails)**: metacity
 - **terminal(gnome doesn't come with one)**: gnome-terminal
 - **password manager**: gnome-keyring
-- **bluetooth configuration tool**: blueberry
+
+```bash
+sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter-settings cinnamon metacity gnome-terminal gnome-keyring
+```
+
+Desktop environment installation(Gnome)
+
+- **display server**: xorg-server
+- **display manager**: gdm
+- **greeter**: lightdm-webkit2-greeter
+- **greeter settings editor**: lightdm-gtk-greeter-settings
+- **desktop environment**: gnome
+- **window manager(used by cinnamon as fallback in case cinnamon fails)**: metacity
+
+```bash
+sudo pacman -S xorg-server gdm lightdm-webkit2-greeter lightdm-gtk-greeter-settings gnome metacity
+```
+
+Desktop environment installation(KDE)
+
+- **display server**: xorg-server
+- **display manager**: lightdm
+- **greeter**: lightdm-webkit2-greeter
+- **greeter settings editor**: lightdm-gtk-greeter-settings
+- **desktop environment**: plasma
+- **password manager**: gnome-keyring
+
+```bash
+sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter-settings plasma gnome-terminal gnome-keyring
+```
+
+Common apps for all desktop environments:
+
+- **multimedia framework**: pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils
 - **screenshot tool**: flameshot
 - **CUPS printer configuration tool**: system-config-printer
-- **status applet**:
+- **NetworkManager applet**: network-manager-applet
+- **bluetooth configuration tool**: blueberry
 - **office suite**: libreoffice
 - **file manager**: thunar
 - **PDF viewer**: okular
 - **calculator**: qalculate-gtk
-- **utils for accesing nfs shares**: nfs-utils
-- **image editing**: gimp
+- **image editor**: gimp
+- **image viewer:** nomacs
 - **vide player**: vlc
 - **video editing software**: shotcut
 - **video transcoder software**: handbrake
@@ -3244,83 +3301,84 @@ List of installed software:
 - **wine**: wine
 - **wine packages for applications that depend on Internet Explorer and .NET**: wine-geko wine-mono
 - **steam**: steam
+- **icons**: papirus-icon-theme
+- **themes**: arc-gtk-theme
+- **Spice agent xorg client that enables copy and paste between client and X-session and more**: spice-vdagent
+- **VGnome irtual filesystems implementation**: gvfs
+- **Windows File and printer sharing for Non-KDE desktops**: gvfs-smb
 
 ```bash
-sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter cinnamon metacity gnome-terminal gnome-keyring blueberry flameshot system-config-printer libreoffice thunar okular qalculate-gtk nfs-utils gimp vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam
+sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb
 ```
 
-Check what graphics driver is used with `nvidia-smi`
-
-Enable greeter and change display output for VM's only
+Configure `lightdm` greeter
 
 ```bash
 sudo nano /etc/lightdm/lightdm.conf
+
+# Select the installed greeter
 greeter-session = lightdm-webkit2-greeter
+#Change display output for VM's only
 display-setup-script=xrandr --output Virtual-1 --mode 1920x1080
 ```
 
-Install greeter theme
+Install AUR packages:
+
+- **greeter theme**: lightdm-webkit-theme-aether
+- **Google Chrome**: google-chrome
+- **Zip archiver**: 7-zip
+- **Visual Studio Code**: visual-studio-code-bin
+- **Sublime text editor**: sublime-text-4
+- **icons**: tela-icon-theme
+- **themes**: mint-themes
+- **Optimus Manager for systems with integrated and dedicated GPU + applet**: optimus-manager optimus-manager-qt
+- **Teamviewer**: teamviewer
+- **Nextcloud desktop client**: nextcloud-client
+- **system information tool + helpers**: [archey4](https://github.com/HorlogeSkynet/archey4) virt-what dmidecode wmctrl pciutils lm_sensors
+- **system restore utility**: timeshift
 
 ```bash
-yay -S lightdm-webkit-theme-aether
+yay -S lightdm-webkit-theme-aether google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift
 ```
 
-Enable display manager
+Enable various services:
 
-```bash
-sudo systemctl enable lightdm
-```
-
-Enable bluetoot
-
-```bash
-sudo systemctl enable bluetooth
-```
-
-Enable NetworkManager daemon
+- **NetworkManager**
+- **display manager**
+- **Bluetooth**
+- **SSH server**
+- **Reflector timer to update periodically the pacman mirrorlist**
+- **Daemon for delivering ACPI events**
+- **Qemu guest agent for VM's**
+- **Systemd Network daemon**
+- **Teamviewer daemon**
+- **Optimus Manager daemon for switching between integrated and dedicated GPU**
 
 ```bash
 sudo systemctl enable NetworkManager
+sudo systemctl enable lightdm
+sudo systemctl enable bluetooth
+sudo systemctl enable sshd
+sudo systemctl enable reflector.timer
+sudo systemctl enable acpid
+sudo systemctl enable qemu-guest-agent
+sudo systemctl enable systemd-networkd
+sudo systemctl enable teamviewerd
+sudo systemctl enable optimus-manager.service
 ```
 
-Install a tool to help manage "well knownw" directories
-
-```bash
-sudo pacman -S xdg-user-dirs
-xdg-user-dirs-update
-ls ~
-```
-
-Install icons and themes
-
-```bash
-yay -S tela-icon-theme
-yay -S mint-themes
-sudo pacman -S papirus-icon-theme arc-gtk-theme
-```
-
-Install **spice-vdagent**: Spice agent xorg client that enables copy and paste between client and X-session and more.
-
-```bash
-sudo pacman -S spice-vdagent
-```
-
-Install Google Chrome
-
-```bash
-yay -S google-chrome
-```
-
-Install Visual Studio Code and sublime
-
-```bash
-yay -S visual-studio-code-bin sublime-text-4
-```
+Check what graphics driver is used with `nvidia-smi`
 
 List AUR installed packages
 
 ```bash
 pacman -Qm
+```
+
+Check all enabled services
+
+```bash
+sudo systemctl list-unit-files --state=enabled
 ```
 
 ### ArchLinux - Troubleshoot sound issues
