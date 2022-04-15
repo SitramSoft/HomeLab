@@ -3187,9 +3187,11 @@ Base software installation after running `arch-chroot`
 - **git**: git
 - **rsync**: rsync
 - **Daemon for delivering ACPI events**: acpi acpi_call
+- **Scripts and tools for pacman**: pacman-contrib
+- **A directory listing program**: tree
 
 ```bash
-sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync
+sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree
 ```
 
 Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
