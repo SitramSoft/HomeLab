@@ -3130,7 +3130,7 @@ sudo systemctl restart code-server@$USER
 - VM id: 151
 - HDD: 60GB
 - Sockets: 1
-- Cores: 12
+- Cores: 30
 - RAM:
   - Min: 2048
   - Max: 32768
@@ -3189,9 +3189,10 @@ Base software installation after running `arch-chroot`
 - **Daemon for delivering ACPI events**: acpi acpi_call
 - **Scripts and tools for pacman**: pacman-contrib
 - **A directory listing program**: tree
+- **System for distributing Linux Sandboxed apps**: flatpak
 
 ```bash
-sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree
+sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak
 ```
 
 Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
@@ -3308,9 +3309,10 @@ Common apps for all desktop environments:
 - **Spice agent xorg client that enables copy and paste between client and X-session and more**: spice-vdagent
 - **VGnome irtual filesystems implementation**: gvfs
 - **Windows File and printer sharing for Non-KDE desktops**: gvfs-smb
+- **GUI system monitor**: gnome-system-monitor
 
 ```bash
-sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb
+sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor
 ```
 
 Configure `lightdm` greeter
