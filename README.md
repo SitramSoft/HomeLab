@@ -122,6 +122,7 @@ Summary:
   - [ArchLinux - VM configuration](#archlinux---vm-configuration)
   - [ArchLinux - OS Configuration](#archlinux---os-configuration)
   - [ArchLinux - Troubleshoot sound issues](#archlinux---troubleshoot-sound-issues)
+  - [ArchLinux - I3 installation & Customization](#archlinux---i3-installation-&-customization)
 - [WordPress - WorPress server VM](#wordpress---worpress-server-vm)
   - [WordPress - VM configuration](#wordpress---vm-configuration)
   - [WordPress - OS Configuration](#wordpress---os-configuration)
@@ -3295,7 +3296,7 @@ Common apps for all desktop environments:
 - **calculator**: qalculate-gtk
 - **image editor**: gimp
 - **image viewer:** nomacs
-- **vide player**: vlc
+- **video player**: vlc
 - **video editing software**: shotcut
 - **video transcoder software**: handbrake
 - **Nvidia driver**: nvidia
@@ -3306,13 +3307,15 @@ Common apps for all desktop environments:
 - **steam**: steam
 - **icons**: papirus-icon-theme
 - **themes**: arc-gtk-theme
+- **fonts bor Bootstrap**: ttf-font-awesome
 - **Spice agent xorg client that enables copy and paste between client and X-session and more**: spice-vdagent
 - **VGnome irtual filesystems implementation**: gvfs
 - **Windows File and printer sharing for Non-KDE desktops**: gvfs-smb
 - **GUI system monitor**: gnome-system-monitor
+- **Telegram - instant messaging system**: telegram-desktop
 
 ```bash
-sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor
+sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop
 ```
 
 Configure `lightdm` greeter
@@ -3394,6 +3397,94 @@ systemctl --user mask pulseaudio.socket
 pulseaudio -k
 pulseaudio -vvv
 systemctl --user mask pulseaudio.socket
+```
+
+### ArchLinux - I3 installation & Customization
+
+Installing the needed packages
+
+- **Display manager**: i3-wm
+- **Lockscreen for I3**: i3lock
+- **i3 Status bar**: i3status
+- **i3 blocks**: i3blocks
+- **compositor**: picom
+- **theme swtcher**: lxappearance
+- **run menu for the programs**: dmenu
+- **font**: ttf-ubuntu-font-family
+- **terminal**: terminator
+- **image viewer that can be use to manage wallpapers**: feh
+- **GUI for xrandr to set resolution**: arandr
+- **dmenu replacement**: rofi
+- **automatically turn numlock on**: numlockx
+
+```bash
+sudo pacman -S i3-wm i3lock i3status i3blocks picom lxappearance dmenu terminator feh arandr rofi numlockx
+```
+
+Keyboard shortcuts:
+
+- **Open new terminal**: $mod+Enter
+- **Open dmenu**: $mod+d
+- **Close window**: $mod+Shift+q
+
+---
+
+- **Switch workspace**: $mod+num
+
+---
+
+- **Open next window vertically**: $mod+v
+- **Open next window horizontally**: $mod+h
+
+---
+
+- **Stacked mode**: $mod+s
+- **Tabbed mode**: $mod+w
+- **Slpith/slpitv mode**: $mod+e
+- **Full screen toggling**: $mod+f
+
+---
+
+- **Restart i3**: $mod+Shift+r
+- **Move left**: $mod+j / $mod+left
+- **Move down**: $mod+k / $mod+down
+- **Move up**: $mod+l / $mod+up
+- **Move right**: $mod+; / $mod+right
+
+---
+
+- **Move window left**: $mod+Shift+j / $mod+Shift+left
+- **Move window down**: $mod+Shift+k / $mod+Shift+down
+- **Move window up**: $mod+Shift+l / $mod+Shift+up
+- **Move window right**: $mod+Shift+; / $mod+Shift+right
+
+---
+
+- **Move window to a workspace**: $mod+Shift+num
+
+---
+
+- **Restart i3 in place**: $mod+Shift+r
+- **Exit i3**: $mod+Shift+e
+
+---
+
+I3 configuration file is located in `~/.config/i3/config`
+
+Changes in order to use i3status bar configuration from home folder
+
+```bash
+mkdir ~/.config/i3status
+sudo cp /etc/i3status.conf ~/.config/i3status/i3status.conf
+sudo chown sitram:sitram ~/.config/i3status/i3status.conf
+```
+
+In order to change system wide theme and fonts, `lxappearance` is used.
+
+Polybar instalation and configuration
+
+```bash
+yay -S polybar
 ```
 
 ## WordPress - WorPress server VM
