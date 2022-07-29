@@ -27,6 +27,13 @@ Summary:
 - [General](#general)
   - [SSH configuration](#ssh-configuration)
   - [Ubuntu Server update](#ubuntu-server-update)
+  - [Clean unnecessary packages on Ubuntu Server](#clean-unnecessary-packages-on-ubuntu-server)
+  - [Remove old kernels on Ubuntu](#remove-old-kernels-on-ubuntu)
+  - [MariaDB update on Ubuntu](#mariadb-update-on-ubuntu)
+  - [Clean up snap on Ubuntu](#clean-up-snap-on-ubuntu)
+  - [Clear systemd journald logs on Ubuntu](#clear-systemd-journald-logs-on-ubuntu)
+  - [Install nginx on Ubuntu](#install-nginx-on-ubuntu)
+  - [Configure PHP source list in Ubuntu](#configure-php-source-list-in-ubuntu)
   - [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
   - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
   - [Update system timezone](#update-system-timezone)
@@ -231,6 +238,246 @@ sudo systemctl restart sshd
 sudo apt update
 sudo apt list --upgradable
 sudo apt upgrade
+```
+
+The repositories for older releases that are not supported (like 11.04, 11.10 and 13.04) get moved to an archive server. There are repositories available at [old-releases.ubuntu.com](http://old-releases.ubuntu.com).
+
+The reason for this is that it is now out of support and no longer receiving updates and security patches.
+
+If you want to continue using an outdated release then edit `/etc/apt/sources`.list and change `archive.ubuntu.com` and `security.ubuntu.com` to old-releases.ubuntu.com.
+
+You can do this with sed:
+
+```bash
+sudo sed -i -re 's/([a-z]{2}\.)?archive.ubuntu.com|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
+```
+
+then update with:
+
+```bash
+sudo apt-get update && sudo apt-get dist-upgrade
+```
+
+### Clean unnecessary packages on Ubuntu Server
+
+Very few server instances utilize these packages. Make sure you don't need them before removing them.
+
+```bash
+sudo apt purge --auto-remove snapd squashfs-tools friendly-recovery apport at cloud-init
+```
+
+Remove the `unattended-upgrades` package and the associated services which are responsible for automatically updating packages in the system.
+
+```bash
+sudo apt purge --auto-remove unattended-upgrades
+sudo systemctl disable apt-daily-upgrade.timer
+sudo systemctl mask apt-daily-upgrade.service
+sudo systemctl disable apt-daily.timer
+sudo systemctl mask apt-daily.service
+```
+
+Remove orphan packages
+
+```bash
+sudo apt autoremove --purge
+```
+
+### Remove old kernels on Ubuntu
+Remove old kernels and image
+
+```bash
+dpkg --list | grep 'linux-image' | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p' | xargs sudo apt-get -y purge
+```
+
+Remove old kernels headers
+```bash
+dpkg --list | grep 'linux-headers' | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p' | xargs sudo apt-get -y purge
+```
+
+Explanation (remember, `|` uses the output of the previous command as the input to the next)
+
+ - `dpkg` --list lists all installed packages
+ - `grep linux-image` looks for the installed linux images
+ - `awk '{ print $2 }'` just outputs the 2nd column (which is the package name)
+ - `sort -V` puts the items in order by version number
+ - ```$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"``` extracts only the version (e.g. "3.2.0-44") , without "-generic" or similar from `uname -r`
+ - `xargs sudo apt-get -y` purge purges the found kernels
+
+Modify last part `xargs echo sudo apt-get -y purge` so that the command to purge the old kernels/headers is printed, then you can check that nothing unexpected is included before you run it.
+
+All-in-one version to remove images and headers (combines the two versions above):
+
+```bash
+echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs sudo apt-get -y purge
+```
+
+
+### MariaDB update on Ubuntu
+
+MariaDb distribution repo can be found [here](https://mariadb.org/download/?t=repo-config)
+
+Configure MariaDB APT repository and add MariaDB signing key to use Ubuntu 20.04 (Focal Fossa) repository:
+
+```bash
+curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+sudo bash mariadb_repo_setup --os-type=ubuntu  --os-version=focal --mariadb-server-version=10.6
+```
+
+### Clean up snap on Ubuntu
+
+List all versions of packages retained by Snap
+
+```bash
+snap list --all
+```
+
+The default value is 3 for several revisions for retention. That means Snap keeps 3 older versions of each package, including the active version. Changing the retention value to 2 can be done with the following command
+
+```bash
+sudo snap set system refresh.retain=2
+```
+
+Script to set the default retention value of Snap packages to 2 and clean-up older packages
+
+```bash
+#!/bin/bash
+#Set default retention values of snaps to 2
+sudo snap set system refresh.retain=2
+
+#Removes old revisions of snaps
+#CLOSE ALL SNAPS BEFORE RUNNING THIS
+set -eu
+LANG=en_US.UTF-8 snap list --all | awk '/disabled/{print $1, $3}' |
+    while read snapname revision; do
+        sudo snap remove "$snapname" --revision="$revision"
+    done
+```
+
+### Clear systemd journald logs on Ubuntu
+
+Checking dis usage of all journal files is done with command
+
+```bash
+sudo journalctl --disk-usage
+```
+
+Before clearing the logs, run command to rotate the journal files. All currently active journal files will be marked as archived, so that they are never written to in future.
+
+```bash
+sudo journalctl --rotate
+```
+
+Delete journal logs older than X days
+
+```bash
+sudo journalctl --vacuum-time=2days
+```
+
+Delete log files until the disk space taken falls below the specified size:
+
+```bash
+sudo journalctl --vacuum-size=100M
+```
+
+Delete old logs and limit file number to X:
+
+```bash
+sudo journalctl --vacuum-size=100M
+```
+
+Edit the configuration file to limit the journal log disk usage to 100MB
+
+```bash
+sudo -H gedit /etc/systemd/journald.conf
+```
+
+When the file opens, un-comment (remove # at the beginning) the line `#SystemMaxUse=` and change it to `SystemMaxUse=100M`.
+
+Save the file and reload systemd daemon via command:
+
+```bash
+sudo systemctl daemon-reload
+```
+
+### Install nginx on Ubuntu
+
+Install the prerequisites:
+
+```bash
+sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring
+```
+
+Import an official nginx signing key so apt could verify the packages authenticity. Fetch the key:
+
+```bash
+curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+    | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+```
+
+Verify that the downloaded file contains the proper key:
+
+```bash
+gpg --dry-run --quiet --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
+```
+
+The output should contain the full fingerprint 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 as follows:
+
+```bash
+pub   rsa2048 2011-08-19 [SC] [expires: 2024-06-14]
+      573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+uid                      nginx signing key <signing-key@nginx.com>
+```
+
+If the fingerprint is different, remove the file.
+
+To set up the apt repository for stable nginx packages, run the following command:
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" \
+    | sudo tee /etc/apt/sources.list.d/nginx.list
+```
+
+If you would like to use mainline nginx packages, run the following command instead:
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+http://nginx.org/packages/mainline/ubuntu `lsb_release -cs` nginx" \
+    | sudo tee /etc/apt/sources.list.d/nginx.list
+```
+
+Set up repository pinning to prefer our packages over distribution-provided ones:
+
+```bash
+echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
+    | sudo tee /etc/apt/preferences.d/99nginx
+```
+
+To install nginx, run the following commands:
+
+```bash
+sudo apt update
+sudo apt install nginx
+```
+
+### Configure PHP source list in Ubuntu
+
+Add software source
+
+```bash
+cd /etc/apt/sources.list.d
+sudo echo "deb [signed-by=/usr/share/keyrings/php-fm.gpg] http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | sudo tee php.list
+```
+
+In order to be able to trust the sources, use the corresponding keys:
+
+```bash
+sudo apt-key adv --recv-keys --keyserver hkps://keyserver.ubuntu.com:443 4F4EA0AAE5267A6C
+sudo apt-get update -q4
+sudo make-ssl-cert generate-default-snakeoil -y
+sudo apt-key export E5267A6C | sudo gpg --dearmour -o /usr/share/keyrings/php-fm.gpg
+sudo apt-key del E5267A6C
+sudo apt-get update
 ```
 
 ### Synchronize time with systemd-timesyncd
@@ -2088,20 +2335,7 @@ sudo chown -R www-data:www-data /var/nc_data /var/www
 
 ### Nextcloud - Installation and configuration of PHP 8.0
 
-Add software source
-
-```bash
-cd /etc/apt/sources.list.d
-sudo echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | sudo tee php.list
-```
-
-In order to be able to trust the sources, use the corresponding keys:
-
-```bash
-sudo apt-key adv --recv-keys --keyserver hkps://keyserver.ubuntu.com:443 4F4EA0AAE5267A6C
-sudo apt-update -q4
-sudo make-ssl-cert generate-default-snakeoil -y
-```
+Perform steps from chapter [Configure PHP source list in Ubuntu](#configure-php-source-list-in-ubuntu)
 
 Install PHP8.0 and required modules
 
@@ -3313,9 +3547,11 @@ Common apps for all desktop environments:
 - **Windows File and printer sharing for Non-KDE desktops**: gvfs-smb
 - **GUI system monitor**: gnome-system-monitor
 - **Telegram - instant messaging system**: telegram-desktop
+- **Utility to modify video**: v4l-utils
+- **Live streaming and recording software**: obs-studio
 
 ```bash
-sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop
+sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio
 ```
 
 Configure `lightdm` greeter
@@ -3334,6 +3570,7 @@ Install AUR packages:
 - **greeter theme**: lightdm-webkit-theme-aether
 - **Google Chrome**: google-chrome
 - **Zip archiver**: 7-zip
+- **GUI Archive Manager**: peazip-gtk2-bin
 - **Visual Studio Code**: visual-studio-code-bin
 - **Sublime text editor**: sublime-text-4
 - **icons**: tela-icon-theme
@@ -3343,9 +3580,10 @@ Install AUR packages:
 - **Nextcloud desktop client**: nextcloud-client
 - **system information tool + helpers**: [archey4](https://github.com/HorlogeSkynet/archey4) virt-what dmidecode wmctrl pciutils lm_sensors
 - **system restore utility**: timeshift
+- **Pacman GUI**: pamac-aur
 
 ```bash
-yay -S lightdm-webkit-theme-aether google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift
+yay -S lightdm-webkit-theme-aether google-chrome 7-zip peazip-gtk2-bin visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift
 ```
 
 Enable various services:
@@ -3662,20 +3900,7 @@ sudo chown -R www-data:www-data /var/www /home/sitram/data/wordpress
 
 ### WordPress - Installation and configuration of PHP 8.0
 
-Add software source
-
-```bash
-cd /etc/apt/sources.list.d
-sudo echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | sudo tee php.list
-```
-
-In order to be able to trust the sources, use the corresponding keys:
-
-```bash
-sudo apt-key adv --recv-keys --keyserver hkps://keyserver.ubuntu.com:443 4F4EA0AAE5267A6C
-sudo apt-get update -q4
-sudo make-ssl-cert generate-default-snakeoil -y
-```
+Perform steps from chapter [Configure PHP source list in Ubuntu](#configure-php-source-list-in-ubuntu)
 
 Install PHP8.0 and required modules
 
