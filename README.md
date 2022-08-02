@@ -26,7 +26,7 @@ Summary:
   - [Document structure](#document-structure)
 - [General](#general)
   - [SSH configuration](#ssh-configuration)
-  - [Ubuntu Server update](#ubuntu-server-update)
+  - [Ubuntu upgrade from older distribution](#ubuntu-upgrade-from-older-distribution)
   - [Clean unnecessary packages on Ubuntu Server](#clean-unnecessary-packages-on-ubuntu-server)
   - [Remove old kernels on Ubuntu](#remove-old-kernels-on-ubuntu)
   - [MariaDB update on Ubuntu](#mariadb-update-on-ubuntu)
@@ -116,10 +116,10 @@ Summary:
   - [Hercules - WordPress docker container](#hercules---wordpress-docker-container)
   - [Hercules - Jenkins CI docker container](#hercules---jenkins-ci-docker-container)
   - [Hercules - LibreSpeed docker container](#hercules---librespeed-docker-container)
-- [Windows10 - Virtual Windows Desktop VM](#windows10---virtual-windows-desktop-vm)
-  - [Windows10 - VM configuration](#windows10---vm-configuration)
-  - [Windows10 - Windows installation](#windows10---windows-installation)
-  - [Windows10 - Remote Desktop Connection configuration](#windows10---remote-desktop-connection-configuration)
+- [Windows11 - Virtual Windows Desktop VM](#windows11---virtual-windows-desktop-vm)
+  - [Windows11 - VM configuration](#windows11---vm-configuration)
+  - [Windows11 - Windows installation](#windows11---windows-installation)
+  - [Windows11 - Remote Desktop Connection configuration](#windows11---remote-desktop-connection-configuration)
 - [Code - coding VM](#code---coding-vm)
   - [Code - VM configuration](#code---vm-configuration)
   - [Code - OS Configuration](#code---os-configuration)
@@ -130,6 +130,7 @@ Summary:
   - [ArchLinux - OS Configuration](#archlinux---os-configuration)
   - [ArchLinux - Troubleshoot sound issues](#archlinux---troubleshoot-sound-issues)
   - [ArchLinux - I3 installation & Customization](#archlinux---i3-installation-&-customization)
+  - [ArchLinux ZSH shell](#archlinux-zsh-shell)
 - [WordPress - WorPress server VM](#wordpress---worpress-server-vm)
   - [WordPress - VM configuration](#wordpress---vm-configuration)
   - [WordPress - OS Configuration](#wordpress---os-configuration)
@@ -232,7 +233,7 @@ Restart sshd to use the new configuration.
 sudo systemctl restart sshd
 ```
 
-### Ubuntu Server update
+### Ubuntu upgrade from older distribution
 
 ```bash
 sudo apt update
@@ -3278,13 +3279,13 @@ Add the following mounting points to `/etc/fstab/`
 
 ### Hercules - LibreSpeed docker container
 
-## Windows10 - Virtual Windows Desktop VM
+## Windows11 - Virtual Windows Desktop VM
 
-### Windows10 - VM configuration
+### Windows11 - VM configuration
 
-### Windows10 - Windows installation
+### Windows11 - Windows installation
 
-### Windows10 - Remote Desktop Connection configuration
+### Windows11 - Remote Desktop Connection configuration
 
 ## Code - coding VM
 
@@ -3723,6 +3724,59 @@ Polybar instalation and configuration
 
 ```bash
 yay -S polybar
+```
+
+### ArchLinux ZSH shell
+
+Zsh (The Z shell) is an Unix shell that can be used as an interactive login shell and as a command interpreter for shell scripting. Zsh is an extended Bourne shell with many improvements, including some features from Bash, ksh, and tcsh.
+
+Install the shell
+
+```bash
+sudo pacman -S zsh zsh-completions
+```
+
+Set Zsh as default shell and open again the terminal
+
+```bash
+chsh -s /usr/bin/zsh
+```
+
+Install [oh my zsh](https://github.com/ohmyzsh/ohmyzsh) using curl
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
+Chose a fancy theme like agnoster and install the fonts used by it
+
+```bash
+sudo pacman -S powerline-fonts
+```
+Edit `~/.zshrc` file and change parameter `ZSH_THEME="agnoster"`. Restart the terminal to load the new theme
+
+Install [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme and the required font
+
+```bash
+yay -S ttf-meslo-nerd-font-powerlevel10k zsh-theme-powerlevel10k-git
+```
+
+Edit `~/.zshrc` file and add line `source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme` at the end
+
+After terminal is restarted, the configuration for PowerLevel10k theme is started atuomatically. This can be triggered later on by running the following command:
+
+```bash
+p10k configure
+```
+
+Edit `~/.zshrc` file and add the following plugins:
+ - [git](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git)
+ - [web-search](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/web-search)
+ - [history](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/history)
+ - [sudo](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sudo)
+
+```bash
+plugins=(git web-search history sudo)
 ```
 
 ## WordPress - WorPress server VM
