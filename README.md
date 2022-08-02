@@ -26,16 +26,17 @@ Summary:
   - [Document structure](#document-structure)
 - [General](#general)
   - [SSH configuration](#ssh-configuration)
-  - [Ubuntu upgrade from older distribution](#ubuntu-upgrade-from-older-distribution)
-  - [Clean unnecessary packages on Ubuntu Server](#clean-unnecessary-packages-on-ubuntu-server)
-  - [Remove old kernels on Ubuntu](#remove-old-kernels-on-ubuntu)
-  - [MariaDB update on Ubuntu](#mariadb-update-on-ubuntu)
-  - [Clean up snap on Ubuntu](#clean-up-snap-on-ubuntu)
-  - [Clear systemd journald logs on Ubuntu](#clear-systemd-journald-logs-on-ubuntu)
-  - [Install nginx on Ubuntu](#install-nginx-on-ubuntu)
-  - [Configure PHP source list in Ubuntu](#configure-php-source-list-in-ubuntu)
-  - [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
-  - [Synchronize time with ntpd](#synchronize-time-with-ntpd)
+  - [Ubuntu - upgrade from older distribution](#ubuntu---upgrade-from-older-distribution)
+  - [Ubuntu - configure unattended upgrades](#ubuntu---configure-unattended-upgrades)
+  - [Ubuntu - Clean unnecessary packages on Ubuntu Server](#ubuntu---clean-unnecessary-packages)
+  - [Ubuntu - Remove old kernels on Ubuntu](#ubuntu---remove-old-kernels)
+  - [Ubuntu - Clean up snap on Ubuntu](#ubuntu---clean-up-snap)
+  - [Clear systemd journald logs](#clear-systemd-journald-logs)
+  - [Ubuntu - MariaDB update](#ubuntu---mariadb-update)
+  - [Ubuntu - Install nginx](#ubuntu---install-nginx)
+  - [Ubuntu - Configure PHP source list](#ubuntu---configure-php-source-list)
+  - [Ubuntu - Synchronize time with systemd-timesyncd](#ubuntu---synchronize-time-with-systemd-timesyncd)
+  - [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
   - [Update system timezone](#update-system-timezone)
   - [Correct DNS resolution](#correct-dns-resolution)
   - [Qemu-guest-agent](#qemu-guest-agent)
@@ -233,7 +234,7 @@ Restart sshd to use the new configuration.
 sudo systemctl restart sshd
 ```
 
-### Ubuntu upgrade from older distribution
+### Ubuntu - upgrade from older distribution
 
 ```bash
 sudo apt update
@@ -259,7 +260,7 @@ then update with:
 sudo apt-get update && sudo apt-get dist-upgrade
 ```
 
-### Clean unnecessary packages on Ubuntu Server
+### Ubuntu - Clean unnecessary packages
 
 Very few server instances utilize these packages. Make sure you don't need them before removing them.
 
@@ -283,7 +284,7 @@ Remove orphan packages
 sudo apt autoremove --purge
 ```
 
-### Remove old kernels on Ubuntu
+### Ubuntu - Remove old kernels
 Remove old kernels and image
 
 ```bash
@@ -312,19 +313,7 @@ All-in-one version to remove images and headers (combines the two versions above
 echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs sudo apt-get -y purge
 ```
 
-
-### MariaDB update on Ubuntu
-
-MariaDb distribution repo can be found [here](https://mariadb.org/download/?t=repo-config)
-
-Configure MariaDB APT repository and add MariaDB signing key to use Ubuntu 20.04 (Focal Fossa) repository:
-
-```bash
-curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
-sudo bash mariadb_repo_setup --os-type=ubuntu  --os-version=focal --mariadb-server-version=10.6
-```
-
-### Clean up snap on Ubuntu
+### Ubuntu - Clean up snap
 
 List all versions of packages retained by Snap
 
@@ -354,7 +343,7 @@ LANG=en_US.UTF-8 snap list --all | awk '/disabled/{print $1, $3}' |
     done
 ```
 
-### Clear systemd journald logs on Ubuntu
+### Clear systemd journald logs
 
 Checking dis usage of all journal files is done with command
 
@@ -400,7 +389,18 @@ Save the file and reload systemd daemon via command:
 sudo systemctl daemon-reload
 ```
 
-### Install nginx on Ubuntu
+### Ubuntu - MariaDB update
+
+MariaDb distribution repo can be found [here](https://mariadb.org/download/?t=repo-config)
+
+Configure MariaDB APT repository and add MariaDB signing key to use Ubuntu 20.04 (Focal Fossa) repository:
+
+```bash
+curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+sudo bash mariadb_repo_setup --os-type=ubuntu  --os-version=focal --mariadb-server-version=10.6
+```
+
+### Ubuntu - Install nginx
 
 Install the prerequisites:
 
@@ -461,7 +461,7 @@ sudo apt update
 sudo apt install nginx
 ```
 
-### Configure PHP source list in Ubuntu
+### Ubuntu - Configure PHP source list
 
 Add software source
 
@@ -481,7 +481,7 @@ sudo apt-key del E5267A6C
 sudo apt-get update
 ```
 
-### Synchronize time with systemd-timesyncd
+### Ubuntu - Synchronize time with systemd-timesyncd
 
 I have a dedicated timeserver which servers all the clients in my HomeLab. Whenever it is possible, I configure each server to use the internal timeserver.
 
@@ -536,7 +536,7 @@ To start troubleshooting, check the logs using the command
 sudo grep systemd-timesyncd /var/log/syslog | tail
 ```
 
-### Synchronize time with ntpd
+### Ubuntu - Synchronize time with ntpd
 
 Install NTP server and ntpdate. Verify the version of NTP server to make sure it is correctly installed
 
@@ -889,7 +889,7 @@ The following subsections from [General](#general) section should be performed i
 
 Because clock accuracy within a VM is still really bad, I chose the barebone server where the virtualization server is running as my local NTP server. It's not ideal but until I decide to move the firewall from a VM to a dedicated HW this will have to do. I tried running NTP server on the pfSense VM but it acted strange.
 
-Follow the instructions from subsection [Synchronize time with ntpd](#synchronize-time-with-ntpd) to install NTP server then make the modifications below.
+Follow the instructions from subsection [[Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd) to install NTP server then make the modifications below.
 
 Edit NTP server configuration file
 
@@ -1367,7 +1367,7 @@ The following subsections from [General](#general) section should be performed i
 
 - [SSH configuration](#ssh-configuration)
 - [Ubuntu Server update](#ubuntu-server-update)
-- [Synchronize time with ntpd](#synchronize-time-with-ntpd)
+- [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
 - [Generate Gmail App Password](#generate-gmail-app-password)
@@ -2190,7 +2190,7 @@ The following subsections from [General](#general) section should be performed i
 
 - [SSH configuration](#ssh-configuration)
 - [Ubuntu Server update](#ubuntu-server-update)
-- [Synchronize time with ntpd](#synchronize-time-with-ntpd)
+- [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
 - [Generate Gmail App Password](#generate-gmail-app-password)
@@ -3217,7 +3217,7 @@ The following subsections from [General](#general) section should be performed i
 
 - [SSH configuration](#ssh-configuration)
 - [Ubuntu Server update](#ubuntu-server-update)
-- [Synchronize time with systemd-timesyncd](#synchronize-time-with-systemd-timesyncd)
+- [Ubuntu - Synchronize time with systemd-timesyncd](#ubuntu---synchronize-time-with-systemd-timesyncd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
 - [Generate Gmail App Password](#generate-gmail-app-password)
@@ -3316,7 +3316,7 @@ The following subsections from [General](#general) section should be performed i
 
 - [SSH configuration](#ssh-configuration)
 - [Ubuntu Server update](#ubuntu-server-update)
-- [Synchronize time with ntpd](#synchronize-time-with-ntpd)
+- [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
 - [Generate Gmail App Password](#generate-gmail-app-password)
@@ -3807,7 +3807,7 @@ The following subsections from [General](#general) section should be performed i
 
 - [SSH configuration](#ssh-configuration)
 - [Ubuntu Server update](#ubuntu-server-update)
-- [Synchronize time with ntpd](#synchronize-time-with-ntpd)
+- [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
 - [Generate Gmail App Password](#generate-gmail-app-password)
