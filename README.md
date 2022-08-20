@@ -26,6 +26,8 @@ Summary:
   - [Document structure](#document-structure)
 - [General](#general)
   - [SSH configuration](#ssh-configuration)
+  - [Execute commands using SSH](#execute-commands-using-ssh)
+  - [How to fix warning about ECDSA host key](#how-to-fix-warning-about-ecdsa-host-key)
   - [Ubuntu - upgrade from older distribution](#ubuntu---upgrade-from-older-distribution)
   - [Ubuntu - configure unattended upgrades](#ubuntu---configure-unattended-upgrades)
   - [Ubuntu - Clean unnecessary packages on Ubuntu Server](#ubuntu---clean-unnecessary-packages)
@@ -44,8 +46,6 @@ Summary:
   - [Generate Gmail App Password](#generate-gmail-app-password)
   - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
   - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
-  - [Execute commands using SSH](#execute-commands-using-ssh)
-  - [How to fix warning about ECDSA host key](#how-to-fix-warning-about-ecdsa-host-key)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
   - [Proxmox - OS configuration](#proxmox---os-configuration)
   - [Proxmox - NTP time server](#proxmox---ntp-time-server)
@@ -234,6 +234,68 @@ Restart sshd to use the new configuration.
 sudo systemctl restart sshd
 ```
 
+### Execute commands using SSH
+
+The SSH client program can be used for logging into a remote machine or server and for executing commands on a remote machine. When command is specified, it is executed on the remote host/server instead of a login shell.
+
+The syntax is as follows for executing commands
+
+```bash
+ssh user1@server1 command1
+ssh user1@server1 'command2'
+```
+
+Pipe commands
+
+```bash
+ssh user1@server1 'command1 | command2'
+```
+
+Execute multiple commands remote
+
+```bash
+ssh user@hostname "command1; command2; command3"
+```
+
+Execute commands remote with `sudo`
+
+```bash
+ssh -t user@hostname sudo command
+ssh -t user@hostname 'sudo command1 arg1 arg2'
+```
+
+Execute comands remote with `su`
+
+```bash
+ssh user@hostname su -c "/path/to/command1 arg1 arg2"
+```
+
+To copy a file from `B` to `A` while logged into `B`:
+
+```bash
+scp /path/to/file username@a:/path/to/destination
+```
+
+To copy a file from `B` to `A` while logged into `A`:
+
+```bash
+scp username@b:/path/to/file /path/to/destination
+```
+
+### How to fix warning about ECDSA host key
+
+When connecting with SSH the following warning could be displayed in case the IP is reused for a different VM.
+
+```text
+Warning: the ECDSA host key for 'myserver' differs from the key for the IP address '192.168.0.xxx'
+```
+
+In order to get rid of the warning, remove the cached key for ```192.168.1.xxx``` on the local machine:
+
+```bash
+ssh-keygen -R 192.168.1.xxx
+```
+
 ### Ubuntu - upgrade from older distribution
 
 ```bash
@@ -259,6 +321,42 @@ then update with:
 ```bash
 sudo apt-get update && sudo apt-get dist-upgrade
 ```
+
+### Ubuntu - configure unattended upgrades
+
+Ubuntu provides a unique tool called `unattended-upgrades` in order to automatically retrieve and install security patches and other essential upgrades for a server. Installing the tool can be done with the following commands:
+
+```bash
+sudo apt-get update
+sudo apt install unattended-upgrades
+```
+
+After installation, you can check to ensure that the `unattended-upgrades` service is running using `systemctl`:
+
+```bash
+sudo systemctl status unattended-upgrades.service
+```
+
+Open configuration file `/etc/apt/apt.conf.d/50unattended-upgrades` with `nano`:
+
+```bash
+sudo nano /etc/apt/apt.conf.d/50unattended-upgrades
+```
+
+Uncomment or change the following lines
+
+- `"${distro_id}:${distro_codename}-updates";`
+- `Unattended-Upgrade::Mail "adrian.martis@gmail.com";`
+- `Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";`
+- `Unattended-Upgrade::Remove-New-Unused-Dependencies "true";`
+- `Unattended-Upgrade::Remove-New-Unused-Dependencies "true";`
+
+Reload `unattended-upgrades` service:
+
+``bash
+sudo systemctl restart unattended-upgrades.service
+```
+
 
 ### Ubuntu - Clean unnecessary packages
 
@@ -831,45 +929,6 @@ Add the following text at the end of the file
 if [ -n "$SSH_CLIENT" ]; then
         echo -e 'Login details:\n  - Hostname:'  `hostname -f` '\n  - Date:' "`date`" '\n  - User:' "`who -m`" | mail -s "Login on `hostname` from `echo $SSH_CLIENT | awk '{print $1}'`" adrian.martis@gmail.com
 fi
-```
-
-### Execute commands using SSH
-
-The SSH client program can be used for logging into a remote machine or server and for executing commands on a remote machine. When command is specified, it is executed on the remote host/server instead of a login shell.
-
-The syntax is as follows for executing commands
-
-```bash
-ssh user1@server1 command1
-ssh user1@server1 'command2'
-
-# pipe
-ssh user1@server1 'command1 | command2'
-
-# multiple commands (must enclose in quotes
-ssh user@hostname "command1; command2; command3"
-
-## sudo syntax
-ssh -t user@hostname sudo command
-ssh -t user@hostname 'sudo command1 arg1 arg2'
- 
- 
-## su syntax
-ssh user@hostname su -c "/path/to/command1 arg1 arg2"
-```
-
-### How to fix warning about ECDSA host key
-
-When connecting with SSH the following warning could be displayed in case the IP is reused for a different VM.
-
-```text
-Warning: the ECDSA host key for 'myserver' differs from the key for the IP address '192.168.0.xxx'
-```
-
-In order to get rid of the warning, remove the cached key for ```192.168.1.xxx``` on the local machine:
-
-```bash
-ssh-keygen -R 192.168.1.xxx
 ```
 
 ## Proxmox - Virtualization server
@@ -3426,9 +3485,11 @@ Base software installation after running `arch-chroot`
 - **Scripts and tools for pacman**: pacman-contrib
 - **A directory listing program**: tree
 - **System for distributing Linux Sandboxed apps**: flatpak
+- **Network monitoring tool**: iftop
+- **Containerization software**: docker
 
 ```bash
-sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak
+sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak iftop docker
 ```
 
 Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
@@ -3520,7 +3581,7 @@ sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter-s
 
 Common apps for all desktop environments:
 
-- **multimedia framework**: pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils
+- **ALSA utilities**: alsa-utils
 - **screenshot tool**: flameshot
 - **CUPS printer configuration tool**: system-config-printer
 - **NetworkManager applet**: network-manager-applet
@@ -3544,7 +3605,7 @@ Common apps for all desktop environments:
 - **themes**: arc-gtk-theme
 - **fonts bor Bootstrap**: ttf-font-awesome
 - **Spice agent xorg client that enables copy and paste between client and X-session and more**: spice-vdagent
-- **VGnome irtual filesystems implementation**: gvfs
+- **Gnome virtual filesystems implementation**: gvfs
 - **Windows File and printer sharing for Non-KDE desktops**: gvfs-smb
 - **GUI system monitor**: gnome-system-monitor
 - **Telegram - instant messaging system**: telegram-desktop
@@ -3552,7 +3613,32 @@ Common apps for all desktop environments:
 - **Live streaming and recording software**: obs-studio
 
 ```bash
-sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio
+sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio
+```
+
+Configure [PipeWire](https://wiki.archlinux.org/title/PipeWire) multimedia framework
+
+- **Low-latency audio/video router and processor**: pipewire
+- **ALSA configuration**: pipewire-alsa
+- **PulseAudio replacement**: pipewire-pulse
+- **Session and policy manager for PipeWire**: wireplumber
+- **Audio effects for PipeWire applications**: easyeffects
+
+```bash
+sudo pacman -S pipewire pipewire-alsa pipewire-pulse wireplumber
+yay -S easyeffects
+```
+
+Configure [PulseAudio](https://wiki.archlinux.org/title/PulseAudio) multimedia framework
+
+- **General-purpose sound server**: pulseaudio
+- **ALSA Configuration for PulseAudio**: pulseaudio-alsa
+- **Bluetooth support for PulseAudio**: pulseaudio-bluetooth
+- **A GTK volume control for PulseAudio**: pacucontrol
+
+```bash
+sudo pacman -S pulseaudio pulseaudio-alsa pulseaudio-bluetooth
+yay -S pavucontrol
 ```
 
 Configure `lightdm` greeter
@@ -3582,9 +3668,10 @@ Install AUR packages:
 - **system information tool + helpers**: [archey4](https://github.com/HorlogeSkynet/archey4) virt-what dmidecode wmctrl pciutils lm_sensors
 - **system restore utility**: timeshift
 - **Pacman GUI**: pamac-aur
+- **Snap**: snapd
 
 ```bash
-yay -S lightdm-webkit-theme-aether google-chrome 7-zip peazip-gtk2-bin visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift
+yay -S lightdm-webkit-theme-aether google-chrome 7-zip peazip-gtk2-bin visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd
 ```
 
 Enable various services:
@@ -3611,6 +3698,7 @@ sudo systemctl enable qemu-guest-agent
 sudo systemctl enable systemd-networkd
 sudo systemctl enable teamviewerd
 sudo systemctl enable optimus-manager.service
+sudo systemctl enable docker
 ```
 
 Check what graphics driver is used with `nvidia-smi`
