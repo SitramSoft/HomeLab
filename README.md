@@ -3508,8 +3508,8 @@ sudo pacman -Syyy
 Add the following mounting points to `/etc/fstab/`
 
 ```bash
-192.168.0.114:/mnt/tank1/data /home/sitram/mounts/data nfs rw 0 0
-192.168.0.114:/mnt/tank2/media /home/sitram/mounts/media nfs rw 0 0
+192.168.0.114:/mnt/tank1/data /home/sitram/mounts/data nfs defaults,x-systemd.after=network-online.target 0 0
+192.168.0.114:/mnt/tank2/media /home/sitram/mounts/media nfs defaults,x-systemd.after=network-online.target 0 0
 ```
 
 Install yay AUR Helper
