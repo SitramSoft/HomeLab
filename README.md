@@ -30,7 +30,7 @@ Summary:
   - [How to fix warning about ECDSA host key](#how-to-fix-warning-about-ecdsa-host-key)
   - [Ubuntu - upgrade from older distribution](#ubuntu---upgrade-from-older-distribution)
   - [Ubuntu - configure unattended upgrades](#ubuntu---configure-unattended-upgrades)
-  - [Ubuntu - Clean unnecessary packages on Ubuntu Server](#ubuntu---clean-unnecessary-packages)
+  - [Ubuntu - Clean unnecessary packages](#ubuntu---clean-unnecessary-packages)
   - [Ubuntu - Remove old kernels on Ubuntu](#ubuntu---remove-old-kernels)
   - [Ubuntu - Clean up snap on Ubuntu](#ubuntu---clean-up-snap)
   - [Clear systemd journald logs](#clear-systemd-journald-logs)
@@ -43,6 +43,9 @@ Summary:
   - [Correct DNS resolution](#correct-dns-resolution)
   - [Qemu-guest-agent](#qemu-guest-agent)
   - [Simulate server load](#simulate-server-load)
+    - [CPU](#cpu)
+    - [RAM](#ram)
+    - [Disk](#disk)
   - [Generate Gmail App Password](#generate-gmail-app-password)
   - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
   - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
@@ -130,7 +133,7 @@ Summary:
   - [ArchLinux - VM configuration](#archlinux---vm-configuration)
   - [ArchLinux - OS Configuration](#archlinux---os-configuration)
   - [ArchLinux - Troubleshoot sound issues](#archlinux---troubleshoot-sound-issues)
-  - [ArchLinux - I3 installation & Customization](#archlinux---i3-installation-&-customization)
+  - [ArchLinux - I3 installation & Customization](#archlinux---i3-installation--customization)
   - [ArchLinux ZSH shell](#archlinux-zsh-shell)
 - [WordPress - WorPress server VM](#wordpress---worpress-server-vm)
   - [WordPress - VM configuration](#wordpress---vm-configuration)
@@ -353,10 +356,9 @@ Uncomment or change the following lines
 
 Reload `unattended-upgrades` service:
 
-``bash
+```bash
 sudo systemctl restart unattended-upgrades.service
 ```
-
 
 ### Ubuntu - Clean unnecessary packages
 
@@ -383,6 +385,7 @@ sudo apt autoremove --purge
 ```
 
 ### Ubuntu - Remove old kernels
+
 Remove old kernels and image
 
 ```bash
@@ -390,18 +393,19 @@ dpkg --list | grep 'linux-image' | awk '{ print $2 }' | sort -V | sed -n '/'"$(u
 ```
 
 Remove old kernels headers
+
 ```bash
 dpkg --list | grep 'linux-headers' | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p' | xargs sudo apt-get -y purge
 ```
 
 Explanation (remember, `|` uses the output of the previous command as the input to the next)
 
- - `dpkg` --list lists all installed packages
- - `grep linux-image` looks for the installed linux images
- - `awk '{ print $2 }'` just outputs the 2nd column (which is the package name)
- - `sort -V` puts the items in order by version number
- - ```$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"``` extracts only the version (e.g. "3.2.0-44") , without "-generic" or similar from `uname -r`
- - `xargs sudo apt-get -y` purge purges the found kernels
+- `dpkg` --list lists all installed packages
+- `grep linux-image` looks for the installed linux images
+- `awk '{ print $2 }'` just outputs the 2nd column (which is the package name)
+- `sort -V` puts the items in order by version number
+- ```$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"``` extracts only the version (e.g. "3.2.0-44") , without "-generic" or similar from `uname -r`
+- `xargs sudo apt-get -y` purge purges the found kernels
 
 Modify last part `xargs echo sudo apt-get -y purge` so that the command to purge the old kernels/headers is printed, then you can check that nothing unexpected is included before you run it.
 
@@ -738,7 +742,7 @@ Sysadmins often need to discover how the performance of an application is affect
 
 Every Linux distribution comes with all the tools needed to create load. They are not as configurable as dedicated tools but they will always be present and you already know how to use them.
 
-**CPU**
+#### CPU
 
 The following command will generate a CPU load by compressing a stream of random data and then sending it to /dev/null:
 
@@ -760,7 +764,7 @@ sha512sum /dev/urandom
 
 Use CTRL+C to end the process.
 
-**RAM**
+#### RAM
 
 The following process will reduce the amount of free RAM. It does this by creating a file system in RAM and then writing files to it. You can use up as much RAM as you need to by simply writing more files.
 
@@ -782,7 +786,7 @@ The size of the file can be set by changing the following operands:
 - bs= Block Size. This can be set to any number followed B for bytes, K for kilobytes, M for megabytes or G for gigabytes.
 - count= The number of blocks to write.
 
-**Disk**
+#### Disk
 
 We will create disk I/O by firstly creating a file, and then use a for loop to repeatedly copy it.
 
@@ -938,7 +942,6 @@ fi
 The following subsections from [General](#general) section should be performed in this order:
 
 - [SSH configuration](#ssh-configuration)
-- [Ubuntu Server update](#ubuntu-server-update)
 - [Update system timezone](#update-system-timezone)
 - [Generate Gmail App Password](#generate-gmail-app-password)
 - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
@@ -1425,7 +1428,6 @@ bc:dd:c2:0f:5b:7c 192.168.0.245 sonoff_dormitor       Switch Sonoff ESP_0F5B7C -
 The following subsections from [General](#general) section should be performed in this order:
 
 - [SSH configuration](#ssh-configuration)
-- [Ubuntu Server update](#ubuntu-server-update)
 - [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
@@ -2248,7 +2250,6 @@ logbook:
 The following subsections from [General](#general) section should be performed in this order:
 
 - [SSH configuration](#ssh-configuration)
-- [Ubuntu Server update](#ubuntu-server-update)
 - [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
@@ -2395,7 +2396,7 @@ sudo chown -R www-data:www-data /var/nc_data /var/www
 
 ### Nextcloud - Installation and configuration of PHP 8.0
 
-Perform steps from chapter [Configure PHP source list in Ubuntu](#configure-php-source-list-in-ubuntu)
+Perform steps from chapter [Ubuntu - Configure PHP source list](#ubuntu---configure-php-source-list)
 
 Install PHP8.0 and required modules
 
@@ -3275,7 +3276,6 @@ Log out of the current session and then log back in again. Now you can run Nextc
 The following subsections from [General](#general) section should be performed in this order:
 
 - [SSH configuration](#ssh-configuration)
-- [Ubuntu Server update](#ubuntu-server-update)
 - [Ubuntu - Synchronize time with systemd-timesyncd](#ubuntu---synchronize-time-with-systemd-timesyncd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
@@ -3374,7 +3374,6 @@ Add the following mounting points to `/etc/fstab/`
 The following subsections from [General](#general) section should be performed in this order:
 
 - [SSH configuration](#ssh-configuration)
-- [Ubuntu Server update](#ubuntu-server-update)
 - [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
@@ -3841,6 +3840,7 @@ Chose a fancy theme like agnoster and install the fonts used by it
 ```bash
 sudo pacman -S powerline-fonts
 ```
+
 Edit `~/.zshrc` file and change parameter `ZSH_THEME="agnoster"`. Restart the terminal to load the new theme
 
 Install [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme and the required font
@@ -3858,10 +3858,11 @@ p10k configure
 ```
 
 Edit `~/.zshrc` file and add the following plugins:
- - [git](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git)
- - [web-search](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/web-search)
- - [history](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/history)
- - [sudo](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sudo)
+
+- [git](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git)
+- [web-search](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/web-search)
+- [history](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/history)
+- [sudo](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sudo)
 
 ```bash
 plugins=(git web-search history sudo)
@@ -3894,7 +3895,6 @@ plugins=(git web-search history sudo)
 The following subsections from [General](#general) section should be performed in this order:
 
 - [SSH configuration](#ssh-configuration)
-- [Ubuntu Server update](#ubuntu-server-update)
 - [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
 - [Update system timezone](#update-system-timezone)
 - [Correct DNS resolution](#correct-dns-resolution)
@@ -4042,7 +4042,7 @@ sudo chown -R www-data:www-data /var/www /home/sitram/data/wordpress
 
 ### WordPress - Installation and configuration of PHP 8.0
 
-Perform steps from chapter [Configure PHP source list in Ubuntu](#configure-php-source-list-in-ubuntu)
+Perform steps from chapter [Ubuntu - Configure PHP source list](#ubuntu---configure-php-source-list
 
 Install PHP8.0 and required modules
 
