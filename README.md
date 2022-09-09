@@ -3588,6 +3588,7 @@ Common apps for all desktop environments:
 - **bluetooth configuration tool**: blueberry
 - **office suite**: libreoffice
 - **file manager**: thunar
+- **archive manager and plugin for Thunar**: file-roller thunar-archive-plugin
 - **PDF viewer**: okular
 - **calculator**: qalculate-gtk
 - **image editor**: gimp
@@ -3613,7 +3614,7 @@ Common apps for all desktop environments:
 - **Live streaming and recording software**: obs-studio
 
 ```bash
-sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio
+sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio
 ```
 
 Configure [PipeWire](https://wiki.archlinux.org/title/PipeWire) multimedia framework
@@ -3657,7 +3658,6 @@ Install AUR packages:
 - **greeter theme**: lightdm-webkit-theme-aether
 - **Google Chrome**: google-chrome
 - **Zip archiver**: 7-zip
-- **GUI Archive Manager**: peazip-gtk2-bin
 - **Visual Studio Code**: visual-studio-code-bin
 - **Sublime text editor**: sublime-text-4
 - **icons**: tela-icon-theme
@@ -3671,7 +3671,7 @@ Install AUR packages:
 - **Snap**: snapd
 
 ```bash
-yay -S lightdm-webkit-theme-aether google-chrome 7-zip peazip-gtk2-bin visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd
+yay -S lightdm-webkit-theme-aether google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd
 ```
 
 Enable various services:
