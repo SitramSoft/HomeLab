@@ -3668,9 +3668,10 @@ Install AUR packages:
 - **system restore utility**: timeshift
 - **Pacman GUI**: pamac-aur
 - **Snap**: snapd
+- **InterractiveBrokers client**: ib-tws
 
 ```bash
-yay -S lightdm-webkit-theme-aether google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd
+yay -S lightdm-webkit-theme-aether google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd ib-tws
 ```
 
 Enable various services:
