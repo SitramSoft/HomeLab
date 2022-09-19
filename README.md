@@ -3611,9 +3611,10 @@ Common apps for all desktop environments:
 - **Telegram - instant messaging system**: telegram-desktop
 - **Utility to modify video**: v4l-utils
 - **Live streaming and recording software**: obs-studio
+- **Remote desktop client and plugins**: remmina spice-gtk freerdp
 
 ```bash
-sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio
+sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk
 ```
 
 Configure [PipeWire](https://wiki.archlinux.org/title/PipeWire) multimedia framework
