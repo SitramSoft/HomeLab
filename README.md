@@ -3541,7 +3541,7 @@ Desktop environment installation(Cinnamon)
 
 - **display server**: xorg-server
 - **display manager**: lightdm
-- **greeter**: lightdm-webkit2-greeter
+- **greeter**: lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-pantheon-greeter lightdm-slick-greeter
 - **greeter settings editor**: lightdm-gtk-greeter-settings
 - **desktop environment**: cinnamon
 - **window manager(used by cinnamon as fallback in case cinnamon fails)**: metacity
@@ -3549,33 +3549,45 @@ Desktop environment installation(Cinnamon)
 - **password manager**: gnome-keyring
 
 ```bash
-sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter-settings cinnamon metacity gnome-terminal gnome-keyring
+sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-pantheon-greeter lightdm-slick-greeter lightdm-gtk-greeter-settings cinnamon metacity gnome-terminal gnome-keyring
 ```
+
+Configuration:
+
+- **Icons Theme***: Papirus-Dark
+- **Applications Theme**: Mint-Y-Dark-Blue
+- **Mouse pointer Theme**: Adwaita
+- **Desktop Theme**: Mint-Y-Dark-Blue
+- **Default Font**: Cantarell Regular 9
+- **Desktop font**: Cantarell Regular 10
+- **Document Font**: Cantarell Regular 11
+- **Monospace font**: Source Code Pro Regular 10
+- **Window title font**: Cantarell Regular 10
 
 Desktop environment installation(Gnome)
 
 - **display server**: xorg-server
 - **display manager**: gdm
-- **greeter**: lightdm-webkit2-greeter
+- **greeter**: lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-slick-greeter lightdm-slick-greeter
 - **greeter settings editor**: lightdm-gtk-greeter-settings
 - **desktop environment**: gnome
 - **window manager(used by cinnamon as fallback in case cinnamon fails)**: metacity
 
 ```bash
-sudo pacman -S xorg-server gdm lightdm-webkit2-greeter lightdm-gtk-greeter-settings gnome metacity
+sudo pacman -S xorg-server gdm lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-pantheon-greeter lightdm-slick-greeter lightdm-gtk-greeter-settings gnome metacity
 ```
 
 Desktop environment installation(KDE)
 
 - **display server**: xorg-server
 - **display manager**: lightdm
-- **greeter**: lightdm-webkit2-greeter
+- **greeter**: lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-slick-greeter lightdm-slick-greeter
 - **greeter settings editor**: lightdm-gtk-greeter-settings
 - **desktop environment**: plasma
 - **password manager**: gnome-keyring
 
 ```bash
-sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter-settings plasma gnome-terminal gnome-keyring
+sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-pantheon-greeter lightdm-slick-greeter lightdm-gtk-greeter-settings plasma gnome-terminal gnome-keyring
 ```
 
 Common apps for all desktop environments:
@@ -3612,9 +3624,10 @@ Common apps for all desktop environments:
 - **Utility to modify video**: v4l-utils
 - **Live streaming and recording software**: obs-studio
 - **Remote desktop client and plugins**: remmina spice-gtk freerdp
+- **LightDM display manager configuration tool**: lightdm-settings
 
 ```bash
-sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk
+sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk freerdp lightdm-settings
 ```
 
 Configure [PipeWire](https://wiki.archlinux.org/title/PipeWire) multimedia framework
@@ -3642,7 +3655,7 @@ sudo pacman -S pulseaudio pulseaudio-alsa pulseaudio-bluetooth
 yay -S pavucontrol
 ```
 
-Configure `lightdm` greeter
+Configure `lightdm` greeter by editing `lightdm.conf`. A list of all greeter-session installed on the system can be found by listing the contents of `/usr/share/xgreeters`
 
 ```bash
 sudo nano /etc/lightdm/lightdm.conf
@@ -3651,6 +3664,10 @@ sudo nano /etc/lightdm/lightdm.conf
 greeter-session = lightdm-webkit2-greeter
 #Change display output for VM's only
 display-setup-script=xrandr --output Virtual-1 --mode 1920x1080
+```
+
+```bash
+sudo systemctl restart lightdm.service
 ```
 
 Install AUR packages:
