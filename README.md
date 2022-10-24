@@ -1477,9 +1477,10 @@ ls -l /dev/disk/by-id/
 Find the links that matches each drive
 
 ```bash
-/dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825 -> ../../sdc
-/dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF -> ../../sda
-/dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF -> ../../sdb
+/dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825 -> ../../sdd -> 750GB
+/dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF -> ../../sda -> 1TB
+/dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF -> ../../sdc -> 1TB
+/dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721 -> ../../sdb -> 500GB
 ```
 
 Add the disk to VM by executing the commands below in Proxmox host shell
@@ -1488,6 +1489,7 @@ Add the disk to VM by executing the commands below in Proxmox host shell
 sudo qm set 102 -scsi1 /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825
 sudo qm set 102 -scsi2 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF
 sudo qm set 102 -scsi3 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF
+sudo qm set 102 -scsi4 /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721
 ```
 
 The outpot of each commands should be
@@ -1496,6 +1498,7 @@ The outpot of each commands should be
 update VM 102: -scsi1 /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825
 update VM 102: -scsi2 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF
 update VM 102: -scsi3 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF
+update VM 102: -scsi4 /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721
 ```
 
 Check if each disk has been attached succesfully
@@ -1504,6 +1507,7 @@ Check if each disk has been attached succesfully
 sudo grep WX91A61Y1825 /etc/pve/qemu-server/102.conf
 sudo grep JR10006P0VSENF /etc/pve/qemu-server/102.conf
 sudo grep JR10006P0VSMXF /etc/pve/qemu-server/102.conf
+sudo grep WMC1U5239721 /etc/pve/qemu-server/102.conf
 ```
 
 Output of each of the above command should be
@@ -1512,6 +1516,7 @@ Output of each of the above command should be
 scsi1: /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825,size=732574584K
 scsi2: /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF,size=976762584K
 scsi3: /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF,size=976762584K
+scsi4: /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721,size=488386584K
 ```
 
 Make sure to reboot the host server if the HDD's were previously managed by it otherwise you will not be able to add the new NFS shares from TrueNAS
@@ -1570,12 +1575,13 @@ In `Global Configuration` section change
     - Description: `Backup for HomeLab VM's and CT's`
     - Maproot User: `root`
     - Maproot Group: `root`
+    - Authorized Hosts and IP address: ``
   - Share 2
     - Path: `/mnt/tank1/data`
     - Description: `Storage for critical data`
     - Maproot User: `root`
     - Maproot Group: `root`
-    - Authorized Hosts and IP address: `192.168.0.101` and `192.168.0.2` and `192.168.0.102`
+    - Authorized Hosts and IP address: `192.168.0.101` and `192.168.0.2` and `192.168.0.102` and `192.168.0.105` and `192.168.0.115` and `192.168.0.5` and `192.168.0.4`
   - Share 3
     - Path: `/mnt/tank2/media`
     - Description: `Storage for various media files(movies, tv series, music, torrents etc)`
@@ -1588,6 +1594,12 @@ In `Global Configuration` section change
     - Maproot User: `root`
     - Maproot Group: `root`
     - Authorized Hosts and IP address: `192.168.0.2`
+  - Share 5
+    - Path: `/mnt/nicusor`
+    - Description: `Personal storage for Nicusor Maciu`
+    - Maproot User: `root`
+    - Maproot Group: `root`
+    - Authorized Hosts and IP address: `192.168.0.102` and `192.168.0.2` and `192.168.0.5` and `192.168.0.4` and `192.168.0.105`
 
 ## HomeAssistant - Home automation server
 
