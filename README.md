@@ -93,6 +93,7 @@ Summary:
   - [Nextcloud - Installation of Redis server](#nextcloud---installation-of-redis-server)
   - [Nextcloud - Optimize and update using a script](#nextcloud---optimize-and-update-using-a-script)
   - [Nextcloud - Bash aliases for executing Nextcloud Toolset occ](#nextcloud---bash-aliases-for-executing-nextcloud-toolset-occ)
+  - [Nextcloud - Map user data directory to nfs share](#nextcloud---map-user-data-directory-to-nfs-share)
 - [Hercules - HomeLab services VM](#hercules---homelab-services-vm)
   - [Hercules - VM configuration](#hercules---vm-configuration)
   - [Hercules - OS Configuration](#hercules---os-configuration)
@@ -2279,13 +2280,14 @@ sudo apt install -y curl gnupg2 git lsb-release ssl-cert ca-certificates apt-tra
 Add the following mounting points to `/etc/fstab/`
 
 ```bash
-192.168.0.114:/mnt/tank1/data /home/sitram/data nfs rw 0 0
+192.168.0.114:/mnt/tank1/data /mnt/data nfs rw 0 0
+192.168.0.114:/mnt/nicusor /var/nc_data/nicusor nfs rw 0 0
 ```
 
 Mount the newly added mount points
 
 ```bash
-mkdir /home/sitram/data
+sudo mkdir /mnt/data
 sudo mount -a
 ```
 
@@ -3278,6 +3280,43 @@ EOF
 ```
 
 Log out of the current session and then log back in again. Now you can run Nextcloud Toolset occ directly via "nocc ... ".
+
+### Nextcloud - Map user data directory to nfs share
+
+Create user `nicusor` in Nextcloud web interface.
+
+Createa a backup of the user data directory, preserving the permissions and ownership and empty the user folder
+
+```bash
+sudo cp -rp /var/nc_data/nicusor /var/nc_data/nicusor_bkp
+sudo rm -r /var/nc_data/nicusor/*
+```
+
+Add the mounting point to the nfs share in `/etc/fstab/`
+
+```bash
+192.168.0.114:/mnt/nicusor /var/nc_data/nicusor nfs rw 0 0
+```
+
+Mount the newly added mount points
+
+```bash
+sudo mount -a
+```
+
+Copy the contents of the user directory to the nfs share and delete the backup.
+
+```bash
+sudo cp -rp /var/nc_data/nicusor_bkp/* /var/nc_data/nicusor
+sudo rm -r /var/nc_data/nicusor_bkp
+```
+
+Restart PHP and Web server
+
+```bash
+sudo /usr/sbin/service php8.0-fpm restart
+sudo /usr/sbin/service nginx restart
+```
 
 ## Hercules - HomeLab services VM
 
