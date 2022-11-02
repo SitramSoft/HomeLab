@@ -1,4 +1,4 @@
-# Proxmox-Homelab
+# A guide to my Homelab
 
 The following document describes the steps I did to create the current configuration of my Homelab.
 
