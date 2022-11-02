@@ -135,7 +135,8 @@ Summary:
   - [ArchLinux - OS Configuration](#archlinux---os-configuration)
   - [ArchLinux - Troubleshoot sound issues](#archlinux---troubleshoot-sound-issues)
   - [ArchLinux - I3 installation & Customization](#archlinux---i3-installation--customization)
-  - [ArchLinux ZSH shell](#archlinux-zsh-shell)
+  - [ArchLinux - ZSH shell](#archlinux---zsh-shell)
+  - [ArchLinux - Downgrade packages](#archlinux---downgrade-packages)
 - [WordPress - WorPress server VM](#wordpress---worpress-server-vm)
   - [WordPress - VM configuration](#wordpress---vm-configuration)
   - [WordPress - OS Configuration](#wordpress---os-configuration)
@@ -3883,7 +3884,7 @@ Polybar instalation and configuration
 yay -S polybar
 ```
 
-### ArchLinux ZSH shell
+### ArchLinux - ZSH shell
 
 Zsh (The Z shell) is an Unix shell that can be used as an interactive login shell and as a command interpreter for shell scripting. Zsh is an extended Bourne shell with many improvements, including some features from Bash, ksh, and tcsh.
 
@@ -3937,6 +3938,50 @@ Edit `~/.zshrc` file and add the following plugins:
 ```bash
 plugins=(git web-search history sudo)
 ```
+
+## ArchLinux - Downgrade packages
+
+When using a rolling distro like Arch, sometimes things break when updating packages to newer version. When this happens there are several ways to perform a downgrade
+
+### Using pacman cache
+
+If a package was installed at an earlier stage, and the pacman cache was not cleaned, an earlier version from `/var/cache/pacman/pkg/` can be installed.
+
+This process will remove the current package and install the older version. Dependency changes will be handled, but pacman will not handle version conflicts. If a library or other package needs to be downgraded with the packages, please be aware that you will have to downgrade this package yourself as well.
+
+```bash
+pacman -U /var/cache/pacman/pkg/package-old_version.pkg.tar.zst
+```
+
+`old_version` could be something like `x.y.z-x86_64` where the last part is the architecture for which the package is installed.
+
+### Using Arch Linux archive
+
+The [Arch Linux Archive](https://wiki.archlinux.org/title/Arch_Linux_Archive) is a daily snapshot of the official repositories. It can be used to install a previous package version, or restore the system to an earlier date.
+
+```bash
+pacman -U https://archive.archlinux.org/packages/path/package-old_version.pkg.tar.zst
+```
+
+### Restore system to an earlier date
+
+To restore all packages to their version at a specific date, let us say 30 March 2014, you have to direct pacman to this date, by replacing your `/etc/pacman.d/mirrorlist` with the following content:
+
+```bash
+##                                                                              
+## Arch Linux repository mirrorlist                                             
+## Generated on 2042-01-01                                                      
+##
+Server=https://archive.archlinux.org/repos/2014/03/30/$repo/os/$arch
+```
+
+Update the database and force downgrade:
+
+```bash
+pacman -Syyuu
+```
+
+If you get errors complaining about corrupted/invalid packages due to PGP signature, try to first update separately `archlinux-keyring` and `ca-certificates`.
 
 ## WordPress - WorPress server VM
 
