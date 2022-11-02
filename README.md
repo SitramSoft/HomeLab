@@ -1,29 +1,13 @@
 # A guide to my Homelab
 
-The following document describes the steps I did to create the current configuration of my Homelab.
-
-Prerequisites:
-
-- [x] Layer 2 Network Switch, preferably one that supports Gigabit Ethernet and has at least 16 ports
-- [x] Dedicated PC that can be used as a PVE Host
-- [x] Internet access for PVE host
-- [x] Network router with Wi-Fi support
-  - Preferably one that supports both 2.4Gz and 5Ghz bands
-- [x] Cabling
-- [x] UPS to allow the network equipment a clean shutdown in case of power failures and prevent damage caused by power fluctuations
-  - I recommend to have a dedicated power circuit for the HomeLab equipment
-
-Optional:
-
-- [x] Network rack to store all homelab equipment
-
-Summary:
+Table of contents:
 
 - [About my Homelab](#about-my-homelab)
 - [Introduction](#introduction)
   - [How I started](#how-i-started)
   - [HomeLab architecture](#homelab-architecture)
   - [Document structure](#document-structure)
+  - [Prerequisites](#prerequisites)
 - [General](#general)
   - [SSH configuration](#ssh-configuration)
   - [Execute commands using SSH](#execute-commands-using-ssh)
@@ -180,6 +164,21 @@ First section contains a short history, current HomeLab state and structure of t
 The second section contains general tutorials that are independed to any any VM. Some of the commands assume that either the DHCP or the DNS server is up and running, so please keep this in mind when reading.
 
 The third section contains a chapter for every VM or LXC container I currently run. Inside each chapter there are sections that describe the VM configuration in Proxmox, specific OS configurations, software and services installation and configuration. This is a work in progress so expect that some of these chapters are empty and will be added at a later date, when I have some time available.
+
+### Prerequisites
+
+- [x] Layer 2 Network Switch, preferably one that supports Gigabit Ethernet and has at least 16 ports
+- [x] Dedicated PC that can be used as a PVE Host
+- [x] Internet access for PVE host
+- [x] Network router with Wi-Fi support
+  - Preferably one that supports both 2.4Gz and 5Ghz bands
+- [x] Cabling
+- [x] UPS to allow the network equipment a clean shutdown in case of power failures and prevent damage caused by power fluctuations
+  - I recommend to have a dedicated power circuit for the HomeLab equipment
+
+Optional:
+
+- [x] Network rack to store all homelab equipment
 
 ## General
 
