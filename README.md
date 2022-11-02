@@ -118,9 +118,9 @@ Summary:
   - [Hercules - PostgressSQL database docker container](#hercules---postgresssql-database-docker-container)
   - [Hercules - MySQL database docker container](#hercules---mysql-database-docker-container)
   - [Hercules - Redis docker container](#hercules---redis-docker-container)
-  - [Hercules - WordPress docker container](#hercules---wordpress-docker-container)
   - [Hercules - Jenkins CI docker container](#hercules---jenkins-ci-docker-container)
   - [Hercules - LibreSpeed docker container](#hercules---librespeed-docker-container)
+  - [Hercules - PortfolioPerformance docker container](#hercules---portfolioperformance-docker-container)
 - [Windows11 - Virtual Windows Desktop VM](#windows11---virtual-windows-desktop-vm)
   - [Windows11 - VM configuration](#windows11---vm-configuration)
   - [Windows11 - Windows installation](#windows11---windows-installation)
@@ -155,21 +155,21 @@ Use the information provided in this repository at your own risk. I take no resp
 
 ### How I started
 
-Initially I started using my adventure in building an HomeLab on an old laptop, where I installed Proxmox and did some testing with several VM's and [HomeAssistant](https://www.home-assistant.io/). It probably would have been enough if it didn't had two annoying issues. Every couple of days, it would freeze and I had to manually reboot it in order to recover. The second issue was that was the BIOS did not support resume to the last state in case of a power shortage. Because of these two issues I couldn't run the laptop for more then a few days without having to physically interact with it.This made any attempt to have a reliable server for running services or home automation annoying. After struggling with this setup for a couple of months I decided it was time for an upgrade.
+Initially I started my adventure in building an HomeLab on an old laptop, where I installed Proxmox and did some testing with several VM's and [HomeAssistant](https://www.home-assistant.io/). It probably would have been enough if it didn't had two annoying issues. Every couple of days, the laptop froze and I had to manually reboot it. The second issue was that BIOS did not support resume to the last power state in case of a power shortage. Because of these two issues, I couldn't run the laptop for more then a few days without having to physically interact with it. Because of this I couldn't have a reliable server for running services or home automation. After struggling with this setup for a couple of months I decided it was time for an upgrade.
 
-I spent several weeks researching on Internet about various hardware build for HomeLab. I read blogs, joined several channels on Reddit and groups on Facebook dedicated to this topic. The more I spent researching, the more I got frustrated of how easy it was for people living in US, Germany or UK to access all kind of equipment. I either had to make a compromise and buy consumer grade equipment, spent extra money on shipping tax to order, or get lucky and find a  good deal in my own country.
+I spent several weeks researching about various hardware builds for an HomeLab. I read blogs, joined several channels on Reddit and groups on Facebook dedicated to this topic. The more I spent researching, the more I got frustrated of how easy it was for people living in US, Germany or UK to access all kind of equipment. I either had to make a compromise and buy consumer grade equipment, spent extra money on shipping tax to order, or get lucky and find a good deal in my own country.
 
-In the end, it payed off to be patient, because I got lucky and found a complete system for sale locally. Everyone I talked with, said it was overkill for what I wanted to run in my HomeLab. I chose to see it as having a huge potential for any project I could think of. I payed for the entire server around 800$.
+In the end, it payed off to be patient, because I got lucky and found a complete system for sale locally. Everyone I talked with, said it was overkill for what I wanted to run in my HomeLab. I diregarded their advices and went with my gut feeling. I payed for the entire server around 800$ and now I had the equipment needed to fulfill any project I wanted.
 
-The server contained the case, PSU, cables, two Intel Xeon CPU's and 192GB of server graded RAM with ECC. I had two 1GB, 2.5', 7200 rpm HDD's in another laptop which I decided to use in RAID 1 to keep some of my data safe. I bought a 1TB M.2 2280 SSD from SWORDFISH to use for host operating system and various VM's. The final purchase was an HPE Ethernet 1GB 2-port 361T adapter which I wanted to passtrough to a VM running a dedicated firewall.
+The server contained the case, PSU, cables, two Intel Xeon CPU's and 192GB of server graded RAM with ECC. I had two 1GB, 2.5', 7200 rpm HDD's in another laptop which I decided to use in RAID 1 to keep some of my data safe. I bought a 1TB M.2 2280 SSD from SWORDFISH to use for host operating system and various VM's. The final purchase was an HPE Ethernet 1GB 2-port 361T adapter which I wanted to passtrough to a VM running a dedicated firewall. Later I added another 750GB old HDD to store movies and tv shows.
 
 ### HomeLab architecture
 
-Over time, I added new hardware to my HomeLab, like IoT devices, a range extender to have a better Wifi coverage and an UPS. I have planned to upgrade my storage and perhaps purchase a GPU but they have a low priority for now. However, I am always open for suggestions so feel free to reach me over email.
+Over time, I added new hardware to my HomeLab, like IoT devices, a range extender to have a better Wifi coverage and an UPS. I have planned to upgrade my storage and perhaps purchase a GPU but they have a low priority due to budget constraints. However, I am always open for suggestions so feel free to reach me over email in case you have one.
 
-The software, services and the architecture I run in my HomeLab are constantly adapting and evolving. When I learn a new technology that or find an interesting software, I decide to incorporate it in my existing architecture or just spin a VM for test.
+The software, services and the overall architecture of my my HomeLab are constantly adapting and evolving. When I learn a new technology or find an interesting software, I decide to incorporate it in my existing architecture or just spin a VM for test.
 
-[Here](HomeLab.jpg) you can find a picture with an overview of the current architecture which I update every time I change something to my HomeLab. The details on the configuration of each VM and service are below.
+[Here](HomeLab.jpg) you can find a picture with an overview of the current architecture. I update every time I change something to my HomeLab. The details on the configuration of each VM and service can be seen below.
 
 ### Document structure
 
@@ -177,9 +177,9 @@ The document is written in Markdown and structured in 3 main sections.
 
 First section contains a short history, current HomeLab state and structure of the document.
 
-The second section contains general configurations that are applied to every VM. Some of the commands assume that either the DHCP or the DNS server is up and running, so please keep this in mind when reading.
+The second section contains general tutorials that are independed to any any VM. Some of the commands assume that either the DHCP or the DNS server is up and running, so please keep this in mind when reading.
 
-The third section contains a chapter for every VM I currently run. Inside each chapter there are sections that describe the VM configuration in Proxmox, specific OS configurations, software and services installation and configuration.
+The third section contains a chapter for every VM or LXC container I currently run. Inside each chapter there are sections that describe the VM configuration in Proxmox, specific OS configurations, software and services installation and configuration. This is a work in progress so expect that some of these chapters are empty and will be added at a later date, when I have some time available.
 
 ## General
 
@@ -195,35 +195,31 @@ I use two keys for my entire HomeLab. One is used for Guacamole, so I can access
 
 I store these keys on every VM so that I can easily connect from one VM to another using SSH. A copy of each key is stored in an offline secure location.
 
-Login to one of existing VM's and copy sshd config and various keys to the new VM.
-
-- sshd configuration
+Copy sshd configuration from an existing VM. An example can be found in this repo [here](sshd_config)
 
 ```bash
 scp /etc/ssh/sshd_config sitram@192.168.0.xxx:/home/sitram
 ```
 
-- Private and public keys for accessing the VM trough Guacamole
+Copy the private and public keys for accessing the VM trough Guacamole from an existing VM
 
  ```bash
 scp guacamole sitram@192.168.0.xxx:~/.ssh/
 scp guacamole.pub sitram@192.168.0.xxx:~/.ssh/
 ```
 
-- Personal private and public keys for accessing the VM trough SSH and being able to access other servers on the network.
+Copy personal private and public keys for accessing the VM trough SSH and being able to access other servers on the network from an existing VM.
 
 ```bash
 scp id_rsa sitram@192.168.0.xxx:~/.ssh/
 scp id_rsa.pub sitram@192.168.0.xxx:~/.ssh/
 ```
 
-- The authorized keys file which allows connection to the VM using only my Guacamole or personal key.
+Copy the authorized_keys file which allows connection to the VM using only my Guacamole or personal key from an existing VM.
 
 ```bash
 scp authorized_keys sitram@192.168.0.xxx:~/.ssh/
 ```
-
-[TODO] Add details about sshd configuration
 
 Backup default sshd configuration, in case something goes wrong. Replace the existing configuration with the new one.
 
@@ -241,7 +237,7 @@ sudo systemctl restart sshd
 
 ### Execute commands using SSH
 
-The SSH client program can be used for logging into a remote machine or server and for executing commands on a remote machine. When command is specified, it is executed on the remote host/server instead of a login shell.
+The SSH client program can be used for logging into a remote machine or server and for executing commands on a remote machine. When a command is specified, it is executed on the remote host/server instead of the login shell of the current machine.
 
 The syntax is as follows for executing commands
 
@@ -250,19 +246,19 @@ ssh user1@server1 command1
 ssh user1@server1 'command2'
 ```
 
-Pipe commands
+Several commands can be piped using the syntax below
 
 ```bash
 ssh user1@server1 'command1 | command2'
 ```
 
-Execute multiple commands remote
+Multiple compands can be executed using the syntax below
 
 ```bash
 ssh user@hostname "command1; command2; command3"
 ```
 
-Execute commands remote with `sudo`
+Commands can be executed remotely with `sudo` using the syntax below
 
 ```bash
 ssh -t user@hostname sudo command
@@ -289,7 +285,7 @@ scp username@b:/path/to/file /path/to/destination
 
 ### How to fix warning about ECDSA host key
 
-When connecting with SSH the following warning could be displayed in case the IP is reused for a different VM.
+When connecting with SSH, the following warning could be displayed in case the IP is reused for a different VM.
 
 ```text
 Warning: the ECDSA host key for 'myserver' differs from the key for the IP address '192.168.0.xxx'
@@ -313,7 +309,7 @@ The repositories for older releases that are not supported (like 11.04, 11.10 an
 
 The reason for this is that it is now out of support and no longer receiving updates and security patches.
 
-If you want to continue using an outdated release then edit `/etc/apt/sources`.list and change `archive.ubuntu.com` and `security.ubuntu.com` to old-releases.ubuntu.com.
+If you want to continue using an outdated release, edit `/etc/apt/sources.list` and change `archive.ubuntu.com` and `security.ubuntu.com` to `old-releases`.ubuntu.com.
 
 You can do this with sed:
 
@@ -321,7 +317,7 @@ You can do this with sed:
 sudo sed -i -re 's/([a-z]{2}\.)?archive.ubuntu.com|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
 ```
 
-then update with:
+then update the system with:
 
 ```bash
 sudo apt-get update && sudo apt-get dist-upgrade
@@ -336,7 +332,7 @@ sudo apt-get update
 sudo apt install unattended-upgrades
 ```
 
-After installation, you can check to ensure that the `unattended-upgrades` service is running using `systemctl`:
+After installation, you can check to ensure that the `unattended-upgrades` service is running using `systemctl`
 
 ```bash
 sudo systemctl status unattended-upgrades.service
@@ -356,6 +352,8 @@ Uncomment or change the following lines
 - `Unattended-Upgrade::Remove-New-Unused-Dependencies "true";`
 - `Unattended-Upgrade::Remove-New-Unused-Dependencies "true";`
 
+An example of this file that I use on all my Ubuntu based VM's can be found [here](50unattended-upgrades)
+
 Reload `unattended-upgrades` service:
 
 ```bash
@@ -364,13 +362,13 @@ sudo systemctl restart unattended-upgrades.service
 
 ### Ubuntu - Clean unnecessary packages
 
-Very few server instances utilize these packages. Make sure you don't need them before removing them.
+Very few server instances utilize these packages and they can be clean to save storage on the VM. Make sure you don't need them before removing them.
 
 ```bash
 sudo apt purge --auto-remove snapd squashfs-tools friendly-recovery apport at cloud-init
 ```
 
-Remove the `unattended-upgrades` package and the associated services which are responsible for automatically updating packages in the system.
+Remove the `unattended-upgrades` package and the associated services which are responsible for automatically updating packages in the system in case this functionality is not used in your HomeLab.
 
 ```bash
 sudo apt purge --auto-remove unattended-upgrades
@@ -388,7 +386,7 @@ sudo apt autoremove --purge
 
 ### Ubuntu - Remove old kernels
 
-Remove old kernels and image
+After a while, there will be multiple versions of kernel on your system, which take up a lot of storage space. Old kernels and images can be removed with the following command
 
 ```bash
 dpkg --list | grep 'linux-image' | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p' | xargs sudo apt-get -y purge
@@ -449,13 +447,13 @@ LANG=en_US.UTF-8 snap list --all | awk '/disabled/{print $1, $3}' |
 
 ### Clear systemd journald logs
 
-Checking dis usage of all journal files is done with command
+Checking disk usage of all journal files is done with command
 
 ```bash
 sudo journalctl --disk-usage
 ```
 
-Before clearing the logs, run command to rotate the journal files. All currently active journal files will be marked as archived, so that they are never written to in future.
+Before clearing the logs, run the following command to rotate the journal files. All currently active journal files will be marked as archived, so that they are never written in future.
 
 ```bash
 sudo journalctl --rotate
@@ -567,7 +565,7 @@ sudo apt install nginx
 
 ### Ubuntu - Configure PHP source list
 
-Add software source
+Add PHP software sources
 
 ```bash
 cd /etc/apt/sources.list.d
@@ -595,13 +593,13 @@ Make sure NTP is not installed
 sudo apt purge ntp
 ```
 
-Edit file **timesyncd.conf**
+Edit file `timesyncd.conf`
 
 ```bash
 sudo nano /etc/systemd/timesyncd.conf
 ```
 
-Uncomment and modify the lines starting with **NTP** and **FallbackNTP**
+Uncomment and modify the lines starting with `NTP`and `FallbackNTP`
 
 ```bash
 NTP=192.168.0.2
@@ -656,13 +654,14 @@ Configure the NTP server pool either to a server closest to own location or loca
 sudo nano /etc/ntp.conf
 ```
 
-Comment the lines starting with **pool** and add the line
+Comment the lines starting with `pool` and add the line
 
 ```bash
 server 192.168.0.2 prefer iburst
 ```
 
-The **iburst** option is recommended, and sends a burst of packets only if it cannot obtain a connection with the first attempt. The **burst** option always does this, even on the first attempt, and should never be used without explicit permission and may result in blacklisting.
+The `iburst` option is recommended, and sends a burst of packets only if it cannot obtain a connection with the first attempt.
+The `burst` option always does this, even on the first attempt, and should never be used without explicit permission and may result in blacklisting.
 
 Restart NTP server and verify that it's running correctly
 
@@ -678,7 +677,7 @@ Check newly configured NTP servers are used by looking in the journal
 journalctl --since -1h -u ntpd
 ```
 
-In order to verify time synchronization status with each defined server or pool look for **\*** near the servers listed by command below. Any server which is not marked with **\*** is not syncronized.
+In order to verify time synchronization status with each defined server or pool look for `\*` near the servers listed by command below. Any server which is not marked with `\*` is not syncronized.
 
 ```bash
 ntpq -pn
@@ -740,19 +739,19 @@ guest-agent has to be installed in ech VM and enabled in Proxmox VE GUI or via C
 
 ### Simulate server load
 
-Sysadmins often need to discover how the performance of an application is affected when the system is under certain types of load. This means that an artificial load must be re-created. It is possible to install dedicated tools to do this but this option isn’t always desirable or possible.
+Sometimes you need to discover how the performance of an application is affected when the system is under certain types of load. This means that an artificial load must be created. It is possible to install dedicated tools to do this, but this option isn’t always desirable or possible.
 
 Every Linux distribution comes with all the tools needed to create load. They are not as configurable as dedicated tools but they will always be present and you already know how to use them.
 
 #### CPU
 
-The following command will generate a CPU load by compressing a stream of random data and then sending it to /dev/null:
+The following command will generate a CPU load by compressing a stream of random data and then sending it to `/dev/null`:
 
 ```bash
 cat /dev/urandom | gzip -9 > /dev/null
 ```
 
-If you require a greater load or have a multi-core system simply keep compressing and decompressing the data as many times as you need e.g.:
+If you require a greater load or have a multi-core system simply keep compressing and decompressing the data as many times as you need:
 
 ```bash
 cat /dev/urandom | gzip -9 | gzip -d | gzip -9 | gzip -d > /dev/null
@@ -818,13 +817,13 @@ When Two-Factor Authentication (2FA) is enabled, Gmail is preconfigured to refus
 
 1. Log in to your Google Account and navigate to the [Manage your account access and security settings](https://myaccount.google.com/security) page.
 
-2. Scroll down to **Signing in to Google** section and enable **2-Step Verification**. You may be asked for your password and a verification code before continuing.
+2. Scroll down to `Signing in to Google` section and enable `2-Step Verification`. You may be asked for your password and a verification code before continuing.
 
 3. In that same section, click on [App passwords](https://security.google.com/settings/security/apppasswords) to generate a unique password that can be used with your application.
 
-4. Click the **Select app** dropdown and choose *Other (custom name)*. Enter name of the service of app for which you want to generate a password and click **Generate**.
+4. Click the `Select app` dropdown and choose `Other (custom name)`. Enter name of the service of app for which you want to generate a password and click `Generate`.
 
-5. The newly generated password will appear. Write it down or save it somewhere secure that you’ll be able to find easily in the next steps, then click **Done**:
+5. The newly generated password will appear. Write it down or save it somewhere secure that you’ll be able to find easily in the next steps, then click `Done`:
 
 ### Configure Postfix Server to send email through Gmail
 
@@ -837,21 +836,21 @@ sudo apt-get update
 sudo apt-get install libsasl2-modules postfix
 ```
 
-When prompted, select **Internet Site** as the type of mail server the Postfix installer should configure. In the next screen, the *System Mail Name* should be set to the domain you’d like to send and receive email through.
+When prompted, select `Internet Site` as the type of mail server the Postfix installer should configure. In the next screen, the `System Mail Name` should be set to the domain you’d like to send and receive email through.
 
-Once the installation is complete, confirm that the **myhostname** parameter is configured with your server’s FQDN in ```/etc/postfix/main.cf```
+Once the installation is complete, confirm that the `myhostname` parameter is configured with your server’s FQDN in `/etc/postfix/main.cf`
 
 Generate an Gmail password as described in subsection [Generate Gmail App Password](#generate-gmail-app-password).
 
-Usernames and passwords are stored in sasl_passwd in the ```/etc/postfix/sasl/``` directory. In this section, you’ll add your email login credentials to this file and to Postfix.
+Usernames and passwords are stored in sasl_passwd in the `/etc/postfix/sasl/` directory. In this section, you’ll add your email login credentials to this file and to Postfix.
 
-Open or create the ```/etc/postfix/sasl/sasl_passwd``` file and add the SMTP Host, username, and password information.
+Open or create the `/etc/postfix/sasl/sasl_passwd` file and add the SMTP Host, username, and password information.
 
 ```bash
 sudo nano /etc/postfix/sasl/sasl_passwd
 ```
 
-The SMTP server address configuration *smtp.gmail.com* supports message submission over port 587(StartTLS) and port 465(SSL). Whichever protocol you choose, be sure the port number is the same in ```/etc/postfix/sasl/sasl\\_passwd``` and ```/etc/postfix/main.cf```
+The SMTP server address configuration `smtp.gmail.com` supports message submission over port `587`(StartTLS) and port `465(`SSL). Whichever protocol you choose, be sure the port number is the same in `/etc/postfix/sasl/sasl\\_passwd` and `/etc/postfix/main.cf`
 
 ```bash
 [smtp.gmail.com]:587 username@gmail.com:password
@@ -863,9 +862,9 @@ Create the hash db file for Postfix by running the postmap command.
 sudo postmap /etc/postfix/sasl/sasl_passwd
 ```
 
-If all went well, a new file named **sasl_passwd.db** in the ```/etc/postfix/sasl/``` directory.
+If all went well, a new file named `sasl_passwd.db` in the `/etc/postfix/sasl/` directory.
 
-Secure Postfix has database and email password files by changing persmissions of ```/etc/postfix/sasl/sasl_passwd``` and the ```/etc/postfix/sasl/sasl_passwd.db``` so that only root user cand read from or write to them.
+Secure Postfix has database and email password files by changing persmissions of `/etc/postfix/sasl/sasl_passwd` and the `/etc/postfix/sasl/sasl_passwd.db` so that only root user cand read from or write to them.
 
 ```bash
 sudo chown root:root /etc/postfix/sasl/sasl_passwd /etc/postfix/sasl/sasl_passwd.db
@@ -874,7 +873,7 @@ sudo chmod 0600 /etc/postfix/sasl/sasl_passwd /etc/postfix/sasl/sasl_passwd.db
 
 Next step is to configure the Postfix Relay Server to use Gmail's SMTP server.
 
-Add or modify if exists the following parameters to Postfix configuration file ```/etc/postfix/main.cf```
+Add or modify if exists the following parameters to Postfix configuration file `/etc/postfix/main.cf`
 
 ```bash
 # make sure the port number is matching the one from /etc/postfix/sasl/sasl\\_passwd
@@ -908,7 +907,7 @@ This is a test email
 .
 ```
 
-Check in a separate sesion the changes as they appear live with command below. Use **CRTL + C** to exit the log.
+Check in a separate sesion the changes as they appear live with command below. Use `CRTL + C` to exit the log.
 
 ```bash
 sudo tail -f /var/log/syslog
@@ -923,7 +922,7 @@ sudo apt-get update
 sudo apt-get install mailutils
 ```
 
-Edit sustem-wide **.profile** for Bourne compative shells
+Edit sustem-wide `.profile` for Bourne compative shells
 
 ```bash
 sudo nano /etc/profile
@@ -933,7 +932,7 @@ Add the following text at the end of the file
 
 ```bash
 if [ -n "$SSH_CLIENT" ]; then
-        echo -e 'Login details:\n  - Hostname:'  `hostname -f` '\n  - Date:' "`date`" '\n  - User:' "`who -m`" | mail -s "Login on `hostname` from `echo $SSH_CLIENT | awk '{print $1}'`" adrian.martis@gmail.com
+        echo -e 'Login details:\n  - Hostname:'  `hostname -f` '\n  - Date:' "`date`" '\n  - User:' "`who -m`" | mail -s "Login on `hostname` from `echo $SSH_CLIENT | awk '{print $1}'`" username@gmail.com
 fi
 ```
 
@@ -986,7 +985,7 @@ fudge 127.127.1.0 stratum 10
 Configure NTP to act as time server for local LAN and VPN
 
 ```bash
-# Allow LAN machines to synchronize with this ntp server
+# Allow LAN and VPN machines to synchronize with this ntp server
 restrict 192.168.0.0 mask 255.255.255.0 nomodify notrap
 restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap
 ```
@@ -999,7 +998,7 @@ sudo service ntp start
 sudo service ntp status
 ```
 
-Verify time synchronization status with each defined server or pool and look for *near the servers listed by command below. Any server which is not marked with* is not syncronized.
+Verify time synchronization status with each defined server or pool and look for `*` near the servers listed by command below. Any server which is not marked with `*` is not syncronized.
 
 ```bash
 ntpq -pn
@@ -1007,13 +1006,15 @@ ntpq -pn
 
 ### Proxmox - PCI Passthrough configuration
 
+This section contains information that are specific to the HW on my server. Please keep in mind that you have to adapt the steps here to match the HW configuration of your own server.
+
 Enable IOMMU
 
 ```bash
 nano /etc/default/grub
 ```
 
-Modify line that starts with **GRUB_CMDLINE_LINUX_DEFAULT** to
+Modify line that starts with `GRUB_CMDLINE_LINUX_DEFAULT` to
 
 ```bash
 GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on iommu=pt pcie_acs_override=downstream,multifunction"
@@ -1027,15 +1028,15 @@ sudo update-grub
 
 Reboot machine.
 
-Verify **IOMMU** is enabled by running
+Verify `IOMMU` is enabled by running
 
 ```bash
 sudo dmesg | grep -e DMAR -E IOMMU 
 ```
 
-There should be a message that looks like `"DMAR: IOMMU enabled"`**`
+There should be a message that looks like `"DMAR: IOMMU enabled"`
 
-Add to file **/etc/modules** the following lines and save it
+Add to file `/etc/modules` the following lines and save it
 
 ```bash
 vfio
@@ -1048,7 +1049,7 @@ Check if IOMMU Interrupt remapping is needed by executing `sudo dmesg | grep 're
 
 ### Proxmox - UPS monitoring software
 
-In order to communicate with existing [ups](https://www.cyberpower.com/eu/ro/product/sku/cp1500epfclcd) I use the business version of the monitoring software offered by CyberPower called **CyberPower Panel Business V4**.
+In order to communicate with existing [ups](https://www.cyberpower.com/eu/ro/product/sku/cp1500epfclcd), I use the business version of the monitoring software offered by CyberPower called `CyberPower Panel Business V4`.
 
 Download and install the latest 64bit version for Linux of [CyberPower Panel Business V4](https://www.cyberpowersystems.com/products/software/power-panel-business/). At the time this document was written the latest version was 4.7.0. The download link and the name of the script might change.
 
@@ -1068,18 +1069,18 @@ Execute the script in order to install the software.
 sudo ./ppb470-linux-x86_x64.sh
 ```
 
-Choose **5** or press **Enter** to select English as language. Confirm installation by pressing **o**.
+Choose `5` or press `Enter` to select English as language. Confirm installation by pressing `o`.
 
-In case the software is already installed on the system, the installer will detect this and will ask to to choose to update existing installation( option**1**) or make a new one(option **2**).
+In case the software is already installed on the system, the installer will detect this and will ask to to choose to update existing installation( option`1`) or make a new one(option `2`).
 
-After agreeing with license, make sure to select local(option **1**) not remote version.
+After agreeing with license, make sure to select local(option `1`) not remote version.
 
 After finishing the installation, access the [web page](http://192.168.0.2:3052/local/login), login with default credentials and continue the configuration on the web interface. As long as the UPS is connected via the USB port to the server, it should be detected automatically by the application.
 
 - user: admin
 - pass: admin
 
-**SETTING -> NOTIFICATION CHANNELS**
+#### SETTING -> NOTIFICATION CHANNELS
 
 - Enable notification by email
 - **Provider:** Other
@@ -1091,10 +1092,11 @@ After finishing the installation, access the [web page](http://192.168.0.2:3052/
 - **User name:** personal email address
 - **Pass:** Gmail password. See [Generate Gmail App Password](#generate-gmail-app-password) subsection for details.
 
-**SETTING -> SNMP SETTINGS**
-Enable **SNMPv1** settings and make sure **SNMP Local Port** is 161.
+#### SETTING -> SNMP SETTINGS
 
-Create the public and private groups under SNP v1 profiles. Link them to IP address 0.0.0.0 and set them to read/write.
+Enable `SNMPv1` settings and make sure `SNMP Local Port` is `161`.
+
+Create the public and private groups under SNP v1 profiles. Link them to IP address `0.0.0.0` and set them to read/write.
 
 This means any computer on the network can query using SNMP protocol information from the UPS. It is usefull for integrating the UPS in [HomeAssistant - Home automation server](#homeassistant---home-automation-server).
 
@@ -1102,19 +1104,20 @@ This means any computer on the network can query using SNMP protocol information
 
 It is possible to enable the VNC access for use with usual VNC clients as [RealVNC](https://www.realvnc.com/), [TightVNC](https://www.tightvnc.com/) or [Remmina](https://remmina.org/) Detailed information can be found [here](https://pve.proxmox.com/wiki/VNC_Client_Access)
 
-VNC service for each vm can be accessed using ```serenity.local:5900+display_number```. I use the following schema to determine the port for each VM: ***6000+last 3 digits of IP***
+VNC service for each vm can be accessed using `serenity.local:5900+display_number`. I use the following schema to determine the port for each VM: `6000+last 3 digits of IP`
 
-Add in the VM´s configuration file ```/etc/pve/local/qemu-server/<KVM ID>.conf``` a line which specifies the VNC display number.
+Add in the VM´s configuration file `/etc/pve/local/qemu-server/<KVM ID>.conf` a line which specifies the VNC display number.
 
 ```script
 pfSense(firewall.local): args: -vnc 0.0.0.0:101
 PiHole (pihole.local): args: -vnc 0.0.0.0:203
+TrueNAS (storage.local): args: -vnc 0.0.0.0:214
 HomeAssistant (ha.local): args: -vnc 0.0.0.0:200
 Hercules (hercules.local): args: -vnc 0.0.0.0:201
-Nextcloud (nextcloud.local): args: -vnc 0.0.0.0:202
-Windows10 (win10.local): args: -vnc 0.0.0.0:204
+Nextcloud (nextcloud.local): args: - vnc 0.0.0.0:202
+Windows11 (win10.local): args: -vnc 0.0.0.0:204
 ArchLinux (archlinux.local): args: -vnc 0.0.0.0:205
-DebianWorkstation (linux.local): args: -vnc 0.0.0.0:206
+UbuntuWorkstation (linux.local): args: -vnc 0.0.0.0:206
 test-server1 (test-server1.local): args: -vnc 0.0.0.0:207
 test-server2 (test-server2.local): args: -vnc 0.0.0.0:208
 test-server3 (test-server3.local): args: -vnc 0.0.0.0:209
@@ -1122,6 +1125,7 @@ LinuxMint (mint.local): args: -vnc 0.0.0.0:210
 Android-x86 (android.local): args: -vnc 0.0.0.0:211
 KaliLinux (kali.local): args: -vnc 0.0.0.0:212
 CodeServer (code.local): args: -vnc 0.0.0.0:213
+WordPress(wordpress.local): args: - vnc 0.0.0.0:215
 ```
 
 Reboot the VM to take into account the new configuration.
@@ -1199,9 +1203,9 @@ Download [pfSense+](https://www.pfsense.org/download/), connect it to a CD-ROM o
 
 ### Firewall / NAT / Outbound
 
-he configuration is done trough web interface in section **Firewall / NAT / Outbound**.
+The configuration is done trough web interface in section `Firewall / NAT / Outbound`.
 
-Select mode **Hybrid Outbound NAT rule generation**  in **Outbound NAT Mode** section.
+Select mode `Hybrid Outbound NAT rule generation`  in `Outbound NAT Mode` section.
 
 - Rule for NAT anything out from firewall itself
   - Disabled: Unchecked
@@ -1219,7 +1223,7 @@ Select mode **Hybrid Outbound NAT rule generation**  in **Outbound NAT Mode** se
 
 The following NAT rules have been configured in pfSense. The rules marked with italic are disabled. The rules marked with normal font are active.
 
-The configuration is done trough web interface in section **Firewall / NAT / Port Forward**
+The configuration is done trough web interface in section `Firewall / NAT / Port Forward`
 
 - Rule for Plex web connection
   - Interface: WAN
@@ -1352,11 +1356,11 @@ The configuration is done trough web interface in section **Firewall / NAT / Por
 
 This machine acts as a DHCP server for my entire local network.
 
-The configuration is done trough web interface in section **Services / DHCP Server / LAN**. Configuration parameters marked with italic below are set-up during initial configuratioon and cannot be changed, but I tought it was worth mentioning them.
+The configuration is done trough web interface in section `Services / DHCP Server / LAN`. Configuration parameters marked with italic below are set-up during initial configuratioon and cannot be changed, but I tought it was worth mentioning them.
 
-**Subnet:** *192.168.0.0*
+**Subnet:** 192.168.0.0
 
-**Subnet mask:** *255.255.255.0*
+**Subnet mask:** 255.255.255.0
 
 **Available Range:** 192.168.0.150 - 192.168.0.200
 
@@ -1375,45 +1379,44 @@ The configuration is done trough web interface in section **Services / DHCP Serv
 
 ```text
 MAC address    IP address  Hostname         Description
-34:97:f6:5a:be:cb 192.168.0.2   serenity              Proxmox server  
-00:19:ba:0d:80:50 192.168.0.3   paradox               IP150 - Modul access internet de la centrala alarma Paradox  
-54:a0:50:89:84:e8 192.168.0.4   personal_adi_wired   Laptop personal Adi - ASUS ROG - Interfata wired  
-80:19:34:a3:3e:e6 192.168.0.5   personal_adi_wireless Laptop personal Adi - ASUS ROG - interfata wireless  
-d4:3b:04:67:e2:4c 192.168.0.6   work_adi_wireless     Laptop work Adi - Dell Precision 7530 - Interfata wireless  
+34:97:f6:5a:be:cb 192.168.0.2   serenity             Proxmox server  
+00:19:ba:0d:80:50 192.168.0.3   paradox              IP150 - Modul access internet de la centrala alarma Paradox  
+54:a0:50:89:84:e8 192.168.0.4   adi                  Laptop personal Adi - ASUS ROG - Interfata wired  
+80:19:34:a3:3e:e6 192.168.0.5   adiw                 Laptop personal Adi - ASUS ROG - interfata wireless  
+d4:3b:04:67:e2:4c 192.168.0.6   work_adi_wireless    Laptop work Adi - Dell Precision 7530 - Interfata wireless  
 c8:f7:50:38:3c:ac 192.168.0.7   work_adi_wired       Laptop work Adi - Dell Precision 7530 - Interfata wired  
 14:a7:8b:d3:89:c5 192.168.0.8   ispy                 iSpy - Sistemul video exterior  
-ac:d6:18:42:5d:63 192.168.0.9   adi_phone             Telefon mobil Adi - OnePlus 9 Pro  
-64:a2:f9:ea:da:8b 192.168.0.10 adi_phone_6t         Telefon mobil Adi - OnePlus 6t  
-30:ab:6a:57:e3:41 192.168.0.11 oli_phone             Telefon mobil Oli - Samsung Galaxy S10  
-bc:7a:bf:96:8a:7c 192.168.0.15 adi_father_phone     Telefon mobil Tata Adi - Samsung Galaxy A51  
-d8:47:32:f5:dc:e6 192.168.0.36 router               Router wireless - Tp Link Archer C80  
-b0:4e:26:eb:8d:8c 192.168.0.37 repeater             Repeater mansarda - Tp Link TL-WA855RE  
-d8:0f:99:12:7b:b3 192.168.0.38 tv_living_wireless   TV Living - Sony LED Bravia 138.8cm, 55XE8577 - wireless interface  
-f4:f5:d8:05:d2:98 192.168.0.39 chromecast           TV Dormitor Alb - Chromecast  
-c4:73:1e:ab:1a:12 192.168.0.40 tv_alb               TV Dormitor Alb - Samsung UE40H5030AW  
-04:5d:4b:a0:8d:cd 192.168.0.41 tv_living_wired       TV Living - Sony LED Bravia 138.8cm, 55XE8577 - wired interface  
-10:3d:1c:c1:bf:ec 192.168.0.46 work_oli             Laptop work Oli - Interfata wireless  
-b8:70:f4:a4:f3:bd 192.168.0.99 acer_laptop           Laptop Acer Aspire - wired interface  
+ac:d6:18:42:5d:63 192.168.0.9   adi_phone            Telefon mobil Adi - OnePlus 9 Pro  
+30:ab:6a:57:e3:41 192.168.0.11  oli_phone            Telefon mobil Oli - Samsung Galaxy S10  
+bc:7a:bf:96:8a:7c 192.168.0.15  adi_father_phone     Telefon mobil Tata Adi - Samsung Galaxy A51  
+d8:47:32:f5:dc:e6 192.168.0.36  router               Router wireless - Tp Link Archer C80  
+b0:4e:26:eb:8d:8c 192.168.0.37  repeater             Repeater mansarda - Tp Link TL-WA855RE  
+d8:0f:99:12:7b:b3 192.168.0.38  tv_living_wireless   TV Living - Sony LED Bravia 138.8cm, 55XE8577 - wireless interface  
+f4:f5:d8:05:d2:98 192.168.0.39  chromecast           TV Dormitor Alb - Chromecast  
+c4:73:1e:ab:1a:12 192.168.0.40  tv_alb               TV Dormitor Alb - Samsung UE40H5030AW  
+04:5d:4b:a0:8d:cd 192.168.0.41  tv_living_wired      TV Living - Sony LED Bravia 138.8cm, 55XE8577 - wired interface  
+10:3d:1c:c1:bf:ec 192.168.0.46  work_oli             Laptop work Oli - Interfata wireless  
+b8:70:f4:a4:f3:bd 192.168.0.99  acer_laptop          Laptop Acer Aspire - wired interface  
 de:5c:a6:b6:4a:aa 192.168.0.100 ha                   Home Assistant VM  
 c2:32:6d:99:f9:76 192.168.0.101 hercules             Ubuntu Server VM - used for running services in Docker  
-86:11:99:9f:ff:b9 192.168.0.102 nextcloud             Ubuntu Server VM - used for hosting Nextcloud  
+86:11:99:9f:ff:b9 192.168.0.102 nextcloud            Ubuntu Server VM - used for hosting Nextcloud  
 62:1b:ea:05:7f:1c 192.168.0.103 pihole               PhiHole VM - ad blocking filter, local DNS and DNS resolver  
-02:d0:7f:f8:61:1c 192.168.0.104 win10                 VM running Windows 10  
-92:4b:cc:81:96:83 192.168.0.105 archlinux             VM running ArchLinux  
-9a:ce:ab:cb:03:43 192.168.0.106 linux                 VM running Ubuntu 20.10 Desktop  
+02:d0:7f:f8:61:1c 192.168.0.104 win                  VM running Windows 11  
+9a:ce:ab:cb:03:43 192.168.0.106 linux                VM running Ubuntu 20.10 Desktop  
 d6:3d:c3:76:fc:ed 192.168.0.107 test-server1         Test server 1 running Ubuntu server 20.10  
 6e:91:2f:17:b3:8d 192.168.0.108 test-server2         Test server 2 running Ubuntu server 20.10  
 82:36:62:1f:59:2f 192.168.0.109 test-server3         Test server 3 running Ubuntu server 20.10  
 7a:0d:69:93:42:6c 192.168.0.110 mint                 VM running LinuxMint Desktop  
-26:8d:6e:7b:b6:b3 192.168.0.111 android               VM running Android X86 VM for development testing purposes  
+26:8d:6e:7b:b6:b3 192.168.0.111 android              VM running Android X86 VM for development testing purposes  
 ae:88:40:3c:fb:ce 192.168.0.112 kali                 VM running Kali Linux Desktop  
 0e:04:4b:34:47:c4 192.168.0.113 code                 VM running Ubuntu server 20.10 used for remote code development  
-fe:17:d2:92:c8:74 192.168.0.114 storage               VM used for storage management running TrueNAS Scale  
-70:ee:50:55:0e:58 192.168.0.234 termostat             Termonstat Netatmo - NTH01-EN-EU  
+fe:17:d2:92:c8:74 192.168.0.114 storage              VM used for storage management running TrueNAS Scale 
+2a:56:f4:07:5d:3d 192.168.0.115 wordpress            Ubuntu Server VM - used for hosting Wordpress 
+70:ee:50:55:0e:58 192.168.0.234 termostat            Termonstat Netatmo - NTH01-EN-EU  
 70:03:9f:47:4d:4e 192.168.0.243 gate                 Switch Sonoff ESP_474D4E - poarta auto  
-b4:e6:2d:15:7d:d0 192.168.0.244 sonoff_living         Switch  Sonoff ESP_157DD0 - Lampa canapea living  
-bc:dd:c2:0f:5b:7c 192.168.0.245 sonoff_dormitor       Switch Sonoff ESP_0F5B7C - Lampi dormitor mare  
-70:66:55:0d:b1:02 192.168.0.246 clima_masterbedroom   Clima dormitor mare - Daikin BRP069B43  
+b4:e6:2d:15:7d:d0 192.168.0.244 sonoff_living        Switch  Sonoff ESP_157DD0 - Lampa canapea living  
+bc:dd:c2:0f:5b:7c 192.168.0.245 sonoff_dormitor      Switch Sonoff ESP_0F5B7C - Lampi dormitor mare  
+70:66:55:0d:b1:02 192.168.0.246 clima_masterbedroom  Clima dormitor mare - Daikin BRP069B43  
 70:66:55:0d:5e:6a 192.168.0.247 clima_dormitor       Clima dormitor alb - Daikin BRP069B43  
 70:66:55:0d:86:f5 192.168.0.248 clima_living         Clima living - Daikin BRP069B43  
 40:31:3c:ab:e0:69 192.168.0.249 vacuum               Aspirator - Xiaomi Roborock S50
@@ -1531,27 +1534,27 @@ Once the installation is completed, open the web interface and continue the rest
 
 Make the following configuration in each page below.
 
-**System Settings -> General**
+#### System Settings -> General
 
 Remove existing NTP servers and add local NPT server(192.168.0.2) with only option selected `iBurst` and Min/Max Pool set to 6/10.
 
 Change `Timezone` in `Localication` to `Europe/Bucharest`
 
-**System Settings -> Services**
+#### System Settings -> Services
 
-Activate **SSH** service and make sure it is marked to be started automatically. Press the configure button and make sure `Log in as Root with Password` and `Allow Password Authentication` are unckeched.
+Activate `SSH` service and make sure it is marked to be started automatically. Press the configure button and make sure `Log in as Root with Password` and `Allow Password Authentication` are unckeched.
 
-**Credentials -> Local Users**
+#### Credentials -> Local Users
 
 Add a new user called `sitram` with UID `1000`
 
 Add my personal public key to user `root` so that I can log is with SSH securely.
 
-**Credentials -> Local Users**
+#### Credentials -> Local Groups
 
 Add a new group called `sitram` with GID `1000`
 
-**Network**
+#### Network
 
 In `Global Configuration` section change
 
@@ -1560,7 +1563,7 @@ In `Global Configuration` section change
 - DNS: `192.168.0.101` and `8.8.8.8`
 - Default Gateway: `192.168.0.1`
 
-**Shares**
+#### Shares
 
 - Windows (SMB) Shares
   - Share 1
@@ -1648,15 +1651,15 @@ Go back into the Home Assistant VM and then go into `Hardware`. The unused disk 
 
 The hard disk, by default, would only have 6GB available. So, to make it larger (32GB Recommended), click on `Resize disk` and add the additional amount that you want to add to the 6GB already available.
 
-The configuration is now completed After powering on the Home Assistant VM, go into **Console** to verify that the installation is working as expected. The process can take several minutes. After the installation is finalized, go to `ha.local:8123`, and the Home Assistant initial configuration would come up.
+The configuration is now completed After powering on the Home Assistant VM, go into `Console` to verify that the installation is working as expected. The process can take several minutes. After the installation is finalized, go to `ha.local:8123`, and the Home Assistant initial configuration would come up.
 
 ### HomeAssistant - Other plugins
 
 ### HomeAssistant - Mosquitto broker(MQTT)
 
-Open **Supervisor -> Add-on Store** and search for **Mosquitto broker** addon and install it.
+Open `Supervisor -> Add-on Store` and search for `Mosquitto broker` addon and install it.
 
-Click **Mosquitto broker** and continue configuration there
+Click `Mosquitto broker` and continue configuration there
 
 - Info tab
   - Make sure `Start on boot`, `Watchdog` and `Auto update` options are active
@@ -1680,7 +1683,7 @@ Click **Mosquitto broker** and continue configuration there
   - Normal MQTT with SSL port - `8883`
   - MQTT over WEbSocker with SSL - `8884`
 
-Press the **Start** button on the info page of the integration and check the **Log** section to make sure HomeAssistant connects succesfully to Paradox Alarm.
+Press the `Start`* button on the info page of the integration and check the `Log` section to make sure HomeAssistant connects succesfully to Paradox Alarm.
 
 Add the following code in `configurations.yam`l file. Sensitive information is located in a separate file called `secrets.yaml`.
 
@@ -1707,11 +1710,11 @@ In order to communicated with Paradox Alarm you need the following preconditions
 [HomeAssistant - Mosquitto broker(MQTT)](#homeassistant---mosquitto-brokermqtt)
 - Install an additional
 
-Open **Supervisor -> Add-on Store** and click the three dots in the upper right corner. Select **Repositories** and add repository for **Paradox Alarm Interface Hass.io** from `https://github.com/ParadoxAlarmInterface/hassio-repository`
+Open `Supervisor -> Add-on Store` and click the three dots in the upper right corner. Select `Repositories` and add repository for `Paradox Alarm Interface Hass.io` from `https://github.com/ParadoxAlarmInterface/hassio-repository`
 
-There should be 3 new integrations available in **Supervisor -> Add-on Store** section at the bottom of the page.
+There should be 3 new integrations available in `Supervisor -> Add-on Store` section at the bottom of the page.
 
-Click **Paradox Alarm Interface** and continue configuration there
+Click `Paradox Alarm Interface` and continue configuration there
 
 - Info tab
   - Make sure `Start on boot`, `Watchdog` and `Auto update` options are active
@@ -1739,7 +1742,7 @@ Click **Paradox Alarm Interface** and continue configuration there
       key-switch: ''
     SYNC_TIME: true
     SYNC_TIME_MIN_DRIFT: 120
-    PASSWORD: '2153'
+    PASSWORD: 'xxx' -> replace with the panel PIN
     MQTT_ENABLE: true
     MQTT_HOST: 192.168.0.100
     MQTT_PORT: 1883
@@ -1786,14 +1789,13 @@ Click **Paradox Alarm Interface** and continue configuration there
 
 - host TCP port - `10000`.
 
-Press the **Start** button on the info page of the integration and check the **Log** section to make sure HomeAssistant connects succesfully to Paradox Alarm.
+Press the `Start` button on the info page of the integration and check the `Log` section to make sure HomeAssistant connects succesfully to Paradox Alarm.
 
 ### HomeAssistant - UPS integration
 
 In order to access different parameters of the UPS using the SNMP protocol, certain stepts need to be taken to identify the corresponding OID's.
 
-Download the latest [MIB](https://www.cyberpowersystems.com/products/software/mib-files/
-) file from CyberPower.
+Download the latest [MIB](https://www.cyberpowersystems.com/products/software/mib-files/) file from CyberPower.
 
 Download and install a MIB browser to edit the file.
 
@@ -1801,11 +1803,11 @@ Download and install a MIB browser to edit the file.
 - [MIB Browser](https://www.ireasoning.com/mibbrowser.shtml)
 - SNMP Browser.
 
-Choose **File -> Open** and go to the folder where you stored the CyberPower MIB file and select it. Start by selecting your ip address or localhost as the address in the top right box.
+Choose `File -> Open` and go to the folder where you stored the CyberPower MIB file and select it. Start by selecting your ip address or localhost as the address in the top right box.
 
-Select from the tree explorer **private -> enterprises -> cps -> products -> ups** and double click a **leaf** on the tree to query the OID and return a value. The OID is listed at the bottom left. When double click on the OID, the values are shown on the right hand panel.
+Select from the tree explorer `private -> enterprises -> cps -> products -> ups` and double click a `leaf` on the tree to query the OID and return a value. The OID is listed at the bottom left. When double click on the OID, the values are shown on the right hand panel.
 
-The OIDs from CyberPower need the **.0** at the end when used in another application. The values from viewer cannot be copied as they are.
+The OIDs from CyberPower need the `.0` at the end when used in another application. The values from viewer cannot be copied as they are.
 
 In order to understand the units of an OID, look at the response data. It might be
 
@@ -1813,7 +1815,7 @@ In order to understand the units of an OID, look at the response data. It might 
 - ticks - e.g. time remaining in my example below
 - a series of strings, e.g the 'Status', which  can then be used to develop the value_template in configuration.yaml.
 
-Add the following code in `configurations.yam`l file to be able to monitor some usefull parameters.
+Add the following code in `configurations.yaml` file to be able to monitor some usefull parameters.
 
 ```yaml
 sensor:
@@ -1929,7 +1931,7 @@ sensor:
           {% endif %}
 ```
 
-Create a new tab in the **Overview** section called **UPS** and add a new **Entities Card** to it with the code below. Make sure an appropiate image with name **ups.png** is loaded in `/config/www/ups`
+Create a new tab in the `Overview` section called `UPS` and add a new `Entities Card` to it with the code below. Make sure an appropiate image with name `ups.png` is loaded in `/config/www/ups`
 
 ```yaml
 type: entities
@@ -2012,12 +2014,12 @@ camera fata stanga:
     verify_ssl: false
 ```
 
-Open the **Overview** tab and add a new view with the followint configuration:
+Open the `Overview` tab and add a new view with the followint configuration:
 
 - Title: `Camere`
 - Icon: `mdi:cctv`
 
- Add 4 **Picture Entity Card** with the following configuration:
+ Add 4 `Picture Entity Card` with the following configuration:
 
 - Entity: `camera.camera_fata_dreapta`
 - Entity: `camera.camera_laterala`
@@ -2049,7 +2051,7 @@ To use Google Assistant, your Home Assistant configuration has to be externally 
       - Authorization URL: `https://[YOUR HOME ASSISTANT URL:PORT]/auth/authorize.` (Replace [`YOUR HOME ASSISTANT URL:PORT]` with your values.)
       - Token URL (replace with your actual URL): `https://[YOUR HOME ASSISTANT URL:PORT]/auth/token`. (Replace `[YOUR HOME ASSISTANT URL:PORT]` with your values.) Click `Next`, then `Next` again.
     - In the `Configure` your client `Scopes` textbox, type email and click `Add scope`, then type name and click `Add scope` again.
-    - Do **NOT** check `Google to transmit clientID and secret via HTTP basic auth header`.
+    - Do `NOT` check `Google to transmit clientID and secret via HTTP basic auth header`.
     - Click `Next`, then click `Save`
  3. Select the `Develop` tab at the top of the page, then in the upper right hand corner select the `Test` button to generate the draft version Test App. If you don’t see this option, go to the `Test` tab instead, click on the `Settings` button in the top right below the header, and ensure `On device testing` is enabled (if it isn’t, enable it).
  4. Add the `google_assistant` integration configuration to your `configuration.yaml` file and restart Home Assistant .
@@ -2095,7 +2097,7 @@ google_assistant:
   project_id: smart-home-e8da1
   service_account: !include service_account_google_assistant.json
   report_state: true
-  secure_devices_pin: "2153"
+  secure_devices_pin: "xxxx" -> replace with alarm panel PIN
   exposed_domains:
     - alarm_control_panel
     - camera
@@ -3384,11 +3386,11 @@ Add the following mounting points to `/etc/fstab/`
 
 ### Hercules - Redis docker container
 
-### Hercules - WordPress docker container
-
 ### Hercules - Jenkins CI docker container
 
 ### Hercules - LibreSpeed docker container
+
+### Hercules - PortfolioPerformance docker container
 
 ## Windows11 - Virtual Windows Desktop VM
 
@@ -3447,7 +3449,7 @@ To install CodeServer using the command below. The same command can be used to u
 curl -fsSL https://code-server.dev/install.sh | sh
 ```
 
-To have **systemd** start code-server now and restart on boot:
+To have `systemd` start code-server now and restart on boot:
 
 ```bash
 sudo systemctl enable --now code-server@$USER
