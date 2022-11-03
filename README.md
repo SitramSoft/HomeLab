@@ -82,21 +82,25 @@ Table of contents:
   - [Hercules - VM configuration](#hercules---vm-configuration)
   - [Hercules - OS Configuration](#hercules---os-configuration)
   - [Hercules - Docker installation and docker-compose](#hercules---docker-installation-and-docker-compose)
-  - [Hercules - Portainer docker container](#hercules---portainer-docker-container)
-  - [Hercules - Guacamole docker container](#hercules---guacamole-docker-container)
+    - [Hercules - Remove docker packages from Ubuntu repository](#hercules---remove-docker-packages-from-ubuntu-repository)
+    - [Hercules - set up Docker repository](#hercules---set-up-docker-repository)
+    - [Hercules - Install Docker Engine](#hercules---install-docker-engine)
   - [Hercules - Watchtower docker container](#hercules---watchtower-docker-container)
   - [Hercules - Heimdall docker container](#hercules---heimdall-docker-container)
-  - [Hercules - Plex docker container](#hercules---plex-docker-container)
-  - [Hercules - Radarr docker container](#hercules---radarr-docker-container)
-  - [Hercules - Sonarr docker container](#hercules---sonarr-docker-container)
-  - [Hercules - Bazarr docker container](#hercules---bazarr-docker-container)
-  - [Hercules - Lidarr docker container](#hercules---lidarr-docker-container)
-  - [Hercules - Jackett docker container](#hercules---jackett-docker-container)
-  - [Hercules - Transmission docker container](#hercules---transmission-docker-container)
-  - [Hercules - DuckDNS docker container](#hercules---duckdns-docker-container)
-  - [Hercules - SWAG - Secure Web Application Gateway docker container](#hercules---swag---secure-web-application-gateway-docker-container)
+  - [Hercules - Portainer docker container](#hercules---portainer-docker-container)
   - [Hercules - Calibre docker container](#hercules---calibre-docker-container)
   - [Hercules - Calibre-web docker container](#hercules---calibre-web-docker-container)
+  - [Hercules - qBitTorrent docker container](#hercules---qbittorrent-docker-container)
+  - [Hercules - Jackett docker container](#hercules---jackett-docker-container)
+  - [Hercules - Sonarr docker container](#hercules---sonarr-docker-container)
+  - [Hercules - Radarr docker container](#hercules---radarr-docker-container)
+  - [Hercules - Bazarr docker container](#hercules---bazarr-docker-container)
+  - [Hercules - Lidarr docker container](#hercules---lidarr-docker-container)
+  - [Hercules - Overseerr docker container](#hercules---overseerr-docker-container)
+  - [Hercules - DuckDNS docker container](#hercules---duckdns-docker-container)
+  - [Hercules - SWAG - Secure Web Application Gateway docker container](#hercules---swag---secure-web-application-gateway-docker-container)
+  - [Hercules - Guacamole docker container](#hercules---guacamole-docker-container)
+  - [Hercules - Plex docker container](#hercules---plex-docker-container)
   - [Hercules - Adminer docker container](#hercules---adminer-docker-container)
   - [Hercules - PGAdmin docker container](#hercules---pgadmin-docker-container)
   - [Hercules - PostgressSQL database docker container](#hercules---postgresssql-database-docker-container)
@@ -3345,35 +3349,462 @@ Add the following mounting points to `/etc/fstab/`
 
 ### Hercules - Docker installation and docker-compose
 
-### Hercules - Portainer docker container
+I used for a while the Docker Engine from Ubuntu apt repository, until a container stopped working because it needed the latest version which was not yet available. I decided to switch from Ubuntu's apt version of docker to the official one from [here](https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository) and it has been working great so far.
 
-### Hercules - Guacamole docker container
+I launch all containers from a single docker-compose file called `docker-compose.yml` which I store in `/home/sitram/data`. Together with the yaml file, I store a `.env` file which contains the stack name:
+
+```bash
+echo COMPOSE_PROJECT_NAME=serenity >> /home/sitram/data/.env
+```
+
+The configuration of each container is stored in `/home/sitram/docker` in a folder named after each container. I have a job running on the host server, which periodically creates a backup of this VM to a Raid 1 so I should be protected in case of some failures.
+
+[TODO] move the containers docker configuration to my tank1 in order to reduce the wear on the SSD.
+
+#### Hercules - Remove docker packages from Ubuntu repository
+
+Identify what docker related packages are installed on your system
+
+```bash
+dpkg -l | grep -i docker
+```
+
+Remove any docker related packages installed from Ubuntu repository. This will not remove images, containers, volumes, or user created configuration files on your host.
+
+```bash
+sudo apt-get purge -y docker-engine docker docker.io docker-ce docker-ce-cli docker-compose-plugin
+sudo apt-get autoremove -y --purge docker-engine docker docker.io docker-ce docker-compose-plugin
+```
+
+If you wish to delete all images, containers, and volumes run the following commands:
+
+```bash
+sudo rm -rf /var/lib/docker /etc/docker
+sudo rm /etc/apparmor.d/docker
+sudo groupdel docker
+sudo rm -rf /var/run/docker.sock
+```
+
+#### Hercules - set up Docker repository
+
+Update the `apt` package index and install packages to allow apt to use a repository over HTTPS:
+
+```bash
+sudo apt-get update
+sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+```
+
+Add Docker’s official GPG key:
+
+```bash
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+```
+
+Use the following command to set up the repository:
+
+```bash
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+#### Hercules - Install Docker Engine
+
+Update the apt package index:
+
+```bash
+sudo apt-get update
+```
+
+Install the latest version of Docker Engine
+
+```bash
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+Verify that the Docker Engine installation is successful by running the hello-world image
+
+```bash
+sudo docker run hello-world
+```
 
 ### Hercules - Watchtower docker container
 
+I keep my containers updated using [Watchtower](https://containrrr.dev/watchtower/). It runs every night and sends notifications over telegram.
+
+The container has:
+
+- a volume mapped to `/var/run/docker.sock` used to access Docker via Unix sockets
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Watchtower every night with telegram notification - https://containrrr.dev/watchtower/
+#Chron Expression format - https://pkg.go.dev/github.com/robfig/cron@v1.2.0#hdr-CRON_Expression_Format
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower_schedule_telegram
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    command: 
+      --cleanup
+      --include-stopped
+      --notifications shoutrrr 
+      --notification-url "xxxxxxx"
+      --schedule "0 0 0 * * *"
+```
+
 ### Hercules - Heimdall docker container
 
-### Hercules - Plex docker container
+I use [Heimdall](https://hub.docker.com/r/linuxserver/heimdall) as a web portal for managing al the services running on my HomeLab.
 
-### Hercules - Radarr docker container
+The container has:
 
-### Hercules - Sonarr docker container
+- a volume mapped to `/home/sitram/docker/heimdall` used to store the configuration of the application
 
-### Hercules - Bazarr docker container
+Below is the docker-compose I used to launch the container.
 
-### Hercules - Lidarr docker container
+```yaml
+#Heimdall - Web portal for managing home lab services - https://hub.docker.com/r/linuxserver/heimdall
+  heimdall:
+    image: ghcr.io/linuxserver/heimdall
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+    volumes:
+      - /home/sitram/docker/heimdall:/config
+    ports:
+      - 81:80
+      - 441:443
+    restart: unless-stopped
+```
+
+### Hercules - Portainer docker container
+
+I use [Portainer](https://www.portainer.io/) as a web interface for managing my docker containers. It helps me tocheck container logs, login to a shell inside the container and perform other various debugging activities.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/portainer` used to store the configuration of the application
+- a volume mapped to `/var/run/docker.sock` used to access Docker via Unix sockets
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Portainer - a web interface for managing docker containers
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/sitram/docker/portainer:/data
+```
+
+### Hercules - Calibre docker container
+
+I use [Calibre](https://hub.docker.com/r/linuxserver/calibre) as a book management application. My book library is stored in the mounted volume.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/calibre` used to store the configuration of the application
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Calibre - Books management application - https://hub.docker.com/r/linuxserver/calibre
+  calibre: 
+    image: ghcr.io/linuxserver/calibre:latest
+    container_name: calibre
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+      - UMASK_SET=022 #optional
+    volumes:
+      - /home/sitram/docker/calibre:/config
+    ports:
+      - 8080:8080
+      - 8081:8081
+      - 9090:9090
+    restart: unless-stopped
+```
+
+### Hercules - Calibre-web docker container
+
+I use [Calibre-web](https://hub.docker.com/r/linuxserver/calibre-web) as a web app providing a clean interface for browsing, reading and downloading eBooks using an existing Calibre datavase.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/calibre-web` used to store the configuration of the application
+- a volume mapped to `/home/sitram/docker/calibre/Calibre Library` where the Calibre database is located.
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Calibre-web - web app providing a clean interface for browsing, reading and downloading eBooks using an existing Calibre database. - https://hub.docker.com/r/linuxserver/calibre-web
+  calibre-web: 
+    image: ghcr.io/linuxserver/calibre-web
+    container_name: calibre-web
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+      - DOCKER_MODS=linuxserver/calibre-web:calibre
+    volumes:
+      - /home/sitram/docker/calibre-web:/config
+      - "/home/sitram/docker/calibre/Calibre Library:/books"
+    ports:
+      - 8086:8083
+    restart: unless-stopped
+```
+
+### Hercules - qBitTorrent docker container
+
+I use [qBitTorrent](https://hub.docker.com/r/linuxserver/qbittorrent/) as my main torrent client accessible to the entire LAN network. I use an older version(14.3.9) because the latest immage is causing some issues which I couldn't figure how to solve.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/qbittorrent` used to store the configuration of the application
+- a volume mapped to `/home/sitram/media/torrents` where all downloaded torrents are storred to preserve the life of the host SSD
+- a volume mapped to `/home/sitram/media/torrents/torrents` where I can add any `.torrent` file and it will be automatically started by the client.
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#qBitTorrent - Torrent client - https://hub.docker.com/r/linuxserver/qbittorrent/
+# 2022.07.08 - Latest docker image caused torrents to go into error and wouldn't download.
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:14.3.9
+    #image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+      - WEBUI_PORT=9093
+    volumes:
+      - /home/sitram/docker/qbittorrent:/config
+      - /home/sitram/media/torrents:/downloads
+      - /home/sitram/media/torrents/torrents:/watch
+    ports:
+      - 51413:51413
+      - 51413:51413/udp
+      - 9093:9093
+    restart: unless-stopped
+```
 
 ### Hercules - Jackett docker container
 
-### Hercules - Transmission docker container
+I use [Jackett]( https://ghcr.io/linuxserver/jackett) as a proxy server: it translates queries from apps (Sonarr, SickRage, CouchPotato, Mylar, etc) into tracker-site-specific http queries, parses the html response, then sends results back to the requesting software.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/jackett` used to store the configuration of the application
+- a volume mapped to `/home/sitram/media/torrents` where all downloaded torrents are storred to preserve the life of the host SSD
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+# Jackett - works as a proxy server: it translates queries from apps (Sonarr, SickRage, CouchPotato, Mylar, etc) into tracker-site-specific http queries, parses the html response, then sends results back to the requesting software. - https://ghcr.io/linuxserver/jackett
+  jackett: 
+    image: ghcr.io/linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+      - AUTO_UPDATE=true #optional
+    volumes:
+      - /home/sitram/docker/jackett:/config
+      - /home/sitram/media/torrents:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+```
+
+### Hercules - Sonarr docker container
+
+I use [Sonarr](https://ghcr.io/linuxserver/sonarr) as a web application to mnitor multiple sources for favourite tv shows.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/sonarr` used to store the configuration of the application
+- a volume mapped to `/home/sitram/media/tvseries` used to store all TV shows
+- a volume mapped to `/home/sitram/media/torrents` where all downloaded torrents are storred to preserve the life of the host SSD
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Sonarr - Monitor multiple sources for favourite tv shows - https://ghcr.io/linuxserver/sonarr
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+      - UMASK_SET=022 #optional
+    volumes:
+      - /home/sitram/docker/sonarr:/config
+      - /home/sitram/media/tvseries:/tv
+      - /home/sitram/media/torrents:/downloads
+    ports:
+      - 8989:8989
+    depends_on:
+      - jackett
+      - qbittorrent
+    restart: unless-stopped
+```
+
+### Hercules - Radarr docker container
+
+I use [Radarr](https://ghcr.io/linuxserver/radarr) as a web application to mnitor multiple sources for favourite movies.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/radarr` used to store the configuration of the application
+- a volume mapped to `/home/sitram/media/movies` used to store all the movies
+- a volume mapped to `/home/sitram/media/torrents` where all downloaded torrents are storred to preserve the life of the host SSD
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Radarr - A fork of Sonarr to work with movies https://ghcr.io/linuxserver/radarr
+  radarr:
+    image: ghcr.io/linuxserver/radarr:nightly-alpine
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+      - UMASK_SET=022 #optional
+    volumes:
+      - /home/sitram/docker/radarr:/config
+      - /home/sitram/media/movies:/movies
+      - /home/sitram/media/torrents:/downloads
+    ports:
+      - 7878:7878
+    depends_on:
+      - jackett
+      - qbittorrent
+    restart: unless-stopped
+```
+
+### Hercules - Bazarr docker container
+
+I use [Bazarr](https://ghcr.io/linuxserver/bazarr) as a web application companion to Sonarr and Radarr. It can manage and download subtitles based on your requirements.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/bazarr` used to store the configuration of the application
+- a volume mapped to `/home/sitram/media/movies` used to store all the movies
+- a volume mapped to `/home/sitram/media/tvseries` used to store all TV shows
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Bazarr is a companion application to Sonarr and Radarr. It can manage and download subtitles based on your requirements. - https://hub.docker.com/r/linuxserver/bazarr
+  bazarr:
+    image: ghcr.io/linuxserver/bazarr
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+    volumes:
+      - /home/sitram/docker/bazarr:/config
+      - /home/sitram/media/movies:/movies
+      - /home/sitram/media/tvseries:/tv
+    ports:
+      - 6767:6767
+    depends_on:
+      - radarr
+      - sonarr
+    restart: unless-stopped
+```
+
+### Hercules - Lidarr docker container
+
+I use [Lidarr](https://hub.docker.com/r/linuxserver/lidarr) as a web application to manage my music collection.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/lidarr` used to store the configuration of the application
+- a volume mapped to `/home/sitram/media/music` used to store all the music
+- a volume mapped to `/home/sitram/media/torrents` where all downloaded torrents are storred to preserve the life of the host SSD
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Lidarr is a music collection manager for Usenet and BitTorrent users. - https://hub.docker.com/r/linuxserver/lidarr
+  lidarr:
+    image: ghcr.io/linuxserver/lidarr
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+    volumes:
+      - /home/sitram/docker/lidarr:/config
+      - /home/sitram/media/music:/music
+      - /home/sitram/media/torrents:/downloads
+    ports:
+      - 8686:8686
+    depends_on:
+      - jackett 
+      - qbittorrent
+    restart: unless-stopped
+```
+
+### Hercules - Overseerr docker container
+
+I use [Overseerr](https://hub.docker.com/r/sctx/overseerr) as a free and open source web application for managing requests for my media library. It integrates with your existing services, such as Sonarr, Radarr, and Plex.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/overseerr` used to store the configuration of the application
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Overseerr is a free and open source software application for managing requests for your media library. 
+# It integrates with your existing services, such as Sonarr, Radarr, and Plex!
+# https://hub.docker.com/r/sctx/overseerr
+  overseerr:
+    image: sctx/overseerr:latest
+    container_name: overseerr
+    environment:
+      - LOG_LEVEL=debug
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+    ports:
+      - 5055:5055
+    volumes:
+      - /home/sitram/docker/overseerr:/app/config
+    restart: unless-stopped
+```
 
 ### Hercules - DuckDNS docker container
 
 ### Hercules - SWAG - Secure Web Application Gateway docker container
 
-### Hercules - Calibre docker container
+### Hercules - Guacamole docker container
 
-### Hercules - Calibre-web docker container
+### Hercules - Plex docker container
 
 ### Hercules - Adminer docker container
 
