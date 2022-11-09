@@ -4088,7 +4088,7 @@ Common apps for all desktop environments:
 - **calculator**: qalculate-gtk
 - **image editor**: gimp
 - **image viewer:** nomacs
-- **video player**: vlc
+- **video player**: smplayer-themes smplayer-skins smtube yt-dlp
 - **video editing software**: shotcut
 - **video transcoder software**: handbrake
 - **Nvidia driver**: nvidia
@@ -4111,7 +4111,7 @@ Common apps for all desktop environments:
 - **LightDM display manager configuration tool**: lightdm-settings
 
 ```bash
-sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs vlc shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk freerdp lightdm-settings
+sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs smplayer-themes smplayer-skins smtube yt-dlp shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk freerdp lightdm-settings
 ```
 
 Configure [PipeWire](https://wiki.archlinux.org/title/PipeWire) multimedia framework
