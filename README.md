@@ -4127,6 +4127,22 @@ sudo pacman -S pipewire pipewire-alsa pipewire-pulse wireplumber
 yay -S easyeffects
 ```
 
+Load extra modules
+
+```bash
+sudo touch /etc/pipewire/pipewire-pulse.conf.d/pipewire.conf
+nano /etc/pipewire/pipewire-pulse.conf.d/pipewire.conf
+```
+
+add text
+
+```bash
+# Extra modules can be loaded here.
+context.exec = [
+    { path = "pactl"        args = "load-module module-switch-on-connect" }
+]
+```
+
 Configure [PulseAudio](https://wiki.archlinux.org/title/PulseAudio) multimedia framework
 
 - **General-purpose sound server**: pulseaudio
