@@ -121,6 +121,9 @@ Table of contents:
 - [ArchLinux - Desktop VM](#archlinux---desktop-vm)
   - [ArchLinux - VM configuration](#archlinux---vm-configuration)
   - [ArchLinux - OS Configuration](#archlinux---os-configuration)
+  - [ArchLinux - Network configuration](#archlinux---network-configuration)
+    - [ArchLinux - systemd-networkd](#archlinux---systemd-networkd)
+    - [ArchLinux - NetworkManager](#archlinux---networkmanager)
   - [ArchLinux - Troubleshoot sound issues](#archlinux---troubleshoot-sound-issues)
   - [ArchLinux - I3 installation & Customization](#archlinux---i3-installation--customization)
   - [ArchLinux - ZSH shell](#archlinux---zsh-shell)
@@ -719,6 +722,17 @@ sudo timedatectl
 ```
 
 ### Correct DNS resolution
+
+Edit file /etc/systemd/resolv.conf an add the following lines:
+
+```bash
+[Resolve]
+DNS=192.168.0.103
+FallbackDNS=8.8.8.8
+Domains=local
+```
+
+To provide domain name resolution for software that reads `/etc/resolv.conf` directly, such as web browsers and GnuPG, replace the file with a symbolic link to the one from `systemd-resolved`
 
 ```bash
 sudo rm -f /etc/resolv.conf
@@ -3931,7 +3945,7 @@ sudo systemctl restart code-server@$USER
 
 ### ArchLinux - OS Configuration
 
-Install iNet Wireless Wireless daemon and set a delay for iwd service start
+Install iNet Wireless daemon and set a delay for iwd service start
 
 ```bash
 sudo pacman -S iwd
@@ -3991,8 +4005,8 @@ sudo pacman -Syyy
 Add the following mounting points to `/etc/fstab/`
 
 ```bash
-192.168.0.114:/mnt/tank1/data /home/sitram/mounts/data nfs defaults,x-systemd.after=network-online.target 0 0
-192.168.0.114:/mnt/tank2/media /home/sitram/mounts/media nfs defaults,x-systemd.after=network-online.target 0 0
+192.168.0.114:/mnt/tank1/data /home/sitram/mounts/data nfs defaults,auto 0 0
+192.168.0.114:/mnt/tank2/media /home/sitram/mounts/media nfs defaults,auto 0 0
 ```
 
 Install yay AUR Helper
@@ -4231,6 +4245,86 @@ Check all enabled services
 
 ```bash
 sudo systemctl list-unit-files --state=enabled
+```
+
+### ArchLinux - Network configuration
+
+#### ArchLinux - systemd-networkd
+
+#### ArchLinux - NetworkManager
+
+[NetworkManager](https://wiki.archlinux.org/title/NetworkManager) is a program for providing detection and configuration for systems to automatically connect to networks. NetworkManager's functionality can be useful for both wireless and wired networks. For wireless networks, NetworkManager prefers known wireless networks and has the ability to switch to the most reliable network. NetworkManager-aware applications can switch from online and offline mode. NetworkManager also prefers wired connections over wireless ones, has support for modem connections and certain types of VPN. NetworkManager was originally developed by Red Hat and now is hosted by the GNOME project.
+
+NetworkManager can be installed with the following packages:
+
+- `networkmanager` -  which contains a daemon, a command line interface (`nmcli`) and a curses‐based interface (`nmtui`)
+- `nm-connection-editor` - agraphical user interface
+- `network-manager-applet` - a system tray applet (nm-applet)
+- `wpa_supplicant` - cross-platform suplicant for wireless connections
+
+```bash
+sudo pacman -S networkmanager wpa_supplicant nm-connection-editor network-manager-applet
+sudo pacman -R iwd
+sudo systemctl disable dhcpcd.service
+sudo systemctl disable systemd-networkd.service
+sudo systemctl disable iwd.service
+sudo systemctl enable wpa_supplicant.service
+sudo systemctl enable NetworkManager
+sudo systemctl start NetworkManager.service
+sudo reboot
+```
+
+By default NetworkManager uses its internal DHCP client so make sure to disable the `dhcpd` service if it is installed on the system.
+
+To change the DHCP client backend, set the option `main.dhcp=dhcp_client_name` with a configuration file in `/etc/NetworkManager/conf.d/`.
+
+```bash
+/etc/NetworkManager/conf.d/dhcp-client.conf
+[main]
+dhcp=dhclient
+```
+
+NetworkManager can use `systemd-resolved` as a DNS resolver and cache. Make sure that `systemd-resolved` is properly configured and that `systemd-resolved.service` is started before using it.
+
+`systemd-resolved` will be used automatically if `/etc/resolv.conf` is a symlink to `/run/systemd/resolve/stub-resolv.conf`, `/run/systemd/resolve/resolv.conf` or `/usr/lib/systemd/resolv.conf.`
+
+You can enable it explicitly by setting `main.dns=systemd-resolved` with a configuration file in `/etc/NetworkManager/conf.d/`
+
+```bash
+/etc/NetworkManager/conf.d/dns.conf
+[main]
+dns=systemd-resolved
+```
+
+Interactive UI manager of NetworkManager can be launched with `nmtui`.
+
+NetworkManager can also be configured to run a script on network status change.
+
+The following script safely unmounts the NFS shares before the relevant network connection is disabled by listening for the down, pre-down and vpn-pre-down events, make sure the script is executable - `/etc/NetworkManager/dispatcher.d/30-nfs.sh`
+
+```bash
+#!/bin/sh
+
+# Find the connection UUID with "nmcli con show" in terminal.
+# All NetworkManager connection types are supported: wireless, VPN, wired...
+WIRED_UUID="4e4a9c21-50d1-3475-ab43-09f582b5ba10"
+WIRELESS_ADI_UUID="1bde9f13-565d-4253-84e2-c4538464345d"
+WIRELESS_ADI5G_UUID="eb7e84c3-07e2-4900-86d0-483b75ad4be8"
+
+if [ "$CONNECTION_UUID" = "$WIRED_UUID" ] || [ "$CONNECTION_UUID" = "$WIRELESS_ADI_UUID" ] || [ "$CONNECTION_UUID" = "$WIRELESS_ADI5G_UUID" ]; then
+    
+    # Script parameter $1: network interface name, not used
+    # Script parameter $2: dispatched event
+    
+    case "$2" in
+        "up")
+            mount -a -t nfs4,nfs 
+            ;;
+        "down"|"pre-down"|"vpn-pre-down")
+            umount -l -a -t nfs4,nfs -f >/dev/null
+            ;;
+    esac
+fi
 ```
 
 ### ArchLinux - Troubleshoot sound issues
