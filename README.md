@@ -99,8 +99,8 @@ Table of contents:
   - [Hercules - Overseerr docker container](#hercules---overseerr-docker-container)
   - [Hercules - DuckDNS docker container](#hercules---duckdns-docker-container)
   - [Hercules - SWAG - Secure Web Application Gateway docker container](#hercules---swag---secure-web-application-gateway-docker-container)
-  - [Hercules - Guacamole docker container](#hercules---guacamole-docker-container)
   - [Hercules - Plex docker container](#hercules---plex-docker-container)
+  - [Hercules - Guacamole docker container](#hercules---guacamole-docker-container)
   - [Hercules - Adminer docker container](#hercules---adminer-docker-container)
   - [Hercules - PGAdmin docker container](#hercules---pgadmin-docker-container)
   - [Hercules - PostgressSQL database docker container](#hercules---postgresssql-database-docker-container)
@@ -3814,11 +3814,75 @@ Below is the docker-compose I used to launch the container.
 
 ### Hercules - DuckDNS docker container
 
+I use [DuckDNS](http://ghcr.io/linuxserver/duckdns) to point the subdomain I reserved on duckdns to the dinamically assigned IP address by my ISP.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/duckdns` used to store the configuration of the application
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#DuckDNS - point the subdomain to my IP address - http://ghcr.io/linuxserver/duckdns
+  duckdns:
+    image: ghcr.io/linuxserver/duckdns
+    container_name: duckdns
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - TZ=Europe/Bucharest
+      - SUBDOMAINS=xxxxx #to be filled with the subdomain
+      - TOKEN=xxxxxxxx #to be filled with the real token
+      - LOG_FILE=true #optional
+      - DOCKER_MODS=linuxserver/mods:universal-wait-for-internet
+    volumes:
+      - /home/sitram/docker/duckdns:/config #optional
+    dns: 192.168.0.103
+    restart: unless-stopped
+```
+
 ### Hercules - SWAG - Secure Web Application Gateway docker container
 
-### Hercules - Guacamole docker container
+I use [SWAG - Secure Web Application Gateway](https://ghcr.io/linuxserver/swag) as a free and open source application that sets a Nginx webserver and reverse proxy with php support and a built-in certbot client that automates free SSL server certificate generation and renewal processes.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/swag` used to store the configuration of the application
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#SWAG - Secure Web Application Gateway sets up an Nginx webserver and reverse proxy with php support and a built-in certbot client that automates free SSL server certificate generation and renewal processes. - https://ghcr.io/linuxserver/swag
+  swag:
+    image: ghcr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+      - URL=xxxxx #to be filled with the subdomain
+      - SUBDOMAINS=wildcard
+      - VALIDATION=duckdns
+      - DUCKDNSTOKEN=xxxxxxxx #to be filled with the real token
+      - EMAIL=xxx@gmail.com # to be filled with real email
+      - ONLY_SUBDOMAINS=false
+      - STAGING=false
+      - DOCKER_MODS=linuxserver/mods:swag-auto-reload|linuxserver/mods:universal-wait-for-internet
+    volumes:
+      - /home/sitram/docker/swag:/config
+    ports:
+      - 443:443
+      - 80:80
+    depends_on: 
+      - duckdns
+    restart: unless-stopped
+```
 
 ### Hercules - Plex docker container
+
+### Hercules - Guacamole docker container
 
 ### Hercules - Adminer docker container
 
@@ -4201,9 +4265,10 @@ Install AUR packages:
 - **Pacman GUI**: pamac-aur
 - **Snap**: snapd
 - **InterractiveBrokers client**: ib-tws
+- **Disk analyzer tool**: qdirstat
 
 ```bash
-yay -S lightdm-webkit-theme-aether google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd ib-tws
+yay -S lightdm-webkit-theme-aether google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd ib-tws qdirstat
 ```
 
 Enable various services:
