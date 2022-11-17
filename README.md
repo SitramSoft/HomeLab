@@ -2747,11 +2747,11 @@ sudo apt install -y redis-server
 Adjust the redisk configuration by saving and adapting the configuration using the following commands
 
 ```bash
-sudo cp /etc/redis/redis.conf /etc/redis/redis.conf.bak
-sudo sed -i "s / port 6379 / port 0 /" /etc/redis/redis.conf
-sudo sed -is / \ # \ unixsocket / \ unixsocket / g /etc/redis/redis.conf
-sudo sed -i "s / unixsocketperm 700 / unixsocketperm 770 /" /etc/redis/redis.conf
-sudo sed -i "s / # maxclients 10000 / maxclients 512 /" /etc/redis/redis.conf
+cp /etc/redis/redis.conf /etc/redis/redis.conf.bak
+sed -i '0,/port 6379/s//port 0/' /etc/redis/redis.conf
+sed -is/\#\ unixsocket/\unixsocket/g /etc/redis/redis.conf
+sed -i "s/unixsocketperm 700/unixsocketperm 770/" /etc/redis/redis.conf
+sed -i "s/# maxclients 10000/maxclients 10240/" /etc/redis/redis.conf
 sudo usermod -aG redis www-data
 ```
 
@@ -4769,7 +4769,7 @@ Perform steps from chapter [Ubuntu - Configure PHP source list](#ubuntu---config
 Install PHP8.0 and required modules
 
 ```bash
-sudo apt install -y php8.0-{fpm,mysql,curl,gd,common,imagick,mbstring,bcmath,xml,zip,intl,mcrypt} imagemagick
+sudo apt install -y php8.0-{fpm,mysql,curl,gd,common,imagick,mbstring,bcmath,xml,zip,intl,mcrypt,igbinary,redis} imagemagick
 ```
 
 Backup original configurations
@@ -5314,4 +5314,62 @@ In order to automatically renew the SSL certificates as well as to initiate the 
 
 ```bash
 crontab -l -u acmeuser
+```
+### Wordpress - Installation of Redis server
+
+Use Redis to increase the Wordpress performance, as Redis reduces the load on the database.
+
+This step is optional and can be skipped if plugins like [Redis Object Cache](https://wordpress.org/plugins/redis-cache/) is not used
+
+Make sure `lsb-release` is installed first then add the repository to the `apt` index, update it, and then install `redis`
+
+```bash
+sudo apt install lsb-release
+
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+
+sudo apt-get update
+sudo apt-get install redis
+```
+
+Adjust the redisk configuration by saving and adapting the configuration using the following commands
+
+```bash
+sudo cp /etc/redis/redis.conf /etc/redis/redis.conf.bak
+
+sudo mkdir /var/run/redis
+sudo chown redis:www-data /var/run/redis
+
+sudo sed -i '0,/port 6379/s//port 0/' /etc/redis/redis.conf
+sudo sed -i s/\#\ unixsocket/\unixsocket/g /etc/redis/redis.conf
+sudo sed -i "s/unixsocket \/run\/redis.sock/unixsocket \/var\/run\/redis\/redis.sock/" /etc/redis/redis.conf
+sudo sed -i "s/unixsocketperm 700/unixsocketperm 777/" /etc/redis/redis.conf
+```
+
+Test `redis` connection from PHP:
+
+```php
+php -a
+php > $redis = new Redis();
+php > $redis->connect(‘/home/user1/.redis/redis.sock’);
+php > $res = $redis->ping();
+php > echo $res;
+1
+php > exit
+```
+
+Add the following defines in `wp-config.php` before the last line which includes `wp-settings.php` so that plugin [Redis Object Cache](https://wordpress.org/plugins/redis-cache/) works
+
+```php
+define( 'WP_REDIS_SCHEME', 'unix' );
+define( 'WP_REDIS_PATH', '/var/run/redis/redis.sock' );
+```
+
+Background save may file under low memory conditions. To fix this issue 'm.overcommit_memory' has to be set to 1.
+
+```bash
+sudo cp /etc/sysctl.conf /etc/sysctl.conf.bak
+sudo sed -i '$ avm.overcommit_memory = 1' /etc/sysctl.conf
+sudo reboot now
 ```
