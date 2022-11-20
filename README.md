@@ -4048,9 +4048,10 @@ Base software installation after running `arch-chroot`
 - **System for distributing Linux Sandboxed apps**: flatpak
 - **Network monitoring tool**: iftop
 - **Containerization software**: docker
+- **Interactive process viewer**: htop
 
 ```bash
-sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak iftop docker
+sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak iftop docker htop
 ```
 
 Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
