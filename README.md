@@ -128,6 +128,10 @@ Table of contents:
   - [ArchLinux - I3 installation & Customization](#archlinux---i3-installation--customization)
   - [ArchLinux - ZSH shell](#archlinux---zsh-shell)
   - [ArchLinux - Downgrade packages](#archlinux---downgrade-packages)
+    - [Using pacman cache](#using-pacman-cache)
+    - [Using Arch Linux Archive](#using-arch-linux-archive)
+    - [Restore system to an earlier date](#restore-system-to-an-earlier-date)
+  - [ArchLinux - Connect Android To Arch Linux Via USB](#archlinux---connect-android-to-arch-linux-via-usb)
 - [WordPress - WorPress server VM](#wordpress---worpress-server-vm)
   - [WordPress - VM configuration](#wordpress---vm-configuration)
   - [WordPress - OS Configuration](#wordpress---os-configuration)
@@ -4286,6 +4290,7 @@ Enable various services:
 - **Systemd Network daemon**
 - **Teamviewer daemon**
 - **Optimus Manager daemon for switching between integrated and dedicated GPU**
+- **Docker**
 
 ```bash
 sudo systemctl enable NetworkManager
@@ -4592,6 +4597,38 @@ pacman -Syyuu
 ```
 
 If you get errors complaining about corrupted/invalid packages due to PGP signature, try to first update separately `archlinux-keyring` and `ca-certificates`.
+
+## ArchLinux - Connect Android To Arch Linux Via USB
+
+Enable MTP(Media Transfer Protocol) support by installing
+
+```bash
+sudo pacman -S mtpfs
+```
+
+For devices running Android 4+, this should do the trick. However, on later versions, we would need another package called `jmtpfs` from AUR repository:
+
+```bash
+yay -S jmtpfs
+```
+
+At this point, we have MTP enabled. However, it would still not be visible in your File Manager as it is not auto-mounted as we desire. To auto mount it, we need to install a package with:
+
+```bash
+sudo pacman -S gvfs-mtp
+```
+
+PTP stands for “Picture Transfer Protocol” and infact is the protocol on which MTP is based. When you communicate with your Android phone via PTP, it appears as a digital camera to your PC.
+
+```bash
+sudo pacman -Sy gvfs-gphoto2
+```
+
+Finally, for the changes to take effect, reboot the system
+
+```bash
+sudo reboot now
+```
 
 ## WordPress - WorPress server VM
 
