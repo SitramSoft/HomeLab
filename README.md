@@ -4312,7 +4312,8 @@ Below is the docker-compose I used to launch the container.
 ```
 
 ### Hercules - PortfolioPerformance docker container
-I use [Portfolio Performance](https://www.portfolio-performance.info/en/) as a free and open source application that sets a Nginx webserver and reverse proxy with php support and a built-in certbot client that automates free SSL server certificate generation and renewal processes.
+
+I use [Portfolio Performance](https://www.portfolio-performance.info/en/) as an open source tool to calculate the overall performance of an investment portfolio. I built the image based on the instructions from [here](https://forum.portfolio-performance.info/t/portfolio-performance-in-docker/10062).
 
 The container has:
 
