@@ -4349,6 +4349,44 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
+### Audiobookshelf - Audiobookshelf docker container
+
+I use [Audiobookshelf](https://www.audiobookshelf.org/) as an self hosted audiobook and podcast server with mobile applications for Android and iOS which allows to listen to audiobooks remotely from the server.
+
+The container has:
+
+- a volume mapped to `/home/sitram/media/audiobooks` used to store all the audiobooks
+- a volume mapped to `/home/sitram/media/podcasts` used to store all the podcasts
+- a volume mapped to `/home/sitram/docker/audiobookshelf/config` used to store the configuration of the application
+- a volume mapped to `/home/sitram/docker/audiobookshelf/metadata` used to store cache, streams, covers, downloads, backups and logs
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Audiobookshelf - is an self hosted audiobook and podcast server - https://www.audiobookshelf.org/
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    environment:
+      - TZ=Europe/Bucharest
+      - AUDIOBOOKSHELF_UID=1000
+      - AUDIOBOOKSHELF_GID=1000
+    volumes:
+      - /home/sitram/media/audiobooks:/audiobooks
+      - /home/sitram/media/podcasts:/podcasts
+      - /home/sitram/docker/audiobookshelf/config:/config
+      - /home/sitram/docker/audiobookshelf/metadata:/metadata
+    ports:
+      - 13378:80
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:13378 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+```
+
 ## Windows11 - Virtual Windows Desktop VM
 
 ### Windows11 - VM configuration
