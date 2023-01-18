@@ -100,14 +100,14 @@ Table of contents:
   - [Hercules - DuckDNS docker container](#hercules---duckdns-docker-container)
   - [Hercules - SWAG - Secure Web Application Gateway docker container](#hercules---swag---secure-web-application-gateway-docker-container)
   - [Hercules - Plex docker container](#hercules---plex-docker-container)
-  - [Hercules - Guacamole docker container](#hercules---guacamole-docker-container)
-  - [Hercules - Adminer docker container](#hercules---adminer-docker-container)
-  - [Hercules - PGAdmin docker container](#hercules---pgadmin-docker-container)
   - [Hercules - PostgressSQL database docker container](#hercules---postgresssql-database-docker-container)
   - [Hercules - MySQL database docker container](#hercules---mysql-database-docker-container)
+  - [Hercules - Adminer docker container](#hercules---adminer-docker-container)
+  - [Hercules - PGAdmin docker container](#hercules---pgadmin-docker-container)
+  - [Hercules - Guacamole daemon and web application docker container](#hercules---guacamole-daemon-and-web-application-docker-container)
   - [Hercules - Redis docker container](#hercules---redis-docker-container)
-  - [Hercules - Jenkins CI docker container](#hercules---jenkins-ci-docker-container)
   - [Hercules - LibreSpeed docker container](#hercules---librespeed-docker-container)
+  - [Hercules - Authelia docker container](#hercules---authelia-docker-container)
   - [Hercules - PortfolioPerformance docker container](#hercules---portfolioperformance-docker-container)
 - [Windows11 - Virtual Windows Desktop VM](#windows11---virtual-windows-desktop-vm)
   - [Windows11 - VM configuration](#windows11---vm-configuration)
@@ -3502,6 +3502,11 @@ Below is the docker-compose I used to launch the container.
     ports:
       - 81:80
       - 441:443
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:81 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
     restart: unless-stopped
 ```
 
@@ -3519,13 +3524,18 @@ Below is the docker-compose I used to launch the container.
 ```yaml
 #Portainer - a web interface for managing docker containers
   portainer:
-    image: portainer/portainer-ce:latest
+    image: portainer/portainer-ce:alpine
     container_name: portainer
     command: -H unix:///var/run/docker.sock
     restart: always
     ports:
       - 9000:9000
       - 8000:8000
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:9000 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/sitram/docker/portainer:/data
@@ -3557,6 +3567,12 @@ Below is the docker-compose I used to launch the container.
       - 8080:8080
       - 8081:8081
       - 9090:9090
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:8080 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 ```
 
@@ -3586,6 +3602,12 @@ Below is the docker-compose I used to launch the container.
       - "/home/sitram/docker/calibre/Calibre Library:/books"
     ports:
       - 8086:8083
+    healthcheck:
+      test: curl -f http://192.168.0.101:8086 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 ```
 
@@ -3621,6 +3643,11 @@ Below is the docker-compose I used to launch the container.
       - 51413:51413
       - 51413:51413/udp
       - 9093:9093
+    healthcheck:
+      test: curl -f http://192.168.0.101:9093 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
     restart: unless-stopped
 ```
 
@@ -3650,6 +3677,11 @@ Below is the docker-compose I used to launch the container.
       - /home/sitram/media/torrents:/downloads
     ports:
       - 9117:9117
+    healthcheck:
+      test: curl -f http://192.168.0.101:9117 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
     restart: unless-stopped
 ```
 
@@ -3681,6 +3713,12 @@ Below is the docker-compose I used to launch the container.
       - /home/sitram/media/torrents:/downloads
     ports:
       - 8989:8989
+    healthcheck:
+      test: curl -f http://192.168.0.101:8989 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on:
       - jackett
       - qbittorrent
@@ -3715,6 +3753,12 @@ Below is the docker-compose I used to launch the container.
       - /home/sitram/media/torrents:/downloads
     ports:
       - 7878:7878
+    healthcheck:
+      test: curl -f http://192.168.0.101:7878 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on:
       - jackett
       - qbittorrent
@@ -3748,6 +3792,12 @@ Below is the docker-compose I used to launch the container.
       - /home/sitram/media/tvseries:/tv
     ports:
       - 6767:6767
+    healthcheck:
+      test: curl -f http://192.168.0.101:6767 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on:
       - radarr
       - sonarr
@@ -3781,6 +3831,12 @@ Below is the docker-compose I used to launch the container.
       - /home/sitram/media/torrents:/downloads
     ports:
       - 8686:8686
+    healthcheck:
+      test: curl -f http://192.168.0.101:8686 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on:
       - jackett 
       - qbittorrent
@@ -3811,6 +3867,12 @@ Below is the docker-compose I used to launch the container.
       - TZ=Europe/Bucharest
     ports:
       - 5055:5055
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:5055 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     volumes:
       - /home/sitram/docker/overseerr:/app/config
     restart: unless-stopped
@@ -3842,6 +3904,12 @@ Below is the docker-compose I used to launch the container.
     volumes:
       - /home/sitram/docker/duckdns:/config #optional
     dns: 192.168.0.103
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider --no-check-certificate https://sitram.duckdns.org || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 ```
 
@@ -3879,6 +3947,12 @@ Below is the docker-compose I used to launch the container.
     ports:
       - 443:443
       - 80:80
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider --no-check-certificate https://sitram.duckdns.org || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on: 
       - duckdns
     restart: unless-stopped
@@ -3886,23 +3960,393 @@ Below is the docker-compose I used to launch the container.
 
 ### Hercules - Plex docker container
 
-### Hercules - Guacamole docker container
+I use [Plex](https://hub.docker.com/r/plexinc/pms-docker/)  to organizes video, music and photos from personal media libraries and streams them to smart TVs, streaming boxes and mobile devices.
 
-### Hercules - Adminer docker container
+The container has:
 
-### Hercules - PGAdmin docker container
+- a volume mapped to `/home/sitram/docker/plex/` used to store the configuration of the application
+- a volume mapped to `/dev/shm` used for transcoding videos. I use this approach to reduce the wear on the host SSD.
+- a volume mapped to `/home/sitram/media/tvseries` used to store all TV shows
+- a volume mapped to `/home/sitram/media/movies` used to store all the movies
+- a volume mapped to `/home/sitram/media/music` used to store all the music
+- a volume mapped to `/home/sitram/media/photos` used to store family photos
+- a volume mapped to `/home/sitram/media/trainings` used to store various video training materials
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+Plex - Organizes video, music and photos from personal media libraries and streams them to smart TVs, streaming boxes and mobile devices. - https://hub.docker.com/r/plexinc/pms-docker/
+  plex:
+    image: plexinc/pms-docker:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - TZ=Europe/Bucharest
+      - PUID=1000
+      - PGID=1000
+      - HOSTNAME=Serenity
+    volumes:
+      - /home/sitram/docker/plex/:/config
+      #- /home/sitram/docker/plex/tmp:/transcode
+      - /dev/shm:/transcode
+      - /home/sitram/media/tvseries:/tvseries
+      - /home/sitram/media/movies:/movies
+      - /home/sitram/media/music:/music
+      - /home/sitram/data/photos:/photos
+      - /home/sitram/media/trainings:/trainings
+#    ports:
+#      - "32400:32400/tcp"
+#      - "3005:3005/tcp"
+#      - "8324:8324/tcp"
+#      - "32469:32469/tcp"
+#      - "1900:1900/udp"
+#      - "32410:32410/udp"
+#      - "32412:32412/udp"
+#      - "32413:32413/udp"
+#      - "32414:32414/udp"
+    depends_on: 
+      - swag
+    restart: unless-stopped
+```
 
 ### Hercules - PostgressSQL database docker container
 
+I use [PostgressSQL database](https://github.com/docker-library/docs/blob/master/postgres/README.md) as a database server for [Guacamole](#hercules---guacamole-daemon-and-web-application-docker-container) container
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/postgres` used to store the configuration of the application and databases
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#PostgressSQL database - https://github.com/docker-library/docs/blob/master/postgres/README.md
+  db_postgress:
+    container_name: db_postgress
+    image: postgres:13
+    user: 1000:1000
+    environment:
+      - POSTGRES_USER=xxx
+      - POSTGRES_PASSWORD=xxx
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: pg_isready -h 192.168.0.101 -p 5432 -U sitram || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - /home/sitram/docker/postgres:/var/lib/postgresql/data:rw
+    restart: unless-stopped
+```
+
 ### Hercules - MySQL database docker container
+
+I use [MySQL](https://hub.docker.com/_/mysql?tab=description) as a open-source relational database management system to store databases for
+
+- [Authelia](#hercules---authelia-docker-container)
+- [Librespeed](#hercules---librespeed-docker-container)
+- [NextCloud](#nextcloud---content-collaboration-server)
+- [WordPress blogs](#wordpress---worpress-server-vm)
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/mysql/data` used to store the databases
+- a volume mapped to `/home/sitram/docker/mysql/conf` used to store custom configurations
+- a volume mapped to `/home/sitram/docker/mysql/logs` used to access MySQL logs
+- a volume mapped to `/home/sitram/docker/mysql/run` used to access the pid and sock files.
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#MySQL database - https://hub.docker.com/_/mysql?tab=description
+  mysql:
+    container_name: mysql
+    image: mysql
+    user: 1000:1000
+    command: 
+      --default-authentication-plugin=mysql_native_password
+    cap_add:
+      - SYS_NICE
+    environment:
+      - MYSQL_ROOT_PASSWORD=xxx
+      - MYSQL_DATABASE=xxx
+      - MYSQL_USER=xxx
+      - MYSQL_PASSWORD=xxx
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: mysqladmin ping -h 192.168.0.101 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - /home/sitram/docker/mysql/data:/var/lib/mysql
+      - /home/sitram/docker/mysql/conf:/etc/mysql/conf.d
+      - /home/sitram/docker/mysql/logs:/var/log/mysql
+      - /home/sitram/docker/mysql/run:/var/run/mysqld
+    restart: unless-stopped
+```
+
+### Hercules - Adminer docker container
+
+I use [Adminer](https://hub.docker.com/_/adminer) (formerly phpMinAdmin) as a full-featured database management tool written in PHP to connect to [MySQL](#hercules---mysql-database-docker-container) container
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Adminer - (formerly phpMinAdmin) is a full-featured database management tool written in PHP - https://hub.docker.com/_/adminer
+  adminer:
+    container_name: adminer
+    image: adminer
+    environment:
+      - ADMINER_DESIGN=nette
+      - ADMINER_DEFAULT_SERVER=192.168.0.101
+    ports:
+      - 8082:8080
+    restart: unless-stopped
+```
+
+### Hercules - PGAdmin docker container
+
+I use [PGAdmin](https://hub.docker.com/_/adminer) as a web interface to administer [PostgressSQL](#hercules---postgresssql-database-docker-container) databasees
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/pgadmin` used to store the configuration of the application
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#PGAdmin - Web interface used to administer PostgressSQL - https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html#environment-variables
+  pg_admin:
+    image: dpage/pgadmin4
+    container_name: pg_admin
+    ports:
+      - 82:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=xxx@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=xxx
+      - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True
+      - PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"
+      - PGADMIN_CONFIG_CONSOLE_LOG_LEVEL=10
+    volumes:
+      - /home/sitram/docker/pgadmin:/var/lib/pgadmin
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:82 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+```
+
+### Hercules - Guacamole daemon and web application docker container
+
+I use [Guacamole](http://guacamole.apache.org/doc/gug/guacamole-docker.html) as a web application for accesing internal services over SSH, RDP or other protocols. It consists of two containers, a daemon and the web interface.
+
+Below is the docker-compose I used to launch the the Guacamole Daemon container.
+
+The container has:
+
+```yaml
+#Guacamole Daemon - http://guacamole.apache.org/doc/gug/guacamole-docker.html
+  guacd: 
+    container_name: guacd
+    image: guacamole/guacd
+    environment:
+      - TZ=Europe/Bucharest
+      - GUACD_LOG_LEVEL=debug
+    ports:
+      - 4822:4822
+    networks:
+      - guacamole
+    restart: unless-stopped
+```
+
+Below is the docker-compose I used to launch the Guacamole web application container.
+
+- a volume mapped to `/home/sitram/docker/swag` used to store the configuration of the application
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Guacamole - web application for accesing internal services over SSH, RDP or other protocols - http://guacamole.apache.org/doc/gug/guacamole-docker.html
+# 2022.7-08 - Latest docker image would not boot. I temporarily switched to version 1.4.0
+  guacamole:
+    container_name: guacamole
+    image: guacamole/guacamole:1.4.0
+    links:
+      - guacd
+    environment:
+      - TZ=Europe/Bucharest
+      - GUACD_HOSTNAME=192.168.0.101
+      - GUACD_PORT=4822
+      - POSTGRES_HOSTNAME=192.168.0.101
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=guacamole_db
+      - POSTGRES_USER=xxx
+      - POSTGRES_PASSWORD=xxx
+      - GUACAMOLE_HOME=/custom-config
+    volumes:
+      - /home/sitram/docker/guacamole:/custom-config
+    networks:
+      - guacamole
+    ports:
+      - 8083:8080
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:8083/guacamole/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on: 
+      - swag
+      - guacd
+      - db_postgress
+    restart: unless-stopped
+```
 
 ### Hercules - Redis docker container
 
-### Hercules - Jenkins CI docker container
+I use [Redis](https://hub.docker.com/_/redis) as an open-source, networked, in-memory, key-value data store with optional durability. It is written in ANSI C
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/redis` used to store the database
+ a volume mapped to `/home/sitram/docker/redis/config` used to store custom configuration
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Redis is an open-source, networked, in-memory, key-value data store with optional durability. It is written in ANSI C.- https://hub.docker.com/_/redis
+  redis:
+    container_name: redis
+    image: redis
+    user: 1000:1000
+    environment:
+      - TZ=Europe/Bucharest
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+       - 6379:6379
+    healthcheck:
+      test: redis-cli -h 192.168.0.101 -p 6379 ping | grep PONG
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+       - /home/sitram/docker/redis:/data
+       - /home/sitram/docker/redis/config:/usr/local/etc/redis
+    restart: unless-stopped
+```
 
 ### Hercules - LibreSpeed docker container
 
+I use [LibreSpeed](https://hub.docker.com/r/linuxserver/librespeed) as a very lightweight Speedtest implemented in Javascript, using XMLHttpRequest and Web Workers. No Flash, No Java, No Websocket, No Bullshit.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/librespeed` used to store the configuration of the application
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#LibreSpeed - very lightweight Speedtest implemented in Javascript, using XMLHttpRequest and Web Workers. No Flash, No Java, No Websocket, No Bullshit. - https://hub.docker.com/r/linuxserver/librespeed
+  librespeed:
+    image: ghcr.io/linuxserver/librespeed:latest
+    container_name: librespeed
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+      - PASSWORD=xxx
+      - CUSTOM_RESULTS=true
+      - DB_TYPE=mysql
+      - DB_NAME=librespeed
+      - DB_HOSTNAME=192.168.0.101
+      - DB_USERNAME=xxx
+      - DB_PASSWORD=xxx
+      - DB_PORT=3306
+    volumes:
+      - /home/sitram/docker/librespeed:/config
+    ports:
+      - 85:80
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:85 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on: 
+      - mysql
+    restart: unless-stopped
+```
+
+### Hercules - Authelia docker container
+
+I use [Authelia](https://www.authelia.com/docs/) as an open source authentication and authorization server protecting modern web applications by collaborating with reverse proxies.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/authelia` used to store the configuration of the application
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Authelia - an open source authentication and authorization server protecting modern web applications by collaborating with reverse proxies - https://www.authelia.com/docs/
+  authelia:
+    image: authelia/authelia:latest
+    container_name: authelia
+    user: 1000:1000
+    environment:
+      - TZ=Europe/Bucharest
+    volumes:
+      - /home/sitram/docker/authelia:/config
+    ports:
+      - 9092:9092
+    depends_on: 
+      - redis
+    restart: unless-stopped
+```
+
 ### Hercules - PortfolioPerformance docker container
+I use [Portfolio Performance](https://www.portfolio-performance.info/en/) as a free and open source application that sets a Nginx webserver and reverse proxy with php support and a built-in certbot client that automates free SSL server certificate generation and renewal processes.
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/portfolio-performance/workspace` used to store the application workspace.
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Portfolio Performance - An open source tool to calculate the overall performance of an investment portfolio.
+#Self build image based on instructions from https://forum.portfolio-performance.info/t/portfolio-performance-in-docker/10062
+  PortfolioPerformance:
+    image: portfolio:latest
+    container_name: PortfolioPerformance
+    environment:
+      - TZ=Europe/Bucharest
+      - USER_ID=1000
+      - GROUP_ID=1000
+      - KEEP_APP_RUNNING=1
+      - DISPLAY_WIDTH=1920
+      - DISPLAY_HEIGHT=910
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+    volumes:
+      - /home/sitram/docker/portfolio-performance/workspace:/opt/portfolio/workspace
+    ports:
+      - 5800:5800
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:5800 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+```
 
 ## Windows11 - Virtual Windows Desktop VM
 
@@ -4054,9 +4498,11 @@ Base software installation after running `arch-chroot`
 - **Containerization software**: docker
 - **Interactive process viewer**: htop
 - **CLI system information tool for terminal**: neofetch
+- **DOS filesystem utilities**: dosfstools
+- **NTFS filesystem driver and utilities**: ntfs-3g
 
 ```bash
-sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak iftop docker htop neofetch
+sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak iftop docker htop neofetch dosfstools	ntfs-3g
 ```
 
 Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
