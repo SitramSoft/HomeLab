@@ -108,9 +108,9 @@ Table of contents:
   - [Hercules - Authelia docker container](./hercules/hercules.md#hercules---authelia-docker-container)
   - [Hercules - PortfolioPerformance docker container](./hercules/hercules.md#hercules---portfolioperformance-docker-container)
 - [Windows11 - Virtual Windows Desktop VM](./hercules/hercules.md./hercules/hercules.md#windows11---virtual-windows-desktop-vm)
-  - [Windows11 - VM configuration](#windows11---vm-configuration)
-  - [Windows11 - Windows installation](#windows11---windows-installation)
-  - [Windows11 - Remote Desktop Connection configuration](#windows11---remote-desktop-connection-configuration)
+  - [Windows11 - VM configuration](./windows/windows.md#windows11---vm-configuration)
+  - [Windows11 - Windows installation](./windows/windows.md#windows11---windows-installation)
+  - [Windows11 - Remote Desktop Connection configuration](./windows/windows.md#windows11---remote-desktop-connection-configuration)
 - [Code - coding VM](#code---coding-vm)
   - [Code - VM configuration](#code---vm-configuration)
   - [Code - OS Configuration](#code---os-configuration)
@@ -137,14 +137,6 @@ Table of contents:
   - [WordPress - Installation and configuration of PHP 8.0](#wordpress---installation-and-configuration-of-php-80)
   - [WordPress - Installation and configuration of MariaDB database](#wordpress---installation-and-configuration-of-mariadb-database)
   - [WordPress - Database creation](#wordpress---database-creation)
-
-# Windows11 - Virtual Windows Desktop VM
-
-## Windows11 - VM configuration
-
-## Windows11 - Windows installation
-
-## Windows11 - Remote Desktop Connection configuration
 
 # Code - coding VM
 
