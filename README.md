@@ -44,12 +44,12 @@ Table of contents:
   - [Firewall / NAT / Outbound](./pfsense/pfsense.md#firewall--nat--outbound)
   - [pfSense - DHCP server setup](./pfsense/pfsense.md#pfsense---dhcp-server-setup)
   - [pfSense - OpenVPN setup](./pfsense/pfsense.md#pfsense---openvpn-setup)
-- [piHole - All-around DNS solution server](#pihole---all-around-dns-solution-server)
-  - [piHole - VM configuration](#pihole---vm-configuration)
-  - [piHole - OS Configuration](#pihole---os-configuration)
-  - [piHole - Setup](#pihole---setup)
-  - [piHole - Ubound as a recursive DNS server](#pihole---ubound-as-a-recursive-dns-server)
-  - [piHole - Local DNS configuration](#pihole---local-dns-configuration)
+- [piHole - All-around DNS solution server](./pihole/pihole.md#pihole---all-around-dns-solution-server)
+  - [piHole - VM configuration](./pihole/pihole.md#pihole---vm-configuration)
+  - [piHole - OS Configuration](./pihole/pihole.md#pihole---os-configuration)
+  - [piHole - Setup](./pihole/pihole.md#pihole---setup)
+  - [piHole - Ubound as a recursive DNS server](./pihole/pihole.md#pihole---ubound-as-a-recursive-dns-server)
+  - [piHole - Local DNS configuration](./pihole/pihole.md#pihole---local-dns-configuration)
 - [TrueNAS - Storage management server](#truenas---storage-management-server)
   - [TrueNAS - VM configuration](#truenas---vm-configuration)
   - [TrueNAS - HDD passtrough](#truenas---hdd-passtrough)
@@ -137,28 +137,6 @@ Table of contents:
   - [WordPress - Installation and configuration of PHP 8.0](#wordpress---installation-and-configuration-of-php-80)
   - [WordPress - Installation and configuration of MariaDB database](#wordpress---installation-and-configuration-of-mariadb-database)
   - [WordPress - Database creation](#wordpress---database-creation)
-
-# piHole - All-around DNS solution server
-
-## piHole - VM configuration
-
-## piHole - OS Configuration
-
-The following subsections from [General](./general/general.md#general) section should be performed in this order:
-
-- [SSH configuration](./general/general.md#ssh-configuration)
-- [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
-- [Update system timezone](./general/general.md#update-system-timezone)
-- [Correct DNS resolution](./general/general.md#correct-dns-resolution)
-- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
-
-## piHole - Setup
-
-## piHole - Ubound as a recursive DNS server
-
-## piHole - Local DNS configuration
 
 # TrueNAS - Storage management server
 
