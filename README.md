@@ -1,38 +1,36 @@
-# A guide to my Homelab
-
 Table of contents:
 
-- [About my Homelab](#about-my-homelab)
-- [Introduction](#introduction)
-  - [How I started](#how-i-started)
-  - [HomeLab architecture](#homelab-architecture)
-  - [Document structure](#document-structure)
-  - [Prerequisites](#prerequisites)
-- [General](#general)
-  - [SSH configuration](#ssh-configuration)
-  - [Execute commands using SSH](#execute-commands-using-ssh)
-  - [How to fix warning about ECDSA host key](#how-to-fix-warning-about-ecdsa-host-key)
-  - [Ubuntu - upgrade from older distribution](#ubuntu---upgrade-from-older-distribution)
-  - [Ubuntu - configure unattended upgrades](#ubuntu---configure-unattended-upgrades)
-  - [Ubuntu - Clean unnecessary packages](#ubuntu---clean-unnecessary-packages)
-  - [Ubuntu - Remove old kernels on Ubuntu](#ubuntu---remove-old-kernels)
-  - [Ubuntu - Clean up snap on Ubuntu](#ubuntu---clean-up-snap)
-  - [Clear systemd journald logs](#clear-systemd-journald-logs)
-  - [Ubuntu - MariaDB update](#ubuntu---mariadb-update)
-  - [Ubuntu - Install nginx](#ubuntu---install-nginx)
-  - [Ubuntu - Configure PHP source list](#ubuntu---configure-php-source-list)
-  - [Ubuntu - Synchronize time with systemd-timesyncd](#ubuntu---synchronize-time-with-systemd-timesyncd)
-  - [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
-  - [Update system timezone](#update-system-timezone)
-  - [Correct DNS resolution](#correct-dns-resolution)
-  - [Qemu-guest-agent](#qemu-guest-agent)
-  - [Simulate server load](#simulate-server-load)
-    - [CPU](#cpu)
-    - [RAM](#ram)
-    - [Disk](#disk)
-  - [Generate Gmail App Password](#generate-gmail-app-password)
-  - [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
-  - [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
+- [About my Homelab](./general/general.md#about-my-homelab)
+- [Introduction](./general/general.md#introduction)
+  - [How I started](./general/general.md#how-i-started)
+  - [HomeLab architecture](./general/general.md#homelab-architecture)
+  - [Document structure](./general/general.md#document-structure)
+  - [Prerequisites](./general/general.md#prerequisites)
+- [General](./general/general.md#general)
+  - [SSH configuration](./general/general.md#ssh-configuration)
+  - [Execute commands using SSH](./general/general.md#execute-commands-using-ssh)
+  - [How to fix warning about ECDSA host key](./general/general.md#how-to-fix-warning-about-ecdsa-host-key)
+  - [Ubuntu - upgrade from older distribution](./general/general.md#ubuntu---upgrade-from-older-distribution)
+  - [Ubuntu - configure unattended upgrades](./general/general.md#ubuntu---configure-unattended-upgrades)
+  - [Ubuntu - Clean unnecessary packages](./general/general.md#ubuntu---clean-unnecessary-packages)
+  - [Ubuntu - Remove old kernels on Ubuntu](./general/general.md#ubuntu---remove-old-kernels)
+  - [Ubuntu - Clean up snap on Ubuntu](./general/general.md#ubuntu---clean-up-snap)
+  - [Clear systemd journald logs](./general/general.md#clear-systemd-journald-logs)
+  - [Ubuntu - MariaDB update](./general/general.md#ubuntu---mariadb-update)
+  - [Ubuntu - Install nginx](./general/general.md#ubuntu---install-nginx)
+  - [Ubuntu - Configure PHP source list](./general/general.md#ubuntu---configure-php-source-list)
+  - [Ubuntu - Synchronize time with systemd-timesyncd](./general/general.md#ubuntu---synchronize-time-with-systemd-timesyncd)
+  - [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
+  - [Update system timezone](./general/general.md#update-system-timezone)
+  - [Correct DNS resolution](./general/general.md#correct-dns-resolution)
+  - [Qemu-guest-agent](./general/general.md#qemu-guest-agent)
+  - [Simulate server load](./general/general.md#simulate-server-load)
+    - [CPU](./general/general.md#cpu)
+    - [RAM](./general/general.md#ram)
+    - [Disk](./general/general.md#disk)
+  - [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
+  - [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
+  - [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
 - [Proxmox - Virtualization server](#proxmox---virtualization-server)
   - [Proxmox - OS configuration](#proxmox---os-configuration)
   - [Proxmox - NTP time server](#proxmox---ntp-time-server)
@@ -140,840 +138,23 @@ Table of contents:
   - [WordPress - Installation and configuration of MariaDB database](#wordpress---installation-and-configuration-of-mariadb-database)
   - [WordPress - Database creation](#wordpress---database-creation)
 
-## About my Homelab
+# Proxmox - Virtualization server
 
-This repository is intended to record my experience in setting up a HomeLab using a dedicated server running [Proxmox](https://www.proxmox.com/en/) with various services running in several VM's and LXC's. I will be touching topics related to virtualization, hardware passtrough, LXC, Docker and several services which I currently use. This document is a work in progress and will evolve as I gain more experience and find more interesting stuff to do. I do not intend this repository or this document to be taken as a tutorial because I don't consider myself an expert in this area.
+## Proxmox - OS configuration
 
-Use the information provided in this repository at your own risk. I take no responsibility for any damage to your equipment. Depending on my availability I can support if asked in solving issues with your software but be prepared to troubleshoot stuff that don't work on your own. My recommendation is to take the information that I provide here and adapt it to your own needs and hardware. For any questions please contact me at **adrian.martis (at) gmail . com**
+The following subsections from [General](./general/general.md#general) section should be performed in this order:
 
-## Introduction
+- [SSH configuration](./general/general.md#ssh-configuration)
+- [Update system timezone](./general/general.md#update-system-timezone)
+- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
+- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
+- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
 
-### How I started
-
-Initially I started my adventure in building an HomeLab on an old laptop, where I installed Proxmox and did some testing with several VM's and [HomeAssistant](https://www.home-assistant.io/). It probably would have been enough if it didn't had two annoying issues. Every couple of days, the laptop froze and I had to manually reboot it. The second issue was that BIOS did not support resume to the last power state in case of a power shortage. Because of these two issues, I couldn't run the laptop for more then a few days without having to physically interact with it. Because of this I couldn't have a reliable server for running services or home automation. After struggling with this setup for a couple of months I decided it was time for an upgrade.
-
-I spent several weeks researching about various hardware builds for an HomeLab. I read blogs, joined several channels on Reddit and groups on Facebook dedicated to this topic. The more I spent researching, the more I got frustrated of how easy it was for people living in US, Germany or UK to access all kind of equipment. I either had to make a compromise and buy consumer grade equipment, spent extra money on shipping tax to order, or get lucky and find a good deal in my own country.
-
-In the end, it payed off to be patient, because I got lucky and found a complete system for sale locally. Everyone I talked with, said it was overkill for what I wanted to run in my HomeLab. I diregarded their advices and went with my gut feeling. I payed for the entire server around 800$ and now I had the equipment needed to fulfill any project I wanted.
-
-The server contained the case, PSU, cables, two Intel Xeon CPU's and 192GB of server graded RAM with ECC. I had two 1GB, 2.5', 7200 rpm HDD's in another laptop which I decided to use in RAID 1 to keep some of my data safe. I bought a 1TB M.2 2280 SSD from SWORDFISH to use for host operating system and various VM's. The final purchase was an HPE Ethernet 1GB 2-port 361T adapter which I wanted to passtrough to a VM running a dedicated firewall. Later I added another 750GB old HDD to store movies and tv shows.
-
-### HomeLab architecture
-
-Over time, I added new hardware to my HomeLab, like IoT devices, a range extender to have a better Wifi coverage and an UPS. I have planned to upgrade my storage and perhaps purchase a GPU but they have a low priority due to budget constraints. However, I am always open for suggestions so feel free to reach me over email in case you have one.
-
-The software, services and the overall architecture of my my HomeLab are constantly adapting and evolving. When I learn a new technology or find an interesting software, I decide to incorporate it in my existing architecture or just spin a VM for test.
-
-[Here](HomeLab.jpg) you can find a picture with an overview of the current architecture. I update every time I change something to my HomeLab. The details on the configuration of each VM and service can be seen below.
-
-### Document structure
-
-The document is written in Markdown and structured in 3 main sections.
-
-First section contains a short history, current HomeLab state and structure of the document.
-
-The second section contains general tutorials that are independed to any any VM. Some of the commands assume that either the DHCP or the DNS server is up and running, so please keep this in mind when reading.
-
-The third section contains a chapter for every VM or LXC container I currently run. Inside each chapter there are sections that describe the VM configuration in Proxmox, specific OS configurations, software and services installation and configuration. This is a work in progress so expect that some of these chapters are empty and will be added at a later date, when I have some time available.
-
-### Prerequisites
-
-- [x] Layer 2 Network Switch, preferably one that supports Gigabit Ethernet and has at least 16 ports
-- [x] Dedicated PC that can be used as a PVE Host
-- [x] Internet access for PVE host
-- [x] Network router with Wi-Fi support
-  - Preferably one that supports both 2.4Gz and 5Ghz bands
-- [x] Cabling
-- [x] UPS to allow the network equipment a clean shutdown in case of power failures and prevent damage caused by power fluctuations
-  - I recommend to have a dedicated power circuit for the HomeLab equipment
-
-Optional:
-
-- [x] Network rack to store all homelab equipment
-
-## General
-
-The following sections apply to all VM's.
-
-Unless the services running on the VM require a dedicated OS, I prefer to use Ubuntu Server. The sections in this chapter are tested on Ubuntu Server but might apply with slight modifications to other Linux based operating systems. For each VM I will specify which chapter from this section applies.
-
-Every VM has user **sitram** configured during installation. The user has **sudo** privileges.
-
-### SSH configuration
-
-I use two keys for my entire HomeLab. One is used for Guacamole, so I can access from any web browser my servers in case I don't have access trough a SSH client. The other is my personal key which I use for accessing trough SSH clients.
-
-I store these keys on every VM so that I can easily connect from one VM to another using SSH. A copy of each key is stored in an offline secure location.
-
-Copy sshd configuration from an existing VM. An example can be found in this repo [here](sshd_config)
-
-```bash
-scp /etc/ssh/sshd_config sitram@192.168.0.xxx:/home/sitram
-```
-
-Copy the private and public keys for accessing the VM trough Guacamole from an existing VM
-
- ```bash
-scp guacamole sitram@192.168.0.xxx:~/.ssh/
-scp guacamole.pub sitram@192.168.0.xxx:~/.ssh/
-```
-
-Copy personal private and public keys for accessing the VM trough SSH and being able to access other servers on the network from an existing VM.
-
-```bash
-scp id_rsa sitram@192.168.0.xxx:~/.ssh/
-scp id_rsa.pub sitram@192.168.0.xxx:~/.ssh/
-```
-
-Copy the authorized_keys file which allows connection to the VM using only my Guacamole or personal key from an existing VM.
-
-```bash
-scp authorized_keys sitram@192.168.0.xxx:~/.ssh/
-```
-
-Backup default sshd configuration, in case something goes wrong. Replace the existing configuration with the new one.
-
-```bash
-sudo mv /etc/ssh/sshd_config /etc/ssh/sshd_config.bkp
-sudo mv ~/sshd_config /etc/ssh/
-sudo chown root:root /etc/ssh/sshd_config
-```
-
-Restart sshd to use the new configuration.
-
-```bash
-sudo systemctl restart sshd
-```
-
-### Execute commands using SSH
-
-The SSH client program can be used for logging into a remote machine or server and for executing commands on a remote machine. When a command is specified, it is executed on the remote host/server instead of the login shell of the current machine.
-
-The syntax is as follows for executing commands
-
-```bash
-ssh user1@server1 command1
-ssh user1@server1 'command2'
-```
-
-Several commands can be piped using the syntax below
-
-```bash
-ssh user1@server1 'command1 | command2'
-```
-
-Multiple compands can be executed using the syntax below
-
-```bash
-ssh user@hostname "command1; command2; command3"
-```
-
-Commands can be executed remotely with `sudo` using the syntax below
-
-```bash
-ssh -t user@hostname sudo command
-ssh -t user@hostname 'sudo command1 arg1 arg2'
-```
-
-Execute comands remote with `su`
-
-```bash
-ssh user@hostname su -c "/path/to/command1 arg1 arg2"
-```
-
-To copy a file from `B` to `A` while logged into `B`:
-
-```bash
-scp /path/to/file username@a:/path/to/destination
-```
-
-To copy a file from `B` to `A` while logged into `A`:
-
-```bash
-scp username@b:/path/to/file /path/to/destination
-```
-
-### How to fix warning about ECDSA host key
-
-When connecting with SSH, the following warning could be displayed in case the IP is reused for a different VM.
-
-```text
-Warning: the ECDSA host key for 'myserver' differs from the key for the IP address '192.168.0.xxx'
-```
-
-In order to get rid of the warning, remove the cached key for ```192.168.1.xxx``` on the local machine:
-
-```bash
-ssh-keygen -R 192.168.1.xxx
-```
-
-### Ubuntu - upgrade from older distribution
-
-```bash
-sudo apt update
-sudo apt list --upgradable
-sudo apt upgrade
-```
-
-The repositories for older releases that are not supported (like 11.04, 11.10 and 13.04) get moved to an archive server. There are repositories available at [old-releases.ubuntu.com](http://old-releases.ubuntu.com).
-
-The reason for this is that it is now out of support and no longer receiving updates and security patches.
-
-If you want to continue using an outdated release, edit `/etc/apt/sources.list` and change `archive.ubuntu.com` and `security.ubuntu.com` to `old-releases`.ubuntu.com.
-
-You can do this with sed:
-
-```bash
-sudo sed -i -re 's/([a-z]{2}\.)?archive.ubuntu.com|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
-```
-
-then update the system with:
-
-```bash
-sudo apt-get update && sudo apt-get dist-upgrade
-```
-
-### Ubuntu - configure unattended upgrades
-
-Ubuntu provides a unique tool called `unattended-upgrades` in order to automatically retrieve and install security patches and other essential upgrades for a server. Installing the tool can be done with the following commands:
-
-```bash
-sudo apt-get update
-sudo apt install unattended-upgrades
-```
-
-After installation, you can check to ensure that the `unattended-upgrades` service is running using `systemctl`
-
-```bash
-sudo systemctl status unattended-upgrades.service
-```
-
-Open configuration file `/etc/apt/apt.conf.d/50unattended-upgrades` with `nano`:
-
-```bash
-sudo nano /etc/apt/apt.conf.d/50unattended-upgrades
-```
-
-Uncomment or change the following lines
-
-- `"${distro_id}:${distro_codename}-updates";`
-- `Unattended-Upgrade::Mail "adrian.martis@gmail.com";`
-- `Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";`
-- `Unattended-Upgrade::Remove-New-Unused-Dependencies "true";`
-- `Unattended-Upgrade::Remove-New-Unused-Dependencies "true";`
-
-An example of this file that I use on all my Ubuntu based VM's can be found [here](50unattended-upgrades)
-
-Reload `unattended-upgrades` service:
-
-```bash
-sudo systemctl restart unattended-upgrades.service
-```
-
-### Ubuntu - Clean unnecessary packages
-
-Very few server instances utilize these packages and they can be clean to save storage on the VM. Make sure you don't need them before removing them.
-
-```bash
-sudo apt purge --auto-remove snapd squashfs-tools friendly-recovery apport at cloud-init
-```
-
-Remove the `unattended-upgrades` package and the associated services which are responsible for automatically updating packages in the system in case this functionality is not used in your HomeLab.
-
-```bash
-sudo apt purge --auto-remove unattended-upgrades
-sudo systemctl disable apt-daily-upgrade.timer
-sudo systemctl mask apt-daily-upgrade.service
-sudo systemctl disable apt-daily.timer
-sudo systemctl mask apt-daily.service
-```
-
-Remove orphan packages
-
-```bash
-sudo apt autoremove --purge
-```
-
-### Ubuntu - Remove old kernels
-
-After a while, there will be multiple versions of kernel on your system, which take up a lot of storage space. Old kernels and images can be removed with the following command
-
-```bash
-dpkg --list | grep 'linux-image' | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p' | xargs sudo apt-get -y purge
-```
-
-Remove old kernels headers
-
-```bash
-dpkg --list | grep 'linux-headers' | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p' | xargs sudo apt-get -y purge
-```
-
-Explanation (remember, `|` uses the output of the previous command as the input to the next)
-
-- `dpkg` --list lists all installed packages
-- `grep linux-image` looks for the installed linux images
-- `awk '{ print $2 }'` just outputs the 2nd column (which is the package name)
-- `sort -V` puts the items in order by version number
-- ```$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"``` extracts only the version (e.g. "3.2.0-44") , without "-generic" or similar from `uname -r`
-- `xargs sudo apt-get -y` purge purges the found kernels
-
-Modify last part `xargs echo sudo apt-get -y purge` so that the command to purge the old kernels/headers is printed, then you can check that nothing unexpected is included before you run it.
-
-All-in-one version to remove images and headers (combines the two versions above):
-
-```bash
-echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs sudo apt-get -y purge
-```
-
-### Ubuntu - Clean up snap
-
-List all versions of packages retained by Snap
-
-```bash
-snap list --all
-```
-
-The default value is 3 for several revisions for retention. That means Snap keeps 3 older versions of each package, including the active version. Changing the retention value to 2 can be done with the following command
-
-```bash
-sudo snap set system refresh.retain=2
-```
-
-Script to set the default retention value of Snap packages to 2 and clean-up older packages
-
-```bash
-#!/bin/bash
-#Set default retention values of snaps to 2
-sudo snap set system refresh.retain=2
-
-#Removes old revisions of snaps
-#CLOSE ALL SNAPS BEFORE RUNNING THIS
-set -eu
-LANG=en_US.UTF-8 snap list --all | awk '/disabled/{print $1, $3}' |
-    while read snapname revision; do
-        sudo snap remove "$snapname" --revision="$revision"
-    done
-```
-
-### Clear systemd journald logs
-
-Checking disk usage of all journal files is done with command
-
-```bash
-sudo journalctl --disk-usage
-```
-
-Before clearing the logs, run the following command to rotate the journal files. All currently active journal files will be marked as archived, so that they are never written in future.
-
-```bash
-sudo journalctl --rotate
-```
-
-Delete journal logs older than X days
-
-```bash
-sudo journalctl --vacuum-time=2days
-```
-
-Delete log files until the disk space taken falls below the specified size:
-
-```bash
-sudo journalctl --vacuum-size=100M
-```
-
-Delete old logs and limit file number to X:
-
-```bash
-sudo journalctl --vacuum-size=100M
-```
-
-Edit the configuration file to limit the journal log disk usage to 100MB
-
-```bash
-sudo -H gedit /etc/systemd/journald.conf
-```
-
-When the file opens, un-comment (remove # at the beginning) the line `#SystemMaxUse=` and change it to `SystemMaxUse=100M`.
-
-Save the file and reload systemd daemon via command:
-
-```bash
-sudo systemctl daemon-reload
-```
-
-### Ubuntu - MariaDB update
-
-MariaDb distribution repo can be found [here](https://mariadb.org/download/?t=repo-config)
-
-Configure MariaDB APT repository and add MariaDB signing key to use Ubuntu 20.04 (Focal Fossa) repository:
-
-```bash
-curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
-sudo bash mariadb_repo_setup --os-type=ubuntu  --os-version=focal --mariadb-server-version=10.6
-```
-
-### Ubuntu - Install nginx
-
-Install the prerequisites:
-
-```bash
-sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring
-```
-
-Import an official nginx signing key so apt could verify the packages authenticity. Fetch the key:
-
-```bash
-curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
-    | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
-```
-
-Verify that the downloaded file contains the proper key:
-
-```bash
-gpg --dry-run --quiet --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
-```
-
-The output should contain the full fingerprint 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 as follows:
-
-```bash
-pub   rsa2048 2011-08-19 [SC] [expires: 2024-06-14]
-      573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
-uid                      nginx signing key <signing-key@nginx.com>
-```
-
-If the fingerprint is different, remove the file.
-
-To set up the apt repository for stable nginx packages, run the following command:
-
-```bash
-echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
-http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" \
-    | sudo tee /etc/apt/sources.list.d/nginx.list
-```
-
-If you would like to use mainline nginx packages, run the following command instead:
-
-```bash
-echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
-http://nginx.org/packages/mainline/ubuntu `lsb_release -cs` nginx" \
-    | sudo tee /etc/apt/sources.list.d/nginx.list
-```
-
-Set up repository pinning to prefer our packages over distribution-provided ones:
-
-```bash
-echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
-    | sudo tee /etc/apt/preferences.d/99nginx
-```
-
-To install nginx, run the following commands:
-
-```bash
-sudo apt update
-sudo apt install nginx
-```
-
-### Ubuntu - Configure PHP source list
-
-Add PHP software sources
-
-```bash
-cd /etc/apt/sources.list.d
-sudo echo "deb [signed-by=/usr/share/keyrings/php-fm.gpg] http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | sudo tee php.list
-```
-
-In order to be able to trust the sources, use the corresponding keys:
-
-```bash
-sudo apt-key adv --recv-keys --keyserver hkps://keyserver.ubuntu.com:443 4F4EA0AAE5267A6C
-sudo apt-get update -q4
-sudo make-ssl-cert generate-default-snakeoil -y
-sudo apt-key export E5267A6C | sudo gpg --dearmour -o /usr/share/keyrings/php-fm.gpg
-sudo apt-key del E5267A6C
-sudo apt-get update
-```
-
-### Ubuntu - Synchronize time with systemd-timesyncd
-
-I have a dedicated timeserver which servers all the clients in my HomeLab. Whenever it is possible, I configure each server to use the internal timeserver.
-
-Make sure NTP is not installed
-
-```bash
-sudo apt purge ntp
-```
-
-Edit file `timesyncd.conf`
-
-```bash
-sudo nano /etc/systemd/timesyncd.conf
-```
-
-Uncomment and modify the lines starting with `NTP`and `FallbackNTP`
-
-```bash
-NTP=192.168.0.2
-FallbackNTP=pool.ntp.org
-```
-
-Restart the timesync daemon to use the internal timeserver
-
-```bash
-sudo systemctl restart systemd-timesyncd
-```
-
-or
-
-```bash
-sudo timedatectl set-ntp off
-sudo timedatectl set-ntp on
-timedatectl timesync-status
-```
-
-Check newly configured NTP servers are used by looking in the journal
-
-```bash
-journalctl --since -1h -u systemd-timesyncd
-```
-
-Configuration used can be checked using
-
-```bash
-sudo timedatectl show-timesync --all
-```
-
-To start troubleshooting, check the logs using the command
-
-```bash
-sudo grep systemd-timesyncd /var/log/syslog | tail
-```
-
-### Ubuntu - Synchronize time with ntpd
-
-Install NTP server and ntpdate. Verify the version of NTP server to make sure it is correctly installed
-
-```bash
-sudo apt-get update
-sudo apt-get install ntp ntpdate
-sntp --version
-```
-
-Configure the NTP server pool either to a server closest to own location or local NTP server.
-
-```bash
-sudo nano /etc/ntp.conf
-```
-
-Comment the lines starting with `pool` and add the line
-
-```bash
-server 192.168.0.2 prefer iburst
-```
-
-The `iburst` option is recommended, and sends a burst of packets only if it cannot obtain a connection with the first attempt.
-The `burst` option always does this, even on the first attempt, and should never be used without explicit permission and may result in blacklisting.
-
-Restart NTP server and verify that it's running correctly
-
-```bash
-sudo service ntp stop
-sudo service ntp start
-sudo service ntp status
-```
-
-Check newly configured NTP servers are used by looking in the journal
-
-```bash
-journalctl --since -1h -u ntpd
-```
-
-In order to verify time synchronization status with each defined server or pool look for `\*` near the servers listed by command below. Any server which is not marked with `\*` is not syncronized.
-
-```bash
-ntpq -pn
-```
-
-Force update time with NTP service daemon and check that the communication with the ntp server is successfully.
-
-```bash
-date ; sudo service ntp stop ; sudo ntpdate -d 192.168.0.2 ; sudo service ntp start ; date
-```
-
-Logs can be checked using the command below
-
-```bash
-sudo grep ntpd /var/log/syslog | tail
-```
-
-### Update system timezone
-
-In order to list all available timezones, the following command can be used
-
-```bash
-timedatectl list-timezones
-```
-
-Once the correct timezone from the above list has been chosen, system timezone can be changed using the command
-
-```bash
-sudo timedatectl set-timezone Europe/Bucharest
-```
-
-Check that system timezone, system clock synchronization and NTP services are correct
-
-```bash
-sudo timedatectl
-```
-
-### Correct DNS resolution
-
-Edit file /etc/systemd/resolv.conf an add the following lines:
-
-```bash
-[Resolve]
-DNS=192.168.0.103
-FallbackDNS=8.8.8.8
-Domains=local
-```
-
-To provide domain name resolution for software that reads `/etc/resolv.conf` directly, such as web browsers and GnuPG, replace the file with a symbolic link to the one from `systemd-resolved`
-
-```bash
-sudo rm -f /etc/resolv.conf
-sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
-sudo systemctl restart systemd-resolved.service
-```
-
-### Qemu-guest-agent
-
-The qemu-guest-agent is a helper daemon, which is installed in the guest VM. It is used to exchange information between the host and guest, and to execute command in the guest.
-
-According to Proxmox VE [wiki](https://pve.proxmox.com/wiki/Qemu-guest-agent), the qemu-guest-agent is used for mainly two things:
-
-1. To properly shutdown the guest, instead of relying on ACPI commands or windows policies
-2. To freeze the guest file system when making a backup (on windows, use the volume shadow copy service VSS).
-
-guest-agent has to be installed in ech VM and enabled in Proxmox VE GUI or via CLI
-
-- GUI: On the VM Options tab, set option 'Enabled' on 'QEMU Guest Agent
-- CLI: `qm set VMID --agent 1`
-
-### Simulate server load
-
-Sometimes you need to discover how the performance of an application is affected when the system is under certain types of load. This means that an artificial load must be created. It is possible to install dedicated tools to do this, but this option isn’t always desirable or possible.
-
-Every Linux distribution comes with all the tools needed to create load. They are not as configurable as dedicated tools but they will always be present and you already know how to use them.
-
-#### CPU
-
-The following command will generate a CPU load by compressing a stream of random data and then sending it to `/dev/null`:
-
-```bash
-cat /dev/urandom | gzip -9 > /dev/null
-```
-
-If you require a greater load or have a multi-core system simply keep compressing and decompressing the data as many times as you need:
-
-```bash
-cat /dev/urandom | gzip -9 | gzip -d | gzip -9 | gzip -d > /dev/null
-```
-
-An alternative is to use the sha512sum utility:
-
-```bash
-sha512sum /dev/urandom
-```
-
-Use CTRL+C to end the process.
-
-#### RAM
-
-The following process will reduce the amount of free RAM. It does this by creating a file system in RAM and then writing files to it. You can use up as much RAM as you need to by simply writing more files.
-
-First, create a mount point then mount a ramfs filesystem there:
-
-```bash
-mkdir z
-mount -t ramfs ramfs z/
-```
-
-Then, use dd to create a file under that directory. Here a 128MB file is created:
-
-```bash
-dd if=/dev/zero of=z/file bs=1M count=128
-```
-
-The size of the file can be set by changing the following operands:
-
-- bs= Block Size. This can be set to any number followed B for bytes, K for kilobytes, M for megabytes or G for gigabytes.
-- count= The number of blocks to write.
-
-#### Disk
-
-We will create disk I/O by firstly creating a file, and then use a for loop to repeatedly copy it.
-
-This command uses dd to generate a 1GB file of zeros:
-
-```bash
-dd if=/dev/zero of=loadfile bs=1M count=1024
-```
-
-The following command starts a for loop that runs 10 times. Each time it runs it will copy loadfile over loadfile1:
-
-```bash
-for i in {1..10}; do cp loadfile loadfile1; done
-```
-
-If you want it to run for a longer or shorter time change the second number in {1..10}.
-
-If you prefer the process to run forever until you kill it with CTRL+C use the following command:
-
-```bash
-while true; do cp loadfile loadfile1; done
-```
-
-### Generate Gmail App Password
-
-When Two-Factor Authentication (2FA) is enabled, Gmail is preconfigured to refuse connections from applications that don’t provide the second step of authentication. While this is an important security measure that is designed to restrict unauthorized users from accessing your account, it hinders sending mail through some SMTP clients as you’re doing here. Follow these steps to configure Gmail to create a Postfix-specific password:
-
-1. Log in to your Google Account and navigate to the [Manage your account access and security settings](https://myaccount.google.com/security) page.
-
-2. Scroll down to `Signing in to Google` section and enable `2-Step Verification`. You may be asked for your password and a verification code before continuing.
-
-3. In that same section, click on [App passwords](https://security.google.com/settings/security/apppasswords) to generate a unique password that can be used with your application.
-
-4. Click the `Select app` dropdown and choose `Other (custom name)`. Enter name of the service of app for which you want to generate a password and click `Generate`.
-
-5. The newly generated password will appear. Write it down or save it somewhere secure that you’ll be able to find easily in the next steps, then click `Done`:
-
-### Configure Postfix Server to send email through Gmail
-
-Postfix is a Mail Transfer Agent (MTA) that can act as an SMTP server or client to send or receive email. I chose to use this method to avoid getting my mail to be flagged as spam if my current server’s IP has been added to a block list.
-
-Install Postfix and libsasl2, a package which helps manage the Simple Authentication and Security Layer (SASL)
-
-```bash
-sudo apt-get update
-sudo apt-get install libsasl2-modules postfix
-```
-
-When prompted, select `Internet Site` as the type of mail server the Postfix installer should configure. In the next screen, the `System Mail Name` should be set to the domain you’d like to send and receive email through.
-
-Once the installation is complete, confirm that the `myhostname` parameter is configured with your server’s FQDN in `/etc/postfix/main.cf`
-
-Generate an Gmail password as described in subsection [Generate Gmail App Password](#generate-gmail-app-password).
-
-Usernames and passwords are stored in sasl_passwd in the `/etc/postfix/sasl/` directory. In this section, you’ll add your email login credentials to this file and to Postfix.
-
-Open or create the `/etc/postfix/sasl/sasl_passwd` file and add the SMTP Host, username, and password information.
-
-```bash
-sudo nano /etc/postfix/sasl/sasl_passwd
-```
-
-The SMTP server address configuration `smtp.gmail.com` supports message submission over port `587`(StartTLS) and port `465(`SSL). Whichever protocol you choose, be sure the port number is the same in `/etc/postfix/sasl/sasl\\_passwd` and `/etc/postfix/main.cf`
-
-```bash
-[smtp.gmail.com]:587 username@gmail.com:password
-```
-
-Create the hash db file for Postfix by running the postmap command.
-
-```bash
-sudo postmap /etc/postfix/sasl/sasl_passwd
-```
-
-If all went well, a new file named `sasl_passwd.db` in the `/etc/postfix/sasl/` directory.
-
-Secure Postfix has database and email password files by changing persmissions of `/etc/postfix/sasl/sasl_passwd` and the `/etc/postfix/sasl/sasl_passwd.db` so that only root user cand read from or write to them.
-
-```bash
-sudo chown root:root /etc/postfix/sasl/sasl_passwd /etc/postfix/sasl/sasl_passwd.db
-sudo chmod 0600 /etc/postfix/sasl/sasl_passwd /etc/postfix/sasl/sasl_passwd.db
-```
-
-Next step is to configure the Postfix Relay Server to use Gmail's SMTP server.
-
-Add or modify if exists the following parameters to Postfix configuration file `/etc/postfix/main.cf`
-
-```bash
-# make sure the port number is matching the one from /etc/postfix/sasl/sasl\\_passwd
-relayhost = [smtp.gmail.com]:587
-
-# Enable SASL authentication
-smtp_sasl_auth_enable = yes
-# Disallow methods that allow anonymous authentication
-smtp_sasl_security_options = noanonymous
-# Location of sasl_passwd
-smtp_sasl_password_maps = hash:/etc/postfix/sasl/sasl_passwd
-# Enable STARTTLS encryption
-smtp_tls_security_level = encrypt
-# Location of CA certificates
-smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
-```
-
-Save changes and restart Postfix server.
-
-```bash
-sudo systemctl restart postfix
-```
-
-Use Postfix’s sendmail implementation to send a test email. Enter lines similar to those shown below, and note that there is no prompt between lines until the . ends the process.
-
-```bash
-sudo sendmail recipient@elsewhere.com
-From: you@example.com
-Subject: Test mail
-This is a test email
-.
-```
-
-Check in a separate sesion the changes as they appear live with command below. Use `CRTL + C` to exit the log.
-
-```bash
-sudo tail -f /var/log/syslog
-```
-
-### Mail notifications for SSH dial-in
-
-Install mail client
-
-```bash
-sudo apt-get update
-sudo apt-get install mailutils
-```
-
-Edit sustem-wide `.profile` for Bourne compative shells
-
-```bash
-sudo nano /etc/profile
-```
-
-Add the following text at the end of the file
-
-```bash
-if [ -n "$SSH_CLIENT" ]; then
-        echo -e 'Login details:\n  - Hostname:'  `hostname -f` '\n  - Date:' "`date`" '\n  - User:' "`who -m`" | mail -s "Login on `hostname` from `echo $SSH_CLIENT | awk '{print $1}'`" username@gmail.com
-fi
-```
-
-## Proxmox - Virtualization server
-
-### Proxmox - OS configuration
-
-The following subsections from [General](#general) section should be performed in this order:
-
-- [SSH configuration](#ssh-configuration)
-- [Update system timezone](#update-system-timezone)
-- [Generate Gmail App Password](#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
-
-### Proxmox - NTP time server
+## Proxmox - NTP time server
 
 Because clock accuracy within a VM is still really bad, I chose the barebone server where the virtualization server is running as my local NTP server. It's not ideal but until I decide to move the firewall from a VM to a dedicated HW this will have to do. I tried running NTP server on the pfSense VM but it acted strange.
 
-Follow the instructions from subsection [[Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd) to install NTP server then make the modifications below.
+Follow the instructions from subsection [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd) to install NTP server then make the modifications below.
 
 Edit NTP server configuration file
 
@@ -1025,7 +206,7 @@ Verify time synchronization status with each defined server or pool and look for
 ntpq -pn
 ```
 
-### Proxmox - PCI Passthrough configuration
+## Proxmox - PCI Passthrough configuration
 
 This section contains information that are specific to the HW on my server. Please keep in mind that you have to adapt the steps here to match the HW configuration of your own server.
 
@@ -1068,7 +249,7 @@ vfio_virqfd
 
 Check if IOMMU Interrupt remapping is needed by executing `sudo dmesg | grep 'remapping'`. If it shows `DMAR-IR: Enabled IRQ remapping in x2apic mode` it means that IOMMU Interrupt remapping is not needed.
 
-### Proxmox - UPS monitoring software
+## Proxmox - UPS monitoring software
 
 In order to communicate with existing [ups](https://www.cyberpower.com/eu/ro/product/sku/cp1500epfclcd), I use the business version of the monitoring software offered by CyberPower called `CyberPower Panel Business V4`.
 
@@ -1101,7 +282,7 @@ After finishing the installation, access the [web page](http://192.168.0.2:3052/
 - user: admin
 - pass: admin
 
-#### SETTING -> NOTIFICATION CHANNELS
+## SETTING -> NOTIFICATION CHANNELS
 
 - Enable notification by email
 - **Provider:** Other
@@ -1111,9 +292,9 @@ After finishing the installation, access the [web page](http://192.168.0.2:3052/
 - **Sender name:** UPS Serenity
 - **Sender email:** personal email address
 - **User name:** personal email address
-- **Pass:** Gmail password. See [Generate Gmail App Password](#generate-gmail-app-password) subsection for details.
+- **Pass:** Gmail password. See [Generate Gmail App Password](./general/general.md#generate-gmail-app-password) subsection for details.
 
-#### SETTING -> SNMP SETTINGS
+## SETTING -> SNMP SETTINGS
 
 Enable `SNMPv1` settings and make sure `SNMP Local Port` is `161`.
 
@@ -1121,7 +302,7 @@ Create the public and private groups under SNP v1 profiles. Link them to IP addr
 
 This means any computer on the network can query using SNMP protocol information from the UPS. It is usefull for integrating the UPS in [HomeAssistant - Home automation server](#homeassistant---home-automation-server).
 
-### Proxmox - VNC client access configuration
+## Proxmox - VNC client access configuration
 
 It is possible to enable the VNC access for use with usual VNC clients as [RealVNC](https://www.realvnc.com/), [TightVNC](https://www.tightvnc.com/) or [Remmina](https://remmina.org/) Detailed information can be found [here](https://pve.proxmox.com/wiki/VNC_Client_Access)
 
@@ -1151,9 +332,9 @@ WordPress(wordpress.local): args: - vnc 0.0.0.0:215
 
 Reboot the VM to take into account the new configuration.
 
-## pfSense - Firewall, DHCP and NTP server
+# pfSense - Firewall, DHCP and NTP server
 
-### pfSense - VM configuration
+## pfSense - VM configuration
 
 - VM id: 100
 - HDD: 32GB
@@ -1178,7 +359,7 @@ Reboot the VM to take into account the new configuration.
     - Start/Shutdown order: oder=1,up=55
 - OS: [pfSense+](https://www.pfsense.org/download/)
 
-### pfSense - Setup
+## pfSense - Setup
 
 The server has a dedicated Intel Corporation I350 Gigabit Network adaptor with two interfaces which is passed to this VM. The board has to interfaces which are configured below:
 
@@ -1222,7 +403,7 @@ Download [pfSense+](https://www.pfsense.org/download/), connect it to a CD-ROM o
 - Status_Traffic_Totals
 - Wireguard
 
-### Firewall / NAT / Outbound
+## Firewall / NAT / Outbound
 
 The configuration is done trough web interface in section `Firewall / NAT / Outbound`.
 
@@ -1240,7 +421,7 @@ Select mode `Hybrid Outbound NAT rule generation`  in `Outbound NAT Mode` sectio
   - Port or Range: Blank
   - Description: NAT anything out from the firewall itself
 
-### Firewall / NAT / Port Forward
+## Firewall / NAT / Port Forward
 
 The following NAT rules have been configured in pfSense. The rules marked with italic are disabled. The rules marked with normal font are active.
 
@@ -1373,7 +554,7 @@ The configuration is done trough web interface in section `Firewall / NAT / Port
   - Redirect target port: Other - Other - 10000
   - Description: IP150 NeWare
 
-### pfSense - DHCP server setup
+## pfSense - DHCP server setup
 
 This machine acts as a DHCP server for my entire local network.
 
@@ -1443,35 +624,35 @@ bc:dd:c2:0f:5b:7c 192.168.0.245 sonoff_dormitor      Switch Sonoff ESP_0F5B7C - 
 40:31:3c:ab:e0:69 192.168.0.249 vacuum               Aspirator - Xiaomi Roborock S50
 ```
 
-### pfSense - OpenVPN setup
+## pfSense - OpenVPN setup
 
-## piHole - All-around DNS solution server
+# piHole - All-around DNS solution server
 
-### piHole - VM configuration
+## piHole - VM configuration
 
-### piHole - OS Configuration
+## piHole - OS Configuration
 
-The following subsections from [General](#general) section should be performed in this order:
+The following subsections from [General](./general/general.md#general) section should be performed in this order:
 
-- [SSH configuration](#ssh-configuration)
-- [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
-- [Update system timezone](#update-system-timezone)
-- [Correct DNS resolution](#correct-dns-resolution)
-- [Generate Gmail App Password](#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
+- [SSH configuration](./general/general.md#ssh-configuration)
+- [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
+- [Update system timezone](./general/general.md#update-system-timezone)
+- [Correct DNS resolution](./general/general.md#correct-dns-resolution)
+- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
+- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
+- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
 
-### piHole - Setup
+## piHole - Setup
 
-### piHole - Ubound as a recursive DNS server
+## piHole - Ubound as a recursive DNS server
 
-### piHole - Local DNS configuration
+## piHole - Local DNS configuration
 
-## TrueNAS - Storage management server
+# TrueNAS - Storage management server
 
-### TrueNAS - OS Configuration
+## TrueNAS - OS Configuration
 
-### TrueNAS - VM configuration
+## TrueNAS - VM configuration
 
 - VM id: 102
 - HDD: 32GB
@@ -1492,7 +673,7 @@ The following subsections from [General](#general) section should be performed i
   - Start/Shutdown order: oder=3,up=60
 - OS: [TrueNAS Scale](https://www.truenas.com/download-tn-scale/)
 
-### TrueNAS - HDD passtrough
+## TrueNAS - HDD passtrough
 
 It is not recommended to passtrough disks by they `sdax` name becaus the operating system can change it. The safest approach is to passtrough the disks by their id. Use following command to list the id of each disk.
 
@@ -1547,7 +728,7 @@ scsi4: /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721,size=488386584
 
 Make sure to reboot the host server if the HDD's were previously managed by it otherwise you will not be able to add the new NFS shares from TrueNAS
 
-### TrueNAS - Setup
+## TrueNAS - Setup
 
 Follow the installation guide from [here](https://www.truenas.com/docs/scale/).
 
@@ -1555,27 +736,27 @@ Once the installation is completed, open the web interface and continue the rest
 
 Make the following configuration in each page below.
 
-#### System Settings -> General
+## System Settings -> General
 
 Remove existing NTP servers and add local NPT server(192.168.0.2) with only option selected `iBurst` and Min/Max Pool set to 6/10.
 
 Change `Timezone` in `Localication` to `Europe/Bucharest`
 
-#### System Settings -> Services
+## System Settings -> Services
 
 Activate `SSH` service and make sure it is marked to be started automatically. Press the configure button and make sure `Log in as Root with Password` and `Allow Password Authentication` are unckeched.
 
-#### Credentials -> Local Users
+## Credentials -> Local Users
 
 Add a new user called `sitram` with UID `1000`
 
 Add my personal public key to user `root` so that I can log is with SSH securely.
 
-#### Credentials -> Local Groups
+## Credentials -> Local Groups
 
 Add a new group called `sitram` with GID `1000`
 
-#### Network
+## Network
 
 In `Global Configuration` section change
 
@@ -1584,7 +765,7 @@ In `Global Configuration` section change
 - DNS: `192.168.0.101` and `8.8.8.8`
 - Default Gateway: `192.168.0.1`
 
-#### Shares
+## Shares
 
 - Windows (SMB) Shares
   - Share 1
@@ -1627,9 +808,9 @@ In `Global Configuration` section change
     - Maproot Group: `root`
     - Authorized Hosts and IP address: `192.168.0.102` and `192.168.0.2` and `192.168.0.5` and `192.168.0.4` and `192.168.0.105`
 
-## HomeAssistant - Home automation server
+# HomeAssistant - Home automation server
 
-### HomeAssistant - VM configuration
+## HomeAssistant - VM configuration
 
 - VM id: 104
 - HDD:
@@ -1652,7 +833,7 @@ In `Global Configuration` section change
   - Start/Shutdown order: oder=6
 - OS: [Home Assistant Operating System](https://www.home-assistant.io/installation/linux)
 
-### HomeAssistant - Installation and setup
+## HomeAssistant - Installation and setup
 
 Download the QCOW2 image file from [Home Assistant Operating System](https://www.home-assistant.io/installation/linux) and upload it to Proxmox host via SSH in the `/root` home folder.
 
@@ -1674,9 +855,9 @@ The hard disk, by default, would only have 6GB available. So, to make it larger 
 
 The configuration is now completed After powering on the Home Assistant VM, go into `Console` to verify that the installation is working as expected. The process can take several minutes. After the installation is finalized, go to `ha.local:8123`, and the Home Assistant initial configuration would come up.
 
-### HomeAssistant - Other plugins
+## HomeAssistant - Other plugins
 
-### HomeAssistant - Mosquitto broker(MQTT)
+## HomeAssistant - Mosquitto broker(MQTT)
 
 Open `Supervisor -> Add-on Store` and search for `Mosquitto broker` addon and install it.
 
@@ -1721,7 +902,7 @@ mqtt:
   password: !secret mqtt_password
 ```
 
-### HomeAssistant - Paradox Alarm integration
+## HomeAssistant - Paradox Alarm integration
 
 In order to communicated with Paradox Alarm you need the following preconditions:
 
@@ -1812,7 +993,7 @@ Click `Paradox Alarm Interface` and continue configuration there
 
 Press the `Start` button on the info page of the integration and check the `Log` section to make sure HomeAssistant connects succesfully to Paradox Alarm.
 
-### HomeAssistant - UPS integration
+## HomeAssistant - UPS integration
 
 In order to access different parameters of the UPS using the SNMP protocol, certain stepts need to be taken to identify the corresponding OID's.
 
@@ -1991,7 +1172,7 @@ header:
     action: none
 ```
 
-### HomeAssistant - Integration of CCTV cameras
+## HomeAssistant - Integration of CCTV cameras
 
 Add the following code in `configurations.yaml` file to be able to access the CCTV cameras connected to the Dahua DVR. Sensitive information is located in a separate file called `secrets.yaml`.
 
@@ -2047,7 +1228,7 @@ Open the `Overview` tab and add a new view with the followint configuration:
 - Entity: `camera.camera_fata_stanga`
 - Entity: `camera.camera_spate`
 
-### HomeAssistant - Google Assistant integration
+## HomeAssistant - Google Assistant integration
 
 To use Google Assistant, your Home Assistant configuration has to be externally accessible with a hostname and SSL certificate.
 
@@ -2158,7 +1339,7 @@ google_assistant:
 
 Reload HomeAssistant configuration and test that the devices are visible in Home App on your mobile phone.
 
-### HomeAssistant - Recorder integration
+## HomeAssistant - Recorder integration
 
 In order to reduce the size of the database the make the following changes to the Recorder configuration in `configuration.yaml`. Additional information can be found [here](https://community.home-assistant.io/t/how-to-reduce-your-database-size-and-extend-the-life-of-your-sd-card/205299).
 
@@ -2259,9 +1440,9 @@ logbook:
       - switch.sonoff_100111e4eb
 ```
 
-## Nextcloud - Content collaboration server
+# Nextcloud - Content collaboration server
 
-### Nextcloud - VM configuration
+## Nextcloud - VM configuration
 
 - VM id: 106
 - HDD: 60GB
@@ -2278,21 +1459,21 @@ logbook:
 - Options:
   - Start at boot: enabled
   - Start/Shutdown: order=6
-  - QEMU Guest agent: enabled - [Qemu-guest-agent](#qemu-guest-agent)
+  - QEMU Guest agent: enabled - [Qemu-guest-agent](./general/general.md#qemu-guest-agent)
   - Run guest-trim after a disk move or VM migration: enabled
 - OS: Ubuntu Server 21.04 amd64
 
-### Nextcloud - OS Configuration
+## Nextcloud - OS Configuration
 
-The following subsections from [General](#general) section should be performed in this order:
+The following subsections from [General](./general/general.md#general) section should be performed in this order:
 
-- [SSH configuration](#ssh-configuration)
-- [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
-- [Update system timezone](#update-system-timezone)
-- [Correct DNS resolution](#correct-dns-resolution)
-- [Generate Gmail App Password](#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
+- [SSH configuration](./general/general.md#ssh-configuration)
+- [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
+- [Update system timezone](./general/general.md#update-system-timezone)
+- [Correct DNS resolution](./general/general.md#correct-dns-resolution)
+- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
+- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
+- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
 
 Install the following packages as necessary basis for server operation:
 
@@ -2315,7 +1496,7 @@ sudo mkdir /mnt/data
 sudo mount -a
 ```
 
-### Nextcloud - Installation and configuration of nginx web server
+## Nextcloud - Installation and configuration of nginx web server
 
 Add software source
 
@@ -2432,9 +1613,9 @@ Assign the right permissions
 sudo chown -R www-data:www-data /var/nc_data /var/www
 ```
 
-### Nextcloud - Installation and configuration of PHP 8.0
+## Nextcloud - Installation and configuration of PHP 8.0
 
-Perform steps from chapter [Ubuntu - Configure PHP source list](#ubuntu---configure-php-source-list)
+Perform steps from chapter [Ubuntu - Configure PHP source list](./general/general.md#ubuntu---configure-php-source-list)
 
 Install PHP8.0 and required modules
 
@@ -2548,7 +1729,7 @@ sudo service nginx status
 
 [TODO] For troubleshooting of php-fpm check [here](https://www.c-rieger.de/nextcloud-und-php-troubleshooting/)
 
-### Nextcloud - Installation and configuration of MariaDB database
+## Nextcloud - Installation and configuration of MariaDB database
 
 [OPTIONAL] This step is optional and can be skipped if using MySQL or MariaDB in a docker instance on a dedicated server.
 
@@ -2697,7 +1878,7 @@ Save and close the file, then restart the database server
 service mysql restart
 ```
 
-### Nextcloud - Database creation
+## Nextcloud - Database creation
 
 Create Nextcloud database, user and password. Use `-h localhost` MariaDB is installed locally or `-h IP` if on a remote server
 
@@ -2727,7 +1908,7 @@ mysql -h 192.168.0.101 -p 3306 -uroot -p -e "SELECT @@global.transaction_isolati
 
 If *READ-COMMITTED* and *utf8mb4_general_c i* appear in the output (resultset) everything has been set up correctly.
 
-### Nextcloud - Installation of Redis server
+## Nextcloud - Installation of Redis server
 
 Use Redis to increase the Nextcloud performance, as Redis reduces the load on the database.
 
@@ -2767,7 +1948,7 @@ sudo sed -i '$ avm.overcommit_memory = 1' /etc/sysctl.conf
 sudo reboot now
 ```
 
-### Nextcloud - Installation and optimization of Nextcloud
+## Nextcloud - Installation and optimization of Nextcloud
 
 We will now set up various vhost, i.e. server configuration files, and modify the standard vhost file persistently.
 
@@ -3226,7 +2407,7 @@ Save and close the file and reconfigure the Nextcloud job from "Ajax" to "Cron" 
 sudo -u www-data php /var/www/nextcloud/occ background:cron
 ```
 
-### Nextcloud - Optimize and update using a script
+## Nextcloud - Optimize and update using a script
 
 Create a script to update and optimize the server, Nextcloud and the activated apps
 
@@ -3289,7 +2470,7 @@ chmod +x update.sh
 
 Execute it periodically.
 
-### Nextcloud - Bash aliases for executing Nextcloud Toolset occ
+## Nextcloud - Bash aliases for executing Nextcloud Toolset occ
 
 Adjust file /home/sitram/.bash_aliases in order to be able to start the Nextcloud Toolset occ directly with nocc
 
@@ -3305,7 +2486,7 @@ EOF
 
 Log out of the current session and then log back in again. Now you can run Nextcloud Toolset occ directly via "nocc ... ".
 
-### Nextcloud - Map user data directory to nfs share
+## Nextcloud - Map user data directory to nfs share
 
 Create user `nicusor` in Nextcloud web interface.
 
@@ -3342,21 +2523,21 @@ sudo /usr/sbin/service php8.0-fpm restart
 sudo /usr/sbin/service nginx restart
 ```
 
-## Hercules - HomeLab services VM
+# Hercules - HomeLab services VM
 
-### Hercules - VM configuration
+## Hercules - VM configuration
 
-### Hercules - OS Configuration
+## Hercules - OS Configuration
 
-The following subsections from [General](#general) section should be performed in this order:
+The following subsections from [General](./general/general.md#general) section should be performed in this order:
 
-- [SSH configuration](#ssh-configuration)
-- [Ubuntu - Synchronize time with systemd-timesyncd](#ubuntu---synchronize-time-with-systemd-timesyncd)
-- [Update system timezone](#update-system-timezone)
-- [Correct DNS resolution](#correct-dns-resolution)
-- [Generate Gmail App Password](#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
+- [SSH configuration](./general/general.md#ssh-configuration)
+- [Ubuntu - Synchronize time with systemd-timesyncd](./general/general.md#ubuntu---synchronize-time-with-systemd-timesyncd)
+- [Update system timezone](./general/general.md#update-system-timezone)
+- [Correct DNS resolution](./general/general.md#correct-dns-resolution)
+- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
+- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
+- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
 
 Add the following mounting points to `/etc/fstab/`
 
@@ -3365,7 +2546,7 @@ Add the following mounting points to `/etc/fstab/`
 192.168.0.114:/mnt/tank2/media /home/sitram/media nfs rw 0 0
 ```
 
-### Hercules - Docker installation and docker-compose
+## Hercules - Docker installation and docker-compose
 
 I used for a while the Docker Engine from Ubuntu apt repository, until a container stopped working because it needed the latest version which was not yet available. I decided to switch from Ubuntu's apt version of docker to the official one from [here](https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository) and it has been working great so far.
 
@@ -3379,7 +2560,7 @@ The configuration of each container is stored in `/home/sitram/docker` in a fold
 
 [TODO] move the containers docker configuration to my tank1 in order to reduce the wear on the SSD.
 
-#### Hercules - Remove docker packages from Ubuntu repository
+## Hercules - Remove docker packages from Ubuntu repository
 
 Identify what docker related packages are installed on your system
 
@@ -3403,7 +2584,7 @@ sudo groupdel docker
 sudo rm -rf /var/run/docker.sock
 ```
 
-#### Hercules - set up Docker repository
+## Hercules - set up Docker repository
 
 Update the `apt` package index and install packages to allow apt to use a repository over HTTPS:
 
@@ -3431,7 +2612,7 @@ echo \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
 
-#### Hercules - Install Docker Engine
+## Hercules - Install Docker Engine
 
 Update the apt package index:
 
@@ -3451,7 +2632,7 @@ Verify that the Docker Engine installation is successful by running the hello-wo
 sudo docker run hello-world
 ```
 
-### Hercules - Watchtower docker container
+## Hercules - Watchtower docker container
 
 I keep my containers updated using [Watchtower](https://containrrr.dev/watchtower/). It runs every night and sends notifications over telegram.
 
@@ -3478,7 +2659,7 @@ Below is the docker-compose I used to launch the container.
       --schedule "0 0 0 * * *"
 ```
 
-### Hercules - Heimdall docker container
+## Hercules - Heimdall docker container
 
 I use [Heimdall](https://hub.docker.com/r/linuxserver/heimdall) as a web portal for managing al the services running on my HomeLab.
 
@@ -3510,7 +2691,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Portainer docker container
+## Hercules - Portainer docker container
 
 I use [Portainer](https://www.portainer.io/) as a web interface for managing my docker containers. It helps me tocheck container logs, login to a shell inside the container and perform other various debugging activities.
 
@@ -3541,7 +2722,7 @@ Below is the docker-compose I used to launch the container.
       - /home/sitram/docker/portainer:/data
 ```
 
-### Hercules - Calibre docker container
+## Hercules - Calibre docker container
 
 I use [Calibre](https://hub.docker.com/r/linuxserver/calibre) as a book management application. My book library is stored in the mounted volume.
 
@@ -3576,7 +2757,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Calibre-web docker container
+## Hercules - Calibre-web docker container
 
 I use [Calibre-web](https://hub.docker.com/r/linuxserver/calibre-web) as a web app providing a clean interface for browsing, reading and downloading eBooks using an existing Calibre datavase.
 
@@ -3611,7 +2792,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - qBitTorrent docker container
+## Hercules - qBitTorrent docker container
 
 I use [qBitTorrent](https://hub.docker.com/r/linuxserver/qbittorrent/) as my main torrent client accessible to the entire LAN network. I use an older version(14.3.9) because the latest immage is causing some issues which I couldn't figure how to solve.
 
@@ -3651,7 +2832,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Jackett docker container
+## Hercules - Jackett docker container
 
 I use [Jackett]( https://ghcr.io/linuxserver/jackett) as a proxy server: it translates queries from apps (Sonarr, SickRage, CouchPotato, Mylar, etc) into tracker-site-specific http queries, parses the html response, then sends results back to the requesting software.
 
@@ -3685,7 +2866,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Sonarr docker container
+## Hercules - Sonarr docker container
 
 I use [Sonarr](https://ghcr.io/linuxserver/sonarr) as a web application to mnitor multiple sources for favourite tv shows.
 
@@ -3725,7 +2906,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Radarr docker container
+## Hercules - Radarr docker container
 
 I use [Radarr](https://ghcr.io/linuxserver/radarr) as a web application to mnitor multiple sources for favourite movies.
 
@@ -3765,7 +2946,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Bazarr docker container
+## Hercules - Bazarr docker container
 
 I use [Bazarr](https://ghcr.io/linuxserver/bazarr) as a web application companion to Sonarr and Radarr. It can manage and download subtitles based on your requirements.
 
@@ -3804,7 +2985,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Lidarr docker container
+## Hercules - Lidarr docker container
 
 I use [Lidarr](https://hub.docker.com/r/linuxserver/lidarr) as a web application to manage my music collection.
 
@@ -3843,7 +3024,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Overseerr docker container
+## Hercules - Overseerr docker container
 
 I use [Overseerr](https://hub.docker.com/r/sctx/overseerr) as a free and open source web application for managing requests for my media library. It integrates with your existing services, such as Sonarr, Radarr, and Plex.
 
@@ -3878,7 +3059,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - DuckDNS docker container
+## Hercules - DuckDNS docker container
 
 I use [DuckDNS](http://ghcr.io/linuxserver/duckdns) to point the subdomain I reserved on duckdns to the dinamically assigned IP address by my ISP.
 
@@ -3913,7 +3094,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - SWAG - Secure Web Application Gateway docker container
+## Hercules - SWAG - Secure Web Application Gateway docker container
 
 I use [SWAG - Secure Web Application Gateway](https://ghcr.io/linuxserver/swag) as a free and open source application that sets a Nginx webserver and reverse proxy with php support and a built-in certbot client that automates free SSL server certificate generation and renewal processes.
 
@@ -3958,7 +3139,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Plex docker container
+## Hercules - Plex docker container
 
 I use [Plex](https://hub.docker.com/r/plexinc/pms-docker/)  to organizes video, music and photos from personal media libraries and streams them to smart TVs, streaming boxes and mobile devices.
 
@@ -4009,7 +3190,7 @@ Plex - Organizes video, music and photos from personal media libraries and strea
     restart: unless-stopped
 ```
 
-### Hercules - PostgressSQL database docker container
+## Hercules - PostgressSQL database docker container
 
 I use [PostgressSQL database](https://github.com/docker-library/docs/blob/master/postgres/README.md) as a database server for [Guacamole](#hercules---guacamole-daemon-and-web-application-docker-container) container
 
@@ -4041,7 +3222,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - MySQL database docker container
+## Hercules - MySQL database docker container
 
 I use [MySQL](https://hub.docker.com/_/mysql?tab=description) as a open-source relational database management system to store databases for
 
@@ -4090,7 +3271,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Adminer docker container
+## Hercules - Adminer docker container
 
 I use [Adminer](https://hub.docker.com/_/adminer) (formerly phpMinAdmin) as a full-featured database management tool written in PHP to connect to [MySQL](#hercules---mysql-database-docker-container) container
 
@@ -4109,7 +3290,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - PGAdmin docker container
+## Hercules - PGAdmin docker container
 
 I use [PGAdmin](https://hub.docker.com/_/adminer) as a web interface to administer [PostgressSQL](#hercules---postgresssql-database-docker-container) databasees
 
@@ -4143,7 +3324,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Guacamole daemon and web application docker container
+## Hercules - Guacamole daemon and web application docker container
 
 I use [Guacamole](http://guacamole.apache.org/doc/gug/guacamole-docker.html) as a web application for accesing internal services over SSH, RDP or other protocols. It consists of two containers, a daemon and the web interface.
 
@@ -4209,7 +3390,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Redis docker container
+## Hercules - Redis docker container
 
 I use [Redis](https://hub.docker.com/_/redis) as an open-source, networked, in-memory, key-value data store with optional durability. It is written in ANSI C
 
@@ -4242,7 +3423,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - LibreSpeed docker container
+## Hercules - LibreSpeed docker container
 
 I use [LibreSpeed](https://hub.docker.com/r/linuxserver/librespeed) as a very lightweight Speedtest implemented in Javascript, using XMLHttpRequest and Web Workers. No Flash, No Java, No Websocket, No Bullshit.
 
@@ -4284,7 +3465,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - Authelia docker container
+## Hercules - Authelia docker container
 
 I use [Authelia](https://www.authelia.com/docs/) as an open source authentication and authorization server protecting modern web applications by collaborating with reverse proxies.
 
@@ -4311,7 +3492,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Hercules - PortfolioPerformance docker container
+## Hercules - PortfolioPerformance docker container
 
 I use [Portfolio Performance](https://www.portfolio-performance.info/en/) as an open source tool to calculate the overall performance of an investment portfolio. I built the image based on the instructions from [here](https://forum.portfolio-performance.info/t/portfolio-performance-in-docker/10062).
 
@@ -4349,7 +3530,7 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-### Audiobookshelf - Audiobookshelf docker container
+## Audiobookshelf - Audiobookshelf docker container
 
 I use [Audiobookshelf](https://www.audiobookshelf.org/) as an self hosted audiobook and podcast server with mobile applications for Android and iOS which allows to listen to audiobooks remotely from the server.
 
@@ -4387,17 +3568,17 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-## Windows11 - Virtual Windows Desktop VM
+# Windows11 - Virtual Windows Desktop VM
 
-### Windows11 - VM configuration
+## Windows11 - VM configuration
 
-### Windows11 - Windows installation
+## Windows11 - Windows installation
 
-### Windows11 - Remote Desktop Connection configuration
+## Windows11 - Remote Desktop Connection configuration
 
-## Code - coding VM
+# Code - coding VM
 
-### Code - VM configuration
+## Code - VM configuration
 
 - VM id: 159
 - HDD: 32GB
@@ -4418,19 +3599,19 @@ Below is the docker-compose I used to launch the container.
   - QEMU Guest Agent: enabled, guest trim
 - OS: [Ubuntu Server](https://ubuntu.com/download/server)
 
-### Code - OS Configuration
+## Code - OS Configuration
 
-The following subsections from [General](#general) section should be performed in this order:
+The following subsections from [General](./general/general.md#general) section should be performed in this order:
 
-- [SSH configuration](#ssh-configuration)
-- [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
-- [Update system timezone](#update-system-timezone)
-- [Correct DNS resolution](#correct-dns-resolution)
-- [Generate Gmail App Password](#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
+- [SSH configuration](./general/general.md#ssh-configuration)
+- [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
+- [Update system timezone](./general/general.md#update-system-timezone)
+- [Correct DNS resolution](./general/general.md#correct-dns-resolution)
+- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
+- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
+- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
 
-### Code - CodeServer installation and configuration
+## Code - CodeServer installation and configuration
 
 Preview what occurs during the install process using
 
@@ -4464,11 +3645,11 @@ Restart code-server service.
 sudo systemctl restart code-server@$USER
 ```
 
-### Code - Accessing CodeServer from outside local network
+## Code - Accessing CodeServer from outside local network
 
-## ArchLinux - Desktop VM
+# ArchLinux - Desktop VM
 
-### ArchLinux - VM configuration
+## ArchLinux - VM configuration
 
 - VM id: 151
 - HDD: 60GB
@@ -4494,7 +3675,7 @@ sudo systemctl restart code-server@$USER
     - Video Streaming: off
 - OS: [ArchLinux](https://archlinux.org/)
 
-### ArchLinux - OS Configuration
+## ArchLinux - OS Configuration
 
 Install iNet Wireless daemon and set a delay for iwd service start
 
@@ -4541,7 +3722,7 @@ Base software installation after running `arch-chroot`
 - **NTFS filesystem driver and utilities**: ntfs-3g
 
 ```bash
-sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak iftop docker htop neofetch dosfstools	ntfs-3g
+sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak iftop docker htop neofetch dosfstools ntfs-3g
 ```
 
 Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
@@ -4805,11 +3986,11 @@ Check all enabled services
 sudo systemctl list-unit-files --state=enabled
 ```
 
-### ArchLinux - Network configuration
+## ArchLinux - Network configuration
 
-#### ArchLinux - systemd-networkd
+## ArchLinux - systemd-networkd
 
-#### ArchLinux - NetworkManager
+## ArchLinux - NetworkManager
 
 [NetworkManager](https://wiki.archlinux.org/title/NetworkManager) is a program for providing detection and configuration for systems to automatically connect to networks. NetworkManager's functionality can be useful for both wireless and wired networks. For wireless networks, NetworkManager prefers known wireless networks and has the ability to switch to the most reliable network. NetworkManager-aware applications can switch from online and offline mode. NetworkManager also prefers wired connections over wireless ones, has support for modem connections and certain types of VPN. NetworkManager was originally developed by Red Hat and now is hosted by the GNOME project.
 
@@ -4885,7 +4066,7 @@ if [ "$CONNECTION_UUID" = "$WIRED_UUID" ] || [ "$CONNECTION_UUID" = "$WIRELESS_A
 fi
 ```
 
-### ArchLinux - Troubleshoot sound issues
+## ArchLinux - Troubleshoot sound issues
 
 ```bash
 dmesg | grep snd
@@ -4896,7 +4077,7 @@ pulseaudio -vvv
 systemctl --user mask pulseaudio.socket
 ```
 
-### ArchLinux - I3 installation & Customization
+## ArchLinux - I3 installation & Customization
 
 Installing the needed packages
 
@@ -4984,7 +4165,7 @@ Polybar instalation and configuration
 yay -S polybar
 ```
 
-### ArchLinux - ZSH shell
+## ArchLinux - ZSH shell
 
 Zsh (The Z shell) is an Unix shell that can be used as an interactive login shell and as a command interpreter for shell scripting. Zsh is an extended Bourne shell with many improvements, including some features from Bash, ksh, and tcsh.
 
@@ -5039,11 +4220,11 @@ Edit `~/.zshrc` file and add the following plugins:
 plugins=(git web-search history sudo)
 ```
 
-## ArchLinux - Downgrade packages
+# ArchLinux - Downgrade packages
 
 When using a rolling distro like Arch, sometimes things break when updating packages to newer version. When this happens there are several ways to perform a downgrade
 
-### Using pacman cache
+## Using pacman cache
 
 If a package was installed at an earlier stage, and the pacman cache was not cleaned, an earlier version from `/var/cache/pacman/pkg/` can be installed.
 
@@ -5055,7 +4236,7 @@ pacman -U /var/cache/pacman/pkg/package-old_version.pkg.tar.zst
 
 `old_version` could be something like `x.y.z-x86_64` where the last part is the architecture for which the package is installed.
 
-### Using Arch Linux archive
+## Using Arch Linux archive
 
 The [Arch Linux Archive](https://wiki.archlinux.org/title/Arch_Linux_Archive) is a daily snapshot of the official repositories. It can be used to install a previous package version, or restore the system to an earlier date.
 
@@ -5063,15 +4244,15 @@ The [Arch Linux Archive](https://wiki.archlinux.org/title/Arch_Linux_Archive) is
 pacman -U https://archive.archlinux.org/packages/path/package-old_version.pkg.tar.zst
 ```
 
-### Restore system to an earlier date
+## Restore system to an earlier date
 
 To restore all packages to their version at a specific date, let us say 30 March 2014, you have to direct pacman to this date, by replacing your `/etc/pacman.d/mirrorlist` with the following content:
 
 ```bash
-##                                                                              
-## Arch Linux repository mirrorlist                                             
-## Generated on 2042-01-01                                                      
-##
+#                                                                              
+# Arch Linux repository mirrorlist                                             
+# Generated on 2042-01-01                                                      
+#
 Server=https://archive.archlinux.org/repos/2014/03/30/$repo/os/$arch
 ```
 
@@ -5083,7 +4264,7 @@ pacman -Syyuu
 
 If you get errors complaining about corrupted/invalid packages due to PGP signature, try to first update separately `archlinux-keyring` and `ca-certificates`.
 
-## ArchLinux - Connect Android To Arch Linux Via USB
+# ArchLinux - Connect Android To Arch Linux Via USB
 
 Enable MTP(Media Transfer Protocol) support by installing
 
@@ -5115,9 +4296,9 @@ Finally, for the changes to take effect, reboot the system
 sudo reboot now
 ```
 
-## WordPress - WorPress server VM
+# WordPress - WorPress server VM
 
-### WordPress - VM configuration
+## WordPress - VM configuration
 
 - VM id: 160
 - HDD: 16GB
@@ -5137,17 +4318,17 @@ sudo reboot now
   - QEMU Guest Agent: enabled, guest trim
 - OS: [Ubuntu Server](https://ubuntu.com/download/server)
 
-### WordPress - OS Configuration
+## WordPress - OS Configuration
 
-The following subsections from [General](#general) section should be performed in this order:
+The following subsections from [General](./general/general.md#general) section should be performed in this order:
 
-- [SSH configuration](#ssh-configuration)
-- [Ubuntu - Synchronize time with ntpd](#ubuntu---synchronize-time-with-ntpd)
-- [Update system timezone](#update-system-timezone)
-- [Correct DNS resolution](#correct-dns-resolution)
-- [Generate Gmail App Password](#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](#mail-notifications-for-ssh-dial-in)
+- [SSH configuration](./general/general.md#ssh-configuration)
+- [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
+- [Update system timezone](./general/general.md#update-system-timezone)
+- [Correct DNS resolution](./general/general.md#correct-dns-resolution)
+- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
+- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
+- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
 
 Install the following packages as necessary basis for server operation:
 
@@ -5169,7 +4350,7 @@ mkdir /home/sitram/data
 sudo mount -a
 ```
 
-### WordPress - Installation and configuration of nginx web server
+## WordPress - Installation and configuration of nginx web server
 
 Add software source
 
@@ -5287,7 +4468,7 @@ Assign the right permissions
 sudo chown -R www-data:www-data /var/www /home/sitram/data/wordpress
 ```
 
-### WordPress - Installation and configuration of PHP 8.0
+## WordPress - Installation and configuration of PHP 8.0
 
 Perform steps from chapter [Ubuntu - Configure PHP source list](#ubuntu---configure-php-source-list
 
@@ -5402,7 +4583,7 @@ sudo service nginx status
 
 [TODO] For troubleshooting of php-fpm check [here](https://www.c-rieger.de/nextcloud-und-php-troubleshooting/)
 
-### Wordpress - Installation and configuration of MariaDB database
+## Wordpress - Installation and configuration of MariaDB database
 
 [OPTIONAL] This step is optional and can be skipped if using MySQL or MariaDB in a docker instance on a dedicated server.
 
@@ -5551,7 +4732,7 @@ Save and close the file, then restart the database server
 service mysql restart
 ```
 
-### Wordpress - Database creation
+## Wordpress - Database creation
 
 Create Nextcloud database, user and password. Use `-h localhost` MariaDB is installed locally or `-h IP` if on a remote server
 
@@ -5567,7 +4748,7 @@ FLUSH privileges;
 quit;
 ```
 
-### Wordpress - Installation and optimization
+## Wordpress - Installation and optimization
 
 We will now set up various vhost, i.e. server configuration files, and modify the standard vhost file persistently.
 
@@ -5841,7 +5022,7 @@ In order to automatically renew the SSL certificates as well as to initiate the 
 crontab -l -u acmeuser
 ```
 
-### Wordpress - Installation of Redis server
+## Wordpress - Installation of Redis server
 
 Use Redis to increase the Wordpress performance, as Redis reduces the load on the database.
 
