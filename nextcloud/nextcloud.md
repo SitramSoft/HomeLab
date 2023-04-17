@@ -23,7 +23,7 @@
 
 ## Nextcloud - OS Configuration
 
-The following subsections from [General](./general/general.md#general) section should be performed in this order:
+The following subsections from [Common](./general/general.md#common) section should be performed in this order:
 
 - [SSH configuration](./general/general.md#ssh-configuration)
 - [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)

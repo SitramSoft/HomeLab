@@ -22,7 +22,7 @@
 
 ## WordPress - OS Configuration
 
-The following subsections from [General](./general/general.md#general) section should be performed in this order:
+The following subsections from [Common](./general/general.md#common) section should be performed in this order:
 
 - [SSH configuration](./general/general.md#ssh-configuration)
 - [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
@@ -172,7 +172,7 @@ sudo chown -R www-data:www-data /var/www /home/sitram/data/wordpress
 
 ## WordPress - Installation and configuration of PHP 8.0
 
-Perform steps from chapter [Ubuntu - Configure PHP source list](#ubuntu---configure-php-source-list
+Perform steps from chapter [Ubuntu - Configure PHP source list](../general/general.md#ubuntu---configure-php-source-list)
 
 Install PHP8.0 and required modules
 

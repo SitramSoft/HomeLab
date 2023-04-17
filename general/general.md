@@ -1,3 +1,5 @@
+# General
+
 ## About my Homelab
 
 This repository is intended to record my experience in setting up a HomeLab using a dedicated server running [Proxmox](https://www.proxmox.com/en/) with various services running in several VM's and LXC's. I will be touching topics related to virtualization, hardware passtrough, LXC, Docker and several services which I currently use. This document is a work in progress and will evolve as I gain more experience and find more interesting stuff to do. I do not intend this repository or this document to be taken as a tutorial because I don't consider myself an expert in this area.
@@ -49,7 +51,7 @@ Optional:
 
 - [x] Network rack to store all homelab equipment
 
-## General
+## Common
 
 The following sections apply to all VM's.
 
@@ -719,7 +721,7 @@ When prompted, select `Internet Site` as the type of mail server the Postfix ins
 
 Once the installation is complete, confirm that the `myhostname` parameter is configured with your server’s FQDN in `/etc/postfix/main.cf`
 
-Generate an Gmail password as described in subsection [Generate Gmail App Password](#generate-gmail-app-password).
+Generate an Gmail password as described in subsection [Generate Gmail App Password](../general/general.md#generate-gmail-app-password).
 
 Usernames and passwords are stored in sasl_passwd in the `/etc/postfix/sasl/` directory. In this section, you’ll add your email login credentials to this file and to Postfix.
 

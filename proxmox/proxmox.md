@@ -2,7 +2,7 @@
 
 ## Proxmox - OS configuration
 
-The following subsections from [General](./general/general.md#general) section should be performed in this order:
+The following subsections from [Common](./general/general.md#common) section should be performed in this order:
 
 - [SSH configuration](./general/general.md#ssh-configuration)
 - [Update system timezone](./general/general.md#update-system-timezone)

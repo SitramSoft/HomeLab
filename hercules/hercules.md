@@ -667,7 +667,7 @@ Plex - Organizes video, music and photos from personal media libraries and strea
 
 ## Hercules - PostgressSQL database docker container
 
-I use [PostgressSQL database](https://github.com/docker-library/docs/blob/master/postgres/README.md) as a database server for [Guacamole](#hercules---guacamole-daemon-and-web-application-docker-container) container
+I use [PostgressSQL database](https://github.com/docker-library/docs/blob/master/postgres/README.md) as a database server for [Guacamole](../hercules/hercules.md#hercules---guacamole-daemon-and-web-application-docker-container) container
 
 The container has:
 
@@ -701,10 +701,10 @@ Below is the docker-compose I used to launch the container.
 
 I use [MySQL](https://hub.docker.com/_/mysql?tab=description) as a open-source relational database management system to store databases for
 
-- [Authelia](#hercules---authelia-docker-container)
-- [Librespeed](#hercules---librespeed-docker-container)
+- [Authelia](../hercules/hercules.md#hercules---authelia-docker-container)
+- [Librespeed](../hercules/hercules.md#hercules---librespeed-docker-container)
 - [NextCloud](./nextcloud/nextcloud.md#nextcloud---content-collaboration-server)
-- [WordPress blogs](#wordpress---worpress-server-vm)
+- [WordPress blogs](../wordpress/wordpress.md#wordpress---worpress-server-vm)
 
 The container has:
 

@@ -1,4 +1,4 @@
-Table of contents:
+# Table of contents
 
 - [About my Homelab](./general/general.md#about-my-homelab)
 - [Introduction](./general/general.md#introduction)
@@ -6,7 +6,7 @@ Table of contents:
   - [HomeLab architecture](./general/general.md#homelab-architecture)
   - [Document structure](./general/general.md#document-structure)
   - [Prerequisites](./general/general.md#prerequisites)
-- [General](./general/general.md#general)
+- [Common](./general/general.md#common)
   - [SSH configuration](./general/general.md#ssh-configuration)
   - [Execute commands using SSH](./general/general.md#execute-commands-using-ssh)
   - [How to fix warning about ECDSA host key](./general/general.md#how-to-fix-warning-about-ecdsa-host-key)
