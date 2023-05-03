@@ -816,3 +816,24 @@ if [ -n "$SSH_CLIENT" ]; then
         echo -e 'Login details:\n  - Hostname:'  `hostname -f` '\n  - Date:' "`date`" '\n  - User:' "`who -m`" | mail -s "Login on `hostname` from `echo $SSH_CLIENT | awk '{print $1}'`" username@gmail.com
 fi
 ```
+
+### Backup folder
+
+In Linux, the tar command is one of the essential commands as far as file management is concerned. It’s short for Tape Archive, and it’s used for creating & extracting archive files.  An archive file is a compressed file containing one or multiple files bundled together for more accessible storage and portability. More examples can be found [here](https://linuxhint.com/linux-tar-command/)
+
+The `tar` command provides the following options:
+
+- `-c`: This creates an archive file.
+- `-x`: The option extracts the archive file.
+- `-f`: Specifies the filename of the archive file.
+- `-v`: This prints verbose information for any tar operation on the terminal.
+- `-t`: This lists all the files inside an archive file.
+- `-u`: This archives a file and then adds it to an existing archive file.
+- `-r`: This updates a file or directory located inside a .tar file
+- `-z`: Creates a tar file using gzip compression
+- `-j`: Create an archive file using the bzip2 compression
+- `-W`: The -w option verifies an archive file.
+
+```bash
+tar -zcvf folder.tar.gz html
+```
