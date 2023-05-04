@@ -837,3 +837,25 @@ The `tar` command provides the following options:
 ```bash
 tar -zcvf folder.tar.gz html
 ```
+
+### Generate random passwords or tokens
+
+A random string of variable lenght that can be used for passwords or access tokens can be generated in the following ways:
+
+- using `/dev/urandom` with `tr` to get only digits and letters:
+
+```bash
+tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''
+```
+
+- using `/dev/urandom` with `tr` to include more characters from the [OWASP password special characters list](https://owasp.org/www-community/password-special-characters):
+
+```bash
+tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 13  ; echo
+```
+
+- using `openssl` command, the swiss army knife of cryptography:
+
+```bash
+openssl rand -base64 12
+```

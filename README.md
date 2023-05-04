@@ -32,6 +32,7 @@
   - [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
   - [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
   - [Backup folder](./general/general.md#backup-folder)
+  - [Generate random passwords or tokens](./general/general.md#generate-random-passwords-or-tokens)
 - [Proxmox - Virtualization server](./proxmox/proxmox.md#proxmox---virtualization-server)
   - [Proxmox - OS configuration](./proxmox/proxmox.md#proxmox---os-configuration)
   - [Proxmox - NTP time server](./proxmox/proxmox.md#proxmox---ntp-time-server)
