@@ -132,6 +132,7 @@
     - [ArchLinux - Using Arch Linux Archive](./archlinux/archlinux.md#archlinux---using-arch-linux-archive)
     - [ArchLinux - Restore system to an earlier date](./archlinux/archlinux.md#archlinux---restore-system-to-an-earlier-date)
   - [ArchLinux - Connect Android To Arch Linux Via USB](./archlinux/archlinux.md#archlinux---connect-android-to-arch-linux-via-usb)
+  - [ArchLinux - Rebuild AUR packages when python is upgraded](./archlinux/archlinux.md#archlinux---rebuild-aur-packages-when-python-is-upgraded)
 - [WordPress - WorPress server VM](./wordpress/wordpress.md#wordpress---worpress-server-vm)
   - [WordPress - VM configuration](./wordpress/wordpress.md#wordpress---vm-configuration)
   - [WordPress - OS Configuration](./wordpress/wordpress.md#wordpress---os-configuration)

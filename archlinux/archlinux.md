@@ -646,3 +646,21 @@ Finally, for the changes to take effect, reboot the system
 ```bash
 sudo reboot now
 ```
+
+## ArchLinux - Rebuild AUR packages when python is upgraded
+
+Whenever `Python` upgrades it's major version in [core](https://archlinux.org/packages/core/x86_64/python/), Python packages installed from AUR might need to be rebuild.
+
+To get a list of them, you can run:
+
+```bash
+pacman -Qoq /usr/lib/python3.xx
+```
+
+And to rebuild them all at once with an AUR helper such as yay, you can do:
+
+```bash
+yay -S $(pacman -Qoq /usr/lib/python3.xx) --answerclean All
+```
+
+If any of the packages don't work with Python 3.xx yet, this might fail halfway through and they might need to be rebuild manually one at a time.
