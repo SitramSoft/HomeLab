@@ -625,7 +625,7 @@ The container has:
 - a volume mapped to `/home/sitram/media/tvseries` used to store all TV shows
 - a volume mapped to `/home/sitram/media/movies` used to store all the movies
 - a volume mapped to `/home/sitram/media/music` used to store all the music
-- a volume mapped to `/home/sitram/media/photos` used to store family photos
+- a volume mapped to `/home/sitram/data/photos` used to store family photos
 - a volume mapped to `/home/sitram/media/trainings` used to store various video training materials
 
 Below is the docker-compose I used to launch the container.
