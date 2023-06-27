@@ -97,7 +97,7 @@
   - [Hercules - Bazarr docker container](./hercules/hercules.md#hercules---bazarr-docker-container)
   - [Hercules - Lidarr docker container](./hercules/hercules.md#hercules---lidarr-docker-container)
   - [Hercules - Overseerr docker container](./hercules/hercules.md#hercules---overseerr-docker-container)
-  - [Hercules - DuckDNS docker container](./hercules/hercules.md#hercules---duckdns-docker-container)
+  - [Hercules - GoDaddy DNS Updater](./hercules/hercules.md#hercules---godaddy-dns-updater)
   - [Hercules - SWAG - Secure Web Application Gateway docker container](./hercules/hercules.md#hercules---swag---secure-web-application-gateway-docker-container)
   - [Hercules - Plex docker container](./hercules/hercules.md#hercules---plex-docker-container)
   - [Hercules - PostgressSQL database docker container](./hercules/hercules.md#hercules---postgresssql-database-docker-container)

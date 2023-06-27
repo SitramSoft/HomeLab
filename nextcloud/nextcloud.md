@@ -537,7 +537,7 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
 
-    server_name nextcloud.sitram.duckdns.org;
+    server_name nextcloud.sitram.eu;
     
     root /var/www;
     location ^~ /.well-known/acme-challenge {
@@ -564,7 +564,7 @@ server {
  listen 443 ssl http2;
  listen [::]:443 ssl http2;
 
- server_name nextcloud.sitram.duckdns.org;
+ server_name nextcloud.sitram.eu;
 
     ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
     ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
@@ -772,11 +772,11 @@ su - acmeuser
 Request the SSL certificates from Let's Encrypt and replace domain if needed
 
 ```bash
-acme.sh --issue -d nextcloud.sitram.duckdns.org --server letsencrypt --keylength 4096 -w /var/www/letsencrypt --key-file /etc/letsencrypt/rsa-certs/privkey.pem --ca-file /etc/letsencrypt/rsa-certs/chain.pem --cert-file /etc/letsencrypt/rsa-certs/cert.pem --fullchain-file /etc/letsencrypt/rsa-certs/fullchain.pem --reloadcmd "sudo /bin/systemctl reload nginx.service"
+acme.sh --issue -d nextcloud.sitram.eu --server letsencrypt --keylength 4096 -w /var/www/letsencrypt --key-file /etc/letsencrypt/rsa-certs/privkey.pem --ca-file /etc/letsencrypt/rsa-certs/chain.pem --cert-file /etc/letsencrypt/rsa-certs/cert.pem --fullchain-file /etc/letsencrypt/rsa-certs/fullchain.pem --reloadcmd "sudo /bin/systemctl reload nginx.service"
 ```
 
 ```bash
-acme.sh --issue -d nextcloud.sitram.duckdns.org --server letsencrypt --keylength ec-384 -w /var/www/letsencrypt --key-file /etc/letsencrypt/ecc-certs/privkey.pem --ca-file /etc/letsencrypt/ecc-certs/chain.pem --cert-file /etc/letsencrypt/ecc-certs/cert.pem --fullchain-file /etc/letsencrypt/ecc-certs/fullchain.pem --reloadcmd "sudo /bin/systemctl reload nginx.service"
+acme.sh --issue -d nextcloud.sitram.eu --server letsencrypt --keylength ec-384 -w /var/www/letsencrypt --key-file /etc/letsencrypt/ecc-certs/privkey.pem --ca-file /etc/letsencrypt/ecc-certs/chain.pem --cert-file /etc/letsencrypt/ecc-certs/cert.pem --fullchain-file /etc/letsencrypt/ecc-certs/fullchain.pem --reloadcmd "sudo /bin/systemctl reload nginx.service"
 ```
 
 exit new user's shell
@@ -836,13 +836,13 @@ Wait until the installation of the Nextcloud has been completed and then adjust 
 Add your domain as a trusted domain
 
 ```bash
-sudo -u www-data php /var/www/nextcloud/occ config:system:set trusted_domains 0 --value=nextcloud.sitram.duckdns.org
+sudo -u www-data php /var/www/nextcloud/occ config:system:set trusted_domains 0 --value=nextcloud.sitram.eu
 ```
 
 Set your domain as overwrite.cli.url
 
 ```bash
-sudo -u www-data php /var/www/nextcloud/occ config:system:set overwrite.cli.url --value=https://nextcloud.sitram.duckdns.org
+sudo -u www-data php /var/www/nextcloud/occ config:system:set overwrite.cli.url --value=https://nextcloud.sitram.eu
 ```
 
 Save the existing config.php and then execute the following lines in a block

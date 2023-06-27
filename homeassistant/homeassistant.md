@@ -422,13 +422,13 @@ Open the `Overview` tab and add a new view with the followint configuration:
 
 To use Google Assistant, your Home Assistant configuration has to be externally accessible with a hostname and SSL certificate.
 
- 1. Create a new project in the Actions on Google console.
+ 1. Create a new project in the Actions on [Google console](https://console.actions.google.com/).
     - Click `New Project` and give your project a name.
     - Click on the `Smart Home card`, then click the `Start Building` button.
-    - Click `Name your Smart Home` action under Q`uick Setup` to give your Action a name - Home Assistant will appear in the Google Home app as `[test] <Action Name>`
-    - Click on the Over`view tab at the top of the page to go back.
+    - Click `Name your Smart Home` action under `Quick Setup` to give your Action a name - Home Assistant will appear in the Google Home app as `[test] <Action Name>`
+    - Click on the Overview tab at the top of the page to go back.
     - Click `Build your Action`, then click `Add Action(s)`.
-    - Add Home Assistant URL: `https://ha.sitram.duckdns.org/api/google_assistant` in the `Fulfillment URL` box.
+    - Add Home Assistant URL: `https://ha.sitram.eu/api/google_assistant` in the `Fulfillment URL` box.
     - Click `Save`.
     - Click the three little dots (more) icon in the upper right corner, select `Project settings`
     - Make note of the `Project ID` that are listed on the `GENERAL` tab of the `Settings` page.

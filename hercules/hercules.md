@@ -534,38 +534,29 @@ Below is the docker-compose I used to launch the container.
     restart: unless-stopped
 ```
 
-## Hercules - DuckDNS docker container
+## Hercules - GoDaddy DNS Updater
 
-I use [DuckDNS](http://ghcr.io/linuxserver/duckdns) to point the subdomain I reserved on duckdns to the dinamically assigned IP address by my ISP.
+I use [GoDaddy DNS Updater](https://github.com/parker-hemphill/godaddy-dns-updater) as a free and open source application that uses curl, and a simple shell script to monitor a sub-domain or domain and update GoDaddy DNS records.
 
 The container has:
 
-- a volume mapped to `/home/sitram/docker/duckdns` used to store the configuration of the application
+- a volume mapped to `/home/sitram/docker/godaddy_dns_updater` used to store the logs of the application
 
 Below is the docker-compose I used to launch the container.
 
 ```yaml
-#DuckDNS - point the subdomain to my IP address - http://ghcr.io/linuxserver/duckdns
-  duckdns:
-    image: ghcr.io/linuxserver/duckdns
-    container_name: duckdns
+#GoDaddy DNS Updater - A simple docker image that uses curl, and a simple shell script to monitor a sub-domain or domain and update GoDaddy DNS records - https://github.com/parker-hemphill/godaddy-dns-updater
+  godaddy_dns_updater:
+    image: parkerhemphill/godaddy-dns-updater
+    container_name: godaddy_dns_updater
     environment:
-      - PUID=1000 #optional
-      - PGID=1000 #optional
-      - TZ=Europe/Bucharest
-      - SUBDOMAINS=xxxxx #to be filled with the subdomain
-      - TOKEN=xxxxxxxx #to be filled with the real token
-      - LOG_FILE=true #optional
-      - DOCKER_MODS=linuxserver/mods:universal-wait-for-internet
+      - DOMAIN=sitram.eu
+      - API_KEY=xxx #to be filled with GoDaddy developer API key
+      - API_SECRET=xxx #to be filled with GoDaddy developer API key secret
+      - DNS_CHECK=600
+      - TIME_ZONE=Europe/Bucharest
     volumes:
-      - /home/sitram/docker/duckdns:/config #optional
-    dns: 192.168.0.103
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider --no-check-certificate https://sitram.duckdns.org || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+      - /home/sitram/docker/godaddy_dns_updater:/tmp
     restart: unless-stopped
 ```
 
@@ -592,8 +583,8 @@ Below is the docker-compose I used to launch the container.
       - TZ=Europe/Bucharest
       - URL=xxxxx #to be filled with the subdomain
       - SUBDOMAINS=wildcard
-      - VALIDATION=duckdns
-      - DUCKDNSTOKEN=xxxxxxxx #to be filled with the real token
+      - VALIDATION=dns
+      - DNSPLUGIN=godaddy
       - EMAIL=xxx@gmail.com # to be filled with real email
       - ONLY_SUBDOMAINS=false
       - STAGING=false
@@ -604,7 +595,7 @@ Below is the docker-compose I used to launch the container.
       - 443:443
       - 80:80
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider --no-check-certificate https://sitram.duckdns.org || exit 1
+      test: wget --no-verbose --tries=1 --spider --no-check-certificate https://sitram.eu || exit 1
       interval: 30s
       timeout: 10s
       retries: 5

@@ -481,7 +481,7 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
 
-    server_name sitram.duckdns.org www.sitram.duckdns.org;
+    server_name  www.sitram.eu;
     
     root /home/sitram/data/wordpress;
     # Uncomment the lines below to enable SSL certificate communication with Let's Encrypt
@@ -678,11 +678,11 @@ su - acmeuser
 Request the SSL certificates from Let's Encrypt and replace domain if needed
 
 ```bash
-acme.sh --issue -d blog.sitram.duckdns.org --server letsencrypt --keylength 4096 -w /home/sitram/wordpress/letsencrypt --key-file /etc/letsencrypt/rsa-certs/privkey.pem --ca-file /etc/letsencrypt/rsa-certs/chain.pem --cert-file /etc/letsencrypt/rsa-certs/cert.pem --fullchain-file /etc/letsencrypt/rsa-certs/fullchain.pem --reloadcmd "sudo /bin/systemctl reload nginx.service"
+acme.sh --issue -d blog.sitram.eu --server letsencrypt --keylength 4096 -w /home/sitram/wordpress/letsencrypt --key-file /etc/letsencrypt/rsa-certs/privkey.pem --ca-file /etc/letsencrypt/rsa-certs/chain.pem --cert-file /etc/letsencrypt/rsa-certs/cert.pem --fullchain-file /etc/letsencrypt/rsa-certs/fullchain.pem --reloadcmd "sudo /bin/systemctl reload nginx.service"
 ```
 
 ```bash
-acme.sh --issue -d blog.sitram.duckdns.org --server letsencrypt --keylength ec-384 -w /home/sitram/wordpress/letsencrypt --key-file /etc/letsencrypt/ecc-certs/privkey.pem --ca-file /etc/letsencrypt/ecc-certs/chain.pem --cert-file /etc/letsencrypt/ecc-certs/cert.pem --fullchain-file /etc/letsencrypt/ecc-certs/fullchain.pem --reloadcmd "sudo /bin/systemctl reload nginx.service"
+acme.sh --issue -d blog.sitram.eu --server letsencrypt --keylength ec-384 -w /home/sitram/wordpress/letsencrypt --key-file /etc/letsencrypt/ecc-certs/privkey.pem --ca-file /etc/letsencrypt/ecc-certs/chain.pem --cert-file /etc/letsencrypt/ecc-certs/cert.pem --fullchain-file /etc/letsencrypt/ecc-certs/fullchain.pem --reloadcmd "sudo /bin/systemctl reload nginx.service"
 ```
 
 exit new user's shell
