@@ -140,3 +140,6 @@
   - [WordPress - Installation and configuration of PHP 8.0](./wordpress/wordpress.md#wordpress---installation-and-configuration-of-php-80)
   - [WordPress - Installation and configuration of MariaDB database](./wordpress/wordpress.md#wordpress---installation-and-configuration-of-mariadb-database)
   - [WordPress - Database creation](./wordpress/wordpress.md#wordpress---database-creation)
+  - [Wordpress - Installation and optimization](./wordpress/wordpress.md#wordpress---installation-and-optimization)
+  - [Wordpress - Installation of Redis server](./wordpress/wordpress.md#wordpress---installation-of-redis-server)
+  - [Wordpress - Manual migration to another domain](./wordpress/wordpress.md#wordpress---manual-migration-to-another-domain)

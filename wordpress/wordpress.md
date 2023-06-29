@@ -454,7 +454,7 @@ quit;
 
 We will now set up various vhost, i.e. server configuration files, and modify the standard vhost file persistently.
 
-If exists, backup existing configuration. Create empty vhosts files. The empty "default.conf" file ensures that the standard configuration does not affect Wordpress operation even when the web server is updated later.
+If exists, backup existing configuration files. Create empty vhosts files. The empty `default.conf` file ensures that the standard configuration does not affect Wordpress operation even when the web server is updated later.
 
 ```bash
 [ -f /etc/nginx/conf.d/default.conf ] && sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak
@@ -466,7 +466,7 @@ sudo touch /etc/nginx/conf.d/http.conf
 sudo touch /etc/nginx/conf.d/myblog.conf
 ```
 
-Create the global vhost file to permanently redirect the http standard requests to https and optionally to enable SSL certificate communication with Let's Encrypt.
+Create the global vhost file to permanently redirect the http standard requests to https and optionally to enable SSL certificate communication with Let's Encrypt. In the example below the SSL certificate handing is commented out because it is handled by a separate Nginx instance.
 
 ```bash
 sudo nano /etc/nginx/conf.d/http.conf
@@ -496,7 +496,7 @@ server {
 }
 ```
 
-For every wordpress instance, create a new .conf file, copy the following lines and adjust the values if needed.
+For every wordpress instance, create a new `.conf` file, copy the following lines and adjust the values if needed.
 
 ```bash
 sudo nano /etc/nginx/conf.d/myblog.conf
@@ -775,10 +775,60 @@ define( 'WP_REDIS_SCHEME', 'unix' );
 define( 'WP_REDIS_PATH', '/var/run/redis/redis.sock' );
 ```
 
-Background save may file under low memory conditions. To fix this issue 'm.overcommit_memory' has to be set to 1.
+Background save may fail under low memory conditions. To fix this issue `m.overcommit_memory` has to be set to 1.
 
 ```bash
 sudo cp /etc/sysctl.conf /etc/sysctl.conf.bak
 sudo sed -i '$ avm.overcommit_memory = 1' /etc/sysctl.conf
 sudo reboot now
+```
+
+### Wordpress - Manual migration to another domain
+
+When changing domain from eg. `old_domain` to `new_domain` the following steps must be performed:
+
+Edit the global vhost file and replace change the `server_name` directive to point to the new domain and restart the `Nginx` web server.
+
+```bash
+sudo nano /etc/nginx/conf.d/http.conf
+```
+
+```bash
+...
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    server_name  new_domain;
+
+...
+```
+
+```bash
+service nginx restart
+```
+
+Connect to the MySQL server that has the wordpress database run the following sql commands below which replace any reference to old domain.
+
+```bash
+mysql -u root -p -h 192.168.0.101 -P 3306
+```
+
+```sql
+UPDATE wp_posts SET guid = replace(guid, 'old_domain','new_domain'); 
+UPDATE wp_posts SET post_content = replace(post_content, 'old_domain', 'new_domain'); 
+UPDATE wp_links SET link_url = replace(link_url, 'old_domain', 'new_domain'); 
+UPDATE wp_links SET link_image = replace(link_image, 'old_domain', 'new_domain'); 
+UPDATE wp_postmeta SET meta_value = replace(meta_value, 'old_domain', 'new_domain'); 
+UPDATE wp_usermeta SET meta_value = replace(meta_value, 'old_domain', 'new_domain'); 
+UPDATE wp_options SET option_value = replace(option_value, 'old_domain', 'new_domain') WHERE option_name = 'home' OR option_name = 'siteurl';
+```
+
+If `Redis` is used as an object cache server, make sure that you flush it, otherwise the webpage will not load correctly, point to old domain.
+
+```bash
+redis-cli -h 192.168.0.101 -p 6379
+
+FLUSHALL
+quit
 ```
