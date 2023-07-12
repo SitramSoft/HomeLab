@@ -171,25 +171,28 @@ Assign the right permissions
 sudo chown -R www-data:www-data /var/nc_data /var/www
 ```
 
-## Nextcloud - Installation and configuration of PHP 8.0
+## Nextcloud - Installation and configuration of PHP 8.2
 
-Perform steps from chapter [Ubuntu - Configure PHP source list](./general/general.md#ubuntu---configure-php-source-list)
+Perform steps from chapter [Ubuntu - Configure PHP source list](../general/general.md#ubuntu---configure-php-source-list)
 
-Install PHP8.0 and required modules
+Install PHP8.2 and required modules
 
 ```bash
-sudo apt install -y php8.0-{fpm,gd,mysql,curl,xml,zip,intl,mbstring,bz2,ldap,apcu,bcmath,gmp,imagick,igbinary,redis,smbclient,cli,common,opcache,readline} imagemagick ldap-utils nfs-common cifs-utils
+sudo apt update && sudo apt install -y php-common \
+php8.2-{fpm,gd,curl,xml,zip,intl,mbstring,bz2,ldap,apcu,bcmath,gmp,imagick,igbinary,mysql,redis,smbclient,cli,common,opcache,readline} \
+imagemagick --allow-change-held-packages \
+ldap-utils nfs-common cifs-utils
 ```
 
 Backup original configurations
 
 ```bash
-sudo cp /etc/php/8.0/fpm/pool.d/www.conf /etc/php/8.0/fpm/pool.d/www.conf.bak
-sudo cp /etc/php/8.0/fpm/php-fpm.conf /etc/php/8.0/fpm/php-fpm.conf.bak
-sudo cp /etc/php/8.0/cli/php.ini /etc/php/8.0/cli/php.ini.bak
-sudo cp /etc/php/8.0/fpm/php.ini /etc/php/8.0/fpm/php.ini.bak
-sudo cp /etc/php/8.0/fpm/php-fpm.conf /etc/php/8.0/fpm/php-fpm.conf.bak
-sudo cp /etc/php/8.0/mods-available/apcu.ini /etc/php/8.0/mods-available/apcu.ini.bak
+sudo cp /etc/php/8.2/fpm/pool.d/www.conf /etc/php/8.2/fpm/pool.d/www.conf.bak
+sudo cp /etc/php/8.2/fpm/php-fpm.conf /etc/php/8.2/fpm/php-fpm.conf.bak
+sudo cp /etc/php/8.2/cli/php.ini /etc/php/8.2/cli/php.ini.bak
+sudo cp /etc/php/8.2/fpm/php.ini /etc/php/8.2/fpm/php.ini.bak
+sudo cp /etc/php/8.2/mods-available/apcu.ini /etc/php/8.2/mods-available/apcu.ini.bak
+sudo cp /etc/php/8.2/mods-available/opcache.ini /etc/php/8.2/mods-available/opcache.ini.bak
 sudo cp /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.bak
 ```
 
@@ -199,7 +202,7 @@ In order to adapt PHP to the configuration of the system, some parameters are ca
 AvailableRAM=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
 echo AvailableRAM = $AvailableRAM
 
-AverageFPM=$(ps --no-headers -o 'rss,cmd' -C php-fpm8.0 | awk '{ sum+=$1 } END { printf ("%d\n", sum/NR/1024,"M") }')
+AverageFPM=$(ps --no-headers -o 'rss,cmd' -C php-fpm8.2 | awk '{ sum+=$1 } END { printf ("%d\n", sum/NR/1024,"M") }')
 echo AverageFPM = $AverageFPM
 
 FPMS=$((AvailableRAM/AverageFPM))
@@ -218,54 +221,60 @@ echo PStartS = $PStartS
 Perform the following optimizations
 
 ```bash
-sudo sed -i "s/;env\[HOSTNAME\] = /env[HOSTNAME] = /" /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i "s/;env\[TMP\] = /env[TMP] = /" /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i "s/;env\[TMPDIR\] = /env[TMPDIR] = /" /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i "s/;env\[TEMP\] = /env[TEMP] = /" /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i "s/;env\[PATH\] = /env[PATH] = /" /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i 's/pm.max_children =.*/pm.max_children = '$FPMS'/' /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i 's/pm.start_servers =.*/pm.start_servers = '$PStartS'/' /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i 's/pm.min_spare_servers =.*/pm.min_spare_servers = '$PMinSS'/' /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i 's/pm.max_spare_servers =.*/pm.max_spare_servers = '$PMaxSS'/' /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i "s/;pm.max_requests =.*/pm.max_requests = 1000/" /etc/php/8.0/fpm/pool.d/www.conf
-sudo sed -i "s/allow_url_fopen =.*/allow_url_fopen = 1/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/;env\[HOSTNAME\] = /env[HOSTNAME] = /" /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i "s/;env\[TMP\] = /env[TMP] = /" /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i "s/;env\[TMPDIR\] = /env[TMPDIR] = /" /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i "s/;env\[TEMP\] = /env[TEMP] = /" /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i "s/;env\[PATH\] = /env[PATH] = /" /etc/php/8.2/fpm/pool.d/www.conf
+
+sudo sed -i 's/pm.max_children =.*/pm.max_children = '$FPMS'/' /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i 's/pm.start_servers =.*/pm.start_servers = '$PStartS'/' /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i 's/pm.min_spare_servers =.*/pm.min_spare_servers = '$PMinSS'/' /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i 's/pm.max_spare_servers =.*/pm.max_spare_servers = '$PMaxSS'/' /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i "s/;pm.max_requests =.*/pm.max_requests = 1000/" /etc/php/8.2/fpm/pool.d/www.conf
+sudo sed -i "s/allow_url_fopen =.*/allow_url_fopen = 1/" /etc/php/8.2/fpm/php.ini
 ```
 
 ```bash
-sudo sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/8.0/cli/php.ini
-sudo sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/8.0/cli/php.ini
-sudo sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/8.0/cli/php.ini
-sudo sed -i "s/post_max_size =.*/post_max_size = 10240M/" /etc/php/8.0/cli/php.ini
-sudo sed -i "s/upload_max_filesize =.*/upload_max_filesize = 10240M/" /etc/php/8.0/cli/php.ini
-sudo sed -i "s/;date.timezone.*/date.timezone = Europe\/\Bucharest/" /etc/php/8.0/cli/php.ini
+sudo sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/8.2/cli/php.ini
+sudo sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/8.2/cli/php.ini
+sudo sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/8.2/cli/php.ini
+sudo sed -i "s/post_max_size =.*/post_max_size = 10240M/" /etc/php/8.2/cli/php.ini
+sudo sed -i "s/upload_max_filesize =.*/upload_max_filesize = 10240M/" /etc/php/8.2/cli/php.ini
+sudo sed -i "s/;date.timezone.*/date.timezone = Europe\/\Bucharest/" /etc/php/8.2/cli/php.ini
+sudo sed -i "s/;cgi.fix_pathinfo.*/cgi.fix_pathinfo=0/" /etc/php/8.2/cli/php.ini
 ```
 
 ```bash
-sudo sed -i "s/memory_limit = 128M/memory_limit = 1024M/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/post_max_size =.*/post_max_size = 10240M/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/upload_max_filesize =.*/upload_max_filesize = 10240M/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;date.timezone.*/date.timezone = Europe\/\Bucharest/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;session.cookie_secure.*/session.cookie_secure = True/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;opcache.enable=.*/opcache.enable=1/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;opcache.enable_cli=.*/opcache.enable_cli=1/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;opcache.memory_consumption=.*/opcache.memory_consumption=128/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;opcache.interned_strings_buffer=.*/opcache.interned_strings_buffer=8/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;opcache.max_accelerated_files=.*/opcache.max_accelerated_files=10000/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;opcache.revalidate_freq=.*/opcache.revalidate_freq=1/" /etc/php/8.0/fpm/php.ini
-sudo sed -i "s/;opcache.save_comments=.*/opcache.save_comments=1/" /etc/php/8.0/fpm/php.ini
+sudo sed -i "s/memory_limit = 128M/memory_limit = 1G/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/post_max_size =.*/post_max_size = 10G/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/upload_max_filesize =.*/upload_max_filesize = 10G/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;date.timezone.*/date.timezone = Europe\/\Bucharest/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;cgi.fix_pathinfo.*/cgi.fix_pathinfo=0/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;session.cookie_secure.*/session.cookie_secure = True/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;opcache.enable=.*/opcache.enable=1/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;opcache.validate_timestamps=.*/opcache.validate_timestamps=1/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;opcache.enable_cli=.*/opcache.enable_cli=1/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;opcache.memory_consumption=.*/opcache.memory_consumption=256/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;opcache.interned_strings_buffer=.*/opcache.interned_strings_buffer=64/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;opcache.max_accelerated_files=.*/opcache.max_accelerated_files=100000/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;opcache.revalidate_freq=.*/opcache.revalidate_freq=0/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/;opcache.save_comments=.*/opcache.save_comments=1/" /etc/php/8.2/fpm/php.ini
 ```
 
 ```bash
-sudo sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /etc/php/8.0/fpm/php-fpm.conf
-sudo sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/8.0/fpm/php-fpm.conf
-sudo sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/8.0/fpm/php-fpm.conf
+sudo sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /etc/php/8.2/fpm/php-fpm.conf
+sudo sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/8.2/fpm/php-fpm.conf
+sudo sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/8.2/fpm/php-fpm.conf
 ```
 
 ```bash
-sudo sed -i '$aapc.enable_cli=1' /etc/php/8.0/mods-available/apcu.ini
+sudo sed -i '$aapc.enable_cli=1' /etc/php/8.2/mods-available/apcu.ini
+sudo sed -i '$aopcache.jit=1255' /etc/php/8.2/mods-available/opcache.ini
+sudo sed -i '$aopcache.jit_buffer_size=256M' /etc/php/8.2/mods-available/opcache.ini
 ```
 
 ```bash
@@ -275,13 +284,27 @@ sudo sed -i "s/rights=\"none\" pattern=\"PDF\"/rights=\"read|write\" pattern=\"P
 sudo sed -i "s/rights=\"none\" pattern=\"XPS\"/rights=\"read|write\" pattern=\"XPS\"/" /etc/ImageMagick-6/policy.xml
 ```
 
+Optimize PHP for MySQL
+
+```bash
+sudo sed -i '$a[mysql]' /etc/php/8.2/mods-available/mysqli.ini
+sudo sed -i '$amysql.allow_local_infile=On' /etc/php/8.2/mods-available/mysqli.ini
+sudo sed -i '$amysql.allow_persistent=On' /etc/php/8.2/mods-available/mysqli.ini
+sudo sed -i '$amysql.cache_size=2000' /etc/php/8.2/mods-available/mysqli.ini
+sudo sed -i '$amysql.max_persistent=-1' /etc/php/8.2/mods-available/mysqli.ini
+sudo sed -i '$amysql.max_links=-1' /etc/php/8.2/mods-available/mysqli.ini
+sudo sed -i '$amysql.default_port=3306' /etc/php/8.2/mods-available/mysqli.ini
+sudo sed -i '$amysql.connect_timeout=60' /etc/php/8.2/mods-available/mysqli.ini
+sudo sed -i '$amysql.trace_mode=Off' /etc/php/8.2/mods-available/mysqli.ini
+```
+
 Restart PHP and nginx and check that they are working correctly
 
 ```bash
-sudo service php8.0-fpm restart
+sudo service php8.2-fpm restart
 sudo service nginx restart
 
-sudo service php8.0-fpm status
+sudo service php8.2-fpm status
 sudo service nginx status
 ```
 
@@ -530,7 +553,7 @@ sudo nano /etc/nginx/conf.d/http.conf
 
 ```bash
 upstream php-handler {
-    server unix:/run/php/php8.0-fpm.sock;
+    server unix:/run/php/php8.2-fpm.sock;
 }
 
 server {
@@ -940,9 +963,9 @@ Nextcloud is now fully operational, optimized and secured. Restart all relevant 
 
 ```bash
 service nginx stop
-service php8.0-fpm stop
+service php8.2-fpm stop
 service mysql restart
-service php8.0-fpm restart
+service php8.2-fpm restart
 service redis-server restart
 service nginx restart
 ```
@@ -1014,7 +1037,7 @@ sudo -u www-data php /var/www/nextcloud/occ files:scan-app-data
 sudo -u www-data php /var/www/nextcloud/occ app:update --all
 
 # Restart PHP and Web server
-sudo /usr/sbin/service php8.0-fpm restart
+sudo /usr/sbin/service php8.2-fpm restart
 sudo /usr/sbin/service nginx restart
 
 exit 0
