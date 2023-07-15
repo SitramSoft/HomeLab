@@ -107,14 +107,27 @@ worker_processes auto;
 pid /var/run/nginx.pid;
 
 events {
-        worker_connections 1024;
+        worker_connections 2048;
         multi_accept on;
         use epoll;
 }
 
 http {
+      log_format criegerde escape=json
+        '{'
+          '"time_local":"$time_local",'
+          '"remote_addr":"$remote_addr",'
+          '"remote_user":"$remote_user",'
+          '"request":"$request",'
+          '"status": "$status",'
+          '"body_bytes_sent":"$body_bytes_sent",'
+          '"request_time":"$request_time",'
+          '"http_referrer":"$http_referer",'
+          '"http_user_agent":"$http_user_agent"'
+        '}';
+
         server_names_hash_bucket_size 64;
-        access_log /var/log/nginx/access.log;
+        access_log /var/log/nginx/access.log criegerde;
         error_log /var/log/nginx/error.log warn;
         #either use 127.0.0.1 or own subnet
         set_real_ip_from 192.168.0.1/24;
@@ -236,7 +249,7 @@ sudo sed -i "s/allow_url_fopen =.*/allow_url_fopen = 1/" /etc/php/8.2/fpm/php.in
 ```
 
 ```bash
-sudo sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/8.2/cli/php.ini
+sudo sed -i "s/output_buffering =.*/output_buffering = Off/" /etc/php/8.2/cli/php.ini
 sudo sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/8.2/cli/php.ini
 sudo sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/8.2/cli/php.ini
 sudo sed -i "s/post_max_size =.*/post_max_size = 10240M/" /etc/php/8.2/cli/php.ini
@@ -247,7 +260,7 @@ sudo sed -i "s/;cgi.fix_pathinfo.*/cgi.fix_pathinfo=0/" /etc/php/8.2/cli/php.ini
 
 ```bash
 sudo sed -i "s/memory_limit = 128M/memory_limit = 1G/" /etc/php/8.2/fpm/php.ini
-sudo sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/8.2/fpm/php.ini
+sudo sed -i "s/output_buffering =.*/output_buffering = Off/" /etc/php/8.2/fpm/php.ini
 sudo sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/8.2/fpm/php.ini
 sudo sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/8.2/fpm/php.ini
 sudo sed -i "s/post_max_size =.*/post_max_size = 10G/" /etc/php/8.2/fpm/php.ini
