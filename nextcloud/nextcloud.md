@@ -597,8 +597,8 @@ sudo nano /etc/nginx/conf.d/nextcloud.conf
 
 ```bash
 server {
- listen 443 ssl http2;
- listen [::]:443 ssl http2;
+ listen 443 ssl default_server;
+ listen [::]:443 ssl default_server;
 
  server_name nextcloud.sitram.eu;
 
@@ -622,6 +622,8 @@ server {
     ssl_stapling_verify on;
     
     client_max_body_size 10G;
+    client_body_timeout 3600s;
+    client_body_buffer_size 512k;
     fastcgi_buffers 64 4K;
     
     gzip on;
