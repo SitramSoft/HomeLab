@@ -28,6 +28,8 @@
 
 ## ArchLinux - OS Configuration
 
+### Configure wireless network access
+
 Install iNet Wireless daemon and set a delay for iwd service start
 
 ```bash
@@ -39,12 +41,27 @@ sudo systemctl edit iwd
 ExecStartPre=sleep 3
 ```
 
-To enable multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`:
+### Base software installation
+
+Enable multilib repository by uncommenting the `[multilib]` section in `/etc/pacman.conf`:
 
 ```bash
 /etc/pacman.conf
 [multilib]
 Include = /etc/pacman.d/mirrorlist
+```
+
+Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
+
+```bash
+sudo pacman -S reflector rsync
+sudo reflector -c Romania -a 6 --sort rate --save /etc/pacman.d/mirrorlist
+```
+
+Refresh the servers
+
+```bash
+sudo pacman -Syyy
 ```
 
 Base software installation after running `arch-chroot`
@@ -76,18 +93,7 @@ Base software installation after running `arch-chroot`
 sudo pacman -S grub os-prober network-manager base-devel linux-headers nfs-utils bash-completition xdg-user-dirs xdg-utils openssh reflector rsync acpi acpi_call pacman-contrib tree flatpak iftop docker htop neofetch dosfstools ntfs-3g
 ```
 
-Update pacman mirror list with the servers that were checked maximum 6 hours ago, sorted by speed for Romania and save it to a file
-
-```bash
-sudo pacman -S reflector rsync
-sudo reflector -c Romania -a 6 --sort rate --save /etc/pacman.d/mirrorlist
-```
-
-Refresh the servers
-
-```bash
-sudo pacman -Syyy
-```
+### Configure local network mounts
 
 Add the following mounting points to `/etc/fstab/`
 
@@ -95,6 +101,8 @@ Add the following mounting points to `/etc/fstab/`
 192.168.0.114:/mnt/tank1/data /home/sitram/mounts/data nfs defaults,auto 0 0
 192.168.0.114:/mnt/tank2/media /home/sitram/mounts/media nfs defaults,auto 0 0
 ```
+
+### Install AUR Helper
 
 Install yay AUR Helper
 
@@ -109,6 +117,8 @@ cd /
 sudo rm -r /tmp/yay-git
 ```
 
+### Desktop environment installation(Cinnamon)
+
 Uninstall graphics driver for intel because it interferes with cinnamon
 
 ```bash
@@ -121,8 +131,6 @@ Disable bluetooth service and remove the existing package
 sudo systemctl disable bluetooth
 sudo pacman -R bluez bluez-utils pulseaudio-bluetooth
 ```
-
-Desktop environment installation(Cinnamon)
 
 - **display server**: xorg-server
 - **display manager**: lightdm
@@ -149,7 +157,7 @@ Configuration:
 - **Monospace font**: Source Code Pro Regular 10
 - **Window title font**: Cantarell Regular 10
 
-Desktop environment installation(Gnome)
+### Desktop environment installation(Gnome)
 
 - **display server**: xorg-server
 - **display manager**: gdm
@@ -162,7 +170,7 @@ Desktop environment installation(Gnome)
 sudo pacman -S xorg-server gdm lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-pantheon-greeter lightdm-slick-greeter lightdm-gtk-greeter-settings gnome metacity
 ```
 
-Desktop environment installation(KDE)
+### Desktop environment installation(KDE)
 
 - **display server**: xorg-server
 - **display manager**: lightdm
@@ -175,7 +183,7 @@ Desktop environment installation(KDE)
 sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-pantheon-greeter lightdm-slick-greeter lightdm-gtk-greeter-settings plasma gnome-terminal gnome-keyring
 ```
 
-Common apps for all desktop environments:
+### Common apps for all desktop environments
 
 - **ALSA utilities**: alsa-utils
 - **screenshot tool**: flameshot
@@ -201,7 +209,7 @@ Common apps for all desktop environments:
 - **steam**: steam
 - **icons**: papirus-icon-theme
 - **themes**: arc-gtk-theme
-- **fonts bor Bootstrap**: ttf-font-awesome
+- **fonts for Bootstrap**: ttf-font-awesome
 - **Spice agent xorg client that enables copy and paste between client and X-session and more**: spice-vdagent
 - **Gnome virtual filesystems implementation**: gvfs
 - **Windows File and printer sharing for Non-KDE desktops**: gvfs-smb
@@ -210,11 +218,14 @@ Common apps for all desktop environments:
 - **Utility to modify video**: v4l-utils
 - **Live streaming and recording software**: obs-studio
 - **Remote desktop client and plugins**: remmina spice-gtk freerdp
-- **LightDM display manager configuration tool**: lightdm-settings
+- **Linux tools for UDF filesystems and DVD/CD-R(W) drives**: udftools
+- **Optimize Linux Laptop Battery Life**: tlp
 
 ```bash
-sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs smplayer-themes smplayer-skins smtube yt-dlp shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono lib32-libpulse steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk freerdp lightdm-settings
+sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs smplayer-themes smplayer-skins smtube yt-dlp shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono lib32-libpulse steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk freerdp udftools tlp
 ```
+
+### Configure PipeWire multimedia framework
 
 Configure [PipeWire](https://wiki.archlinux.org/title/PipeWire) multimedia framework
 
@@ -245,6 +256,8 @@ context.exec = [
 ]
 ```
 
+### Configure PulseAudio multimedia framework
+
 Configure [PulseAudio](https://wiki.archlinux.org/title/PulseAudio) multimedia framework
 
 - **General-purpose sound server**: pulseaudio
@@ -272,9 +285,10 @@ display-setup-script=xrandr --output Virtual-1 --mode 1920x1080
 sudo systemctl restart lightdm.service
 ```
 
-Install AUR packages:
+### Common AUR packages
 
 - **greeter theme**: lightdm-webkit-theme-aether
+- **LightDM display manager configuration tool**: lightdm-settings
 - **Google Chrome**: google-chrome
 - **Zip archiver**: 7-zip
 - **Visual Studio Code**: visual-studio-code-bin
@@ -290,15 +304,26 @@ Install AUR packages:
 - **Snap**: snapd
 - **InterractiveBrokers client**: ib-tws
 - **Disk analyzer tool**: qdirstat
+- **Microsoft fonts**: ttf-ms-win11-auto
+- **Plex desktop client for Linux**: plex-desktop
+- **Optional firmware for the default linux kernel to get rid of the annoying 'WARNING: Possibly missing firmware for module:' messages**: mkinitcpio-firmware
 
 ```bash
-yay -S lightdm-webkit-theme-aether google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd ib-tws qdirstat
+yay -S lightdm-webkit-theme-aether lightdm-settings google-chrome 7-zip visual-studio-code-bin sublime-text-4 tela-icon-theme mint-themes optimus-manager optimus-manager-qt teamviewer nextcloud-client archey4 virt-what dmidecode wmctrl pciutils lm_sensors timeshift snapd ib-tws qdirstat ttf-ms-win11-auto plex-desktop mkinitcpio-firmware
 ```
+
+List AUR installed packages
+
+```bash
+pacman -Qm
+```
+
+### Post instalation services handling
 
 Enable various services:
 
 - **NetworkManager**
-- **display manager**
+- **Display manager**
 - **Bluetooth**
 - **SSH server**
 - **Reflector timer to update periodically the pacman mirrorlist**
@@ -315,7 +340,7 @@ sudo systemctl enable lightdm
 sudo systemctl enable bluetooth
 sudo systemctl enable sshd
 sudo systemctl enable reflector.timer
-sudo systemctl enable acpid
+sudo systemctl enable tlp
 sudo systemctl enable qemu-guest-agent
 sudo systemctl enable systemd-networkd
 sudo systemctl enable teamviewerd
@@ -323,13 +348,7 @@ sudo systemctl enable optimus-manager.service
 sudo systemctl enable docker
 ```
 
-Check what graphics driver is used with `nvidia-smi`
-
-List AUR installed packages
-
-```bash
-pacman -Qm
-```
+Check what graphics driver is used with command `nvidia-smi`
 
 Check all enabled services
 
@@ -447,7 +466,7 @@ Installing the needed packages
 - **automatically turn numlock on**: numlockx
 
 ```bash
-sudo pacman -S i3-wm i3lock i3status i3blocks picom lxappearance dmenu terminator feh arandr rofi numlockx
+sudo pacman -S i3-wm i3lock i3status i3blocks picom lxappearance dmenu ttf-ubuntu-font-family terminator feh arandr rofi numlockx
 ```
 
 Keyboard shortcuts:
@@ -616,6 +635,12 @@ pacman -Syyuu
 If you get errors complaining about corrupted/invalid packages due to PGP signature, try to first update separately `archlinux-keyring` and `ca-certificates`.
 
 ## ArchLinux - Connect Android To Arch Linux Via USB
+
+Install Android studio
+
+```bash
+yay -S android-studio
+```
 
 Enable MTP(Media Transfer Protocol) support by installing
 
