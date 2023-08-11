@@ -587,7 +587,7 @@ sudo timedatectl
 
 ### Correct DNS resolution
 
-Edit file /etc/systemd/resolv.conf an add the following lines:
+Edit file `/etc/systemd/resolved.conf` an add the following lines:
 
 ```bash
 [Resolve]
@@ -602,6 +602,12 @@ To provide domain name resolution for software that reads `/etc/resolv.conf` dir
 sudo rm -f /etc/resolv.conf
 sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 sudo systemctl restart systemd-resolved.service
+```
+
+Check that both Global and the link for the ethernet/wireless interface has correct dns and domain set using:
+
+```bash
+sudo resolvectl status
 ```
 
 ### Qemu-guest-agent
