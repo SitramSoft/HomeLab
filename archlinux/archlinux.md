@@ -138,7 +138,7 @@ sudo pacman -R bluez bluez-utils pulseaudio-bluetooth
 - **greeter settings editor**: lightdm-gtk-greeter-settings
 - **desktop environment**: cinnamon
 - **window manager(used by cinnamon as fallback in case cinnamon fails)**: metacity
-- **terminal(gnome doesn't come with one)**: gnome-terminal
+- **terminal(cinnamon doesn't come with one)**: gnome-terminal
 - **password manager**: gnome-keyring
 
 ```bash
@@ -177,6 +177,7 @@ sudo pacman -S xorg-server gdm lightdm-webkit2-greeter lightdm-gtk-greeter light
 - **greeter**: lightdm-webkit2-greeter lightdm-gtk-greeter lightdm-slick-greeter lightdm-slick-greeter
 - **greeter settings editor**: lightdm-gtk-greeter-settings
 - **desktop environment**: plasma
+- **terminal**: gnome-terminal
 - **password manager**: gnome-keyring
 
 ```bash
