@@ -44,6 +44,7 @@ Add the following mounting points to `/etc/fstab/`
 
 ```bash
 192.168.0.114:/mnt/tank1/data /mnt/data nfs rw 0 0
+192.168.0.114:/mnt/tank2/media /mnt/media nfs rw 0 0
 192.168.0.114:/mnt/nicusor /var/nc_data/nicusor nfs rw 0 0
 ```
 
