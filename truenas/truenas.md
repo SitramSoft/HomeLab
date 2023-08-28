@@ -45,29 +45,26 @@ Find the links that matches each drive
 Add the disk to VM by executing the commands below in Proxmox host shell
 
 ```bash
-sudo qm set 102 -scsi1 /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825
-sudo qm set 102 -scsi2 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF
-sudo qm set 102 -scsi3 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF
-sudo qm set 102 -scsi4 /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721
-sudo qm set 102 -scsi5 /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610H5G
-sudo qm set 102 -scsi6 /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610HZL
+sudo qm set 102 -scsi1 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF
+sudo qm set 102 -scsi2 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF
+sudo qm set 102 -scsi3 /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721
+sudo qm set 102 -scsi4 /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610H5G
+sudo qm set 102 -scsi5 /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610HZL
 ```
 
 The outpot of each commands should be
 
 ```bash
-update VM 102: -scsi1 /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825
-update VM 102: -scsi2 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF
-update VM 102: -scsi3 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF
-update VM 102: -scsi4 /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721
-update VM 102: -scsi5 /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610H5G
-update VM 102: -scsi6 /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610HZL
+update VM 102: -scsi1 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF
+update VM 102: -scsi2 /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF
+update VM 102: -scsi3 /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721
+update VM 102: -scsi4 /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610H5G
+update VM 102: -scsi5 /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610HZL
 ```
 
 Check if each disk has been attached succesfully
 
 ```bash
-sudo grep WX91A61Y1825 /etc/pve/qemu-server/102.conf
 sudo grep JR10006P0VSENF /etc/pve/qemu-server/102.conf
 sudo grep JR10006P0VSMXF /etc/pve/qemu-server/102.conf
 sudo grep WMC1U5239721 /etc/pve/qemu-server/102.conf
@@ -78,12 +75,11 @@ sudo grep 3CW104_WW610HZL /etc/pve/qemu-server/102.conf
 Output of each of the above command should be
 
 ```bash
-scsi1: /dev/disk/by-id/ata-WDC_WD7500BPVT-22HXZT1_WD-WX91A61Y1825,size=732574584K
-scsi2: /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF,size=976762584K
-scsi3: /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF,size=976762584K
-scsi4: /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721,size=488386584K
-scsi5: /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610H5G,size=3907018584K
-scsi6: /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610HZL,size=3907018584K
+scsi1: /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSENF,size=976762584K
+scsi2: /dev/disk/by-id/ata-HGST_HTS721010A9E630_JR10006P0VSMXF,size=976762584K
+scsi3: /dev/disk/by-id/ata-WDC_WD5000AZRX-00A8LB0_WD-WMC1U5239721,size=488386584K
+scsi4: /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610H5G,size=3907018584K
+scsi5: /dev/disk/by-id/ata-ST4000VN006-3CW104_WW610HZL,size=3907018584K
 ```
 
 Make sure to reboot the host server if the HDD's were previously managed by it otherwise you will not be able to add the new NFS shares from TrueNAS
