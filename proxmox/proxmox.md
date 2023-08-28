@@ -113,22 +113,22 @@ Check if IOMMU Interrupt remapping is needed by executing `sudo dmesg | grep 're
 
 In order to communicate with existing [ups](https://www.cyberpower.com/eu/ro/product/sku/cp1500epfclcd), I use the business version of the monitoring software offered by CyberPower called `CyberPower Panel Business V4`.
 
-Download and install the latest 64bit version for Linux of [CyberPower Panel Business V4](https://www.cyberpowersystems.com/products/software/power-panel-business/). At the time this document was written the latest version was 4.7.0. The download link and the name of the script might change.
+Download and install the latest 64bit version for Linux of [CyberPower Panel Business](https://www.cyberpowersystems.com/products/software/power-panel-business/). At the time this document was written the latest version was 4.9.0. The download link and the name of the script might change.
 
 ```bash
-wget https://dl4jz3rbrsfum.cloudfront.net/software/ppb470-linux-x86_x64.sh
+wget https://dl4jz3rbrsfum.cloudfront.net/software/PPB_Linux%2064bit_v4.9.0.sh
 ```
 
 Make the script executable.
 
 ```bash
-chmod +x ppb470-linux-x86_x64.sh
+chmod +x 'PPB_Linux 64bit_v4.9.0.sh'
 ```
 
 Execute the script in order to install the software.
 
 ```bash
-sudo ./ppb470-linux-x86_x64.sh
+sudo ./'PPB_Linux 64bit_v4.9.0.sh'
 ```
 
 Choose `5` or press `Enter` to select English as language. Confirm installation by pressing `o`.
@@ -141,6 +141,48 @@ After finishing the installation, access the [web page](http://192.168.0.2:3052/
 
 - user: admin
 - pass: admin
+
+In order to configure shutdown of the server in case of low battery and power failure, I installed additionally [CyberPower PowerPanel Personal Software](https://www.cyberpowersystems.com/products/software/power-panel-personal/). It might be reduntant because CyberPower Panel Business has this functionality already built in, but I couldn't figure out how to make it run.
+
+```bash
+wget https://dl4jz3rbrsfum.cloudfront.net/software/PPL_64bit_v1.4.1.deb
+```
+
+Make the script executable.
+
+```bash
+chmod +x PPL_64bit_v1.4.1.deb
+```
+
+Execute the script in order to install the software.
+
+```bash
+sudo dpkg -i PPL_64bit_v1.4.1.deb
+```
+
+Check if the daemon is running by executing the following command:
+
+```bash
+sudo pwrstat -status
+```
+
+In case a power failure event occurs, it will take 1 second to run a shell script named `pwrstatd-powerfail.sh` in the directory `/etc`, and the system will be shut down after a power failure event occurs for 15 minutes(900 seconds)
+
+```bash
+sudo pwrstat -pwrfail -delay 900 -active on -cmd /etc/pwrstatd-powerfail.sh -duration 1 -shutdown on
+```
+
+In case a low battery event occurs, it will take 1 second to run a shell script named `pwrstatd-lowbatt.sh` in the directory `/etc`, and the system will be shut down when either remaining runtime is less then 15 minutes(900 seconds), or the battery capacity is lower than 50%
+
+```bash
+sudo pwrstat -lowbatt -runtime 900 -capacity 50 -active on -cmd /etc/pwrstatd-lowbatt.sh -duration 1 -shutdown on
+```
+
+To check the current settings use the following command:
+
+```bash
+sudo pwrstat -config
+```
 
 ## SETTING -> NOTIFICATION CHANNELS
 
