@@ -690,3 +690,69 @@ yay -S $(pacman -Qoq /usr/lib/python3.xx) --answerclean All
 ```
 
 If any of the packages don't work with Python 3.xx yet, this might fail halfway through and they might need to be rebuild manually one at a time.
+
+### ArchLinux - Brother printer & scanner
+
+CUPS is the standards-based, open source printing system developed by OpenPrinting for Linux.
+
+Install CUPS and start it automatically system-wide.
+
+```bash
+sudo pacman -S cups
+
+sudo systemctl enable cups
+sudo systemctl enable cups.socket
+sudo systemctl start cups
+```
+
+For the HomeLab I chose [Brother MFC-L2732DW](https://support.brother.com/g/b/spec.aspx?c=eu_ot&lang=en&prod=mfcl2732dw_eu) monochrome laser printer with scanner and fax functionality. The reason I chose this printer is because Brother is a very reliable brand and it's quite cheap to refill the drum with tonner.
+
+In order to use the printer, the driver needs to be installed. The AUR package for mfc-l2732dw model doesn't work and since the driver is the same as for mfc-l2730dw model, I chose to install this one.
+
+```bash
+sudo yay -S brother-mfc-l2730dw
+```
+
+Configure the printer in `CUPS`:
+
+- Open `CUPS` by searching for `Manage printing` in your desktop environment or going to [http://localhost:631/](http://localhost:631/)
+- Open the tab `Administration` an press `Add Printer` button
+- Select the printer for which the drivers were installed for from `Discovered Network Printers` option
+- Configure the name and sharing settings
+- Select the name of the printer in `Model` list, and click `Add Printer`
+
+Now the printer should be configured and it can be tested by printing a test page and some random text or image from web.
+
+In order to use the scanner functionality of the device, the corresponding driver has to be installed. There are multiple `brscan` packages in AUR and for the model I chose, `brscan4` contains the correct driver.
+
+```bash
+sudo yay -S brscan4
+```
+
+For network scanners, Brother provides a different configuration tool for each `brscan` version which has to be run with the name, model and the ip specific for the scanner
+
+```bash
+sudo brsaneconfig4 -a name="Scanner" model="MFC-L2732DW" ip=192.168.0.233
+```
+
+Brother has released a tool to enable scanning to be triggered by user interaction with the scanner itself (e.g., by selecting one of `Scan to email`, `Scan to image`, etc. on the scanner's keypad) rather than by an attached computer. This can be set up by installing the `brscan-skey` package and starting `brscan-skey.service` using `systemd`.
+
+Brother supplies some default scripts that are executed when a scan type is selected on the keypad. For all options apart from "Scan to email" the resulting output can be found inside `$HOME/brscan`, with `$HOME` the home directory of the user running this tool (so `/srv/brscan-skey` if started via systemd as a systemwide process).
+
+```bash
+sudo yay -S brscan-skey
+
+systemctl enable brscan-skey.service
+systemctl start brscan-skey.service
+```
+
+SANE provides a library and a command-line tool to use the scanner functionality of the printer under Linux.
+
+For a GUI frontend the following two options will be installed
+
+- [Simple Scan](https://gitlab.gnome.org/GNOME/simple-scan) — Simplified GUI that is intended to be easier to use and better integrated into the GNOME desktop than XSane.
+- [XSane](http://www.xsane.org/) — Full-featured GTK-based frontend, looking a bit old but providing extended functionalities.
+
+```bash
+sudo pacman -S sane xsane xsane-gimp simple-scan
+```
