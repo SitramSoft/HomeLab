@@ -1033,3 +1033,42 @@ Below is the docker-compose I used to launch the container.
       start_period: 30s
     restart: unless-stopped
 ```
+
+## Stirling-PDF - PDF manipulation tool
+
+I use [Stirling-PDF](https://github.com/Frooodle/Stirling-PDF) as a selfhosted web based PDF manipulation tool
+
+The container has:
+
+- a volume mapped to `/home/sitram/docker/stirling-pdf/trainingData:` used to store extra OCR languages
+- a volume mapped to `/home/sitram/media/podcasts` used to store all the podcasts
+- a volume mapped to `/home/sitram/docker/stirling-pdf/configs` used to store the configuration of the application
+- a volume mapped to `/home/sitram/docker/stirling-pdf/customFiles` used to store custom static files uch as the app logo by placing files in the `/customFiles/static/` directory. An example of customising app logo is placing a `/customFiles/static/favicon.svg` to override current SVG. This can be used to change any images/icons/css/fonts/js etc in Stirling-PDF
+
+Below is the docker-compose I used to launch the container.
+
+```yaml
+#Stirling-PDF - locally hosted web based PDF manipulation tool - https://github.com/Frooodle/Stirling-PDF
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    container_name: stirling-pdf
+    env_file:
+      - .env
+    ports:
+      - 8084:8080
+    healthcheck: 
+      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:8084 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /home/sitram/docker/stirling-pdf/trainingData:/usr/share/tesseract-ocr/4.00/tessdata #Required for extra OCR languages
+      - /home/sitram/docker/stirling-pdf/configs:/configs
+      - /home/sitram/docker/stirling-pdf/customFiles:/customFiles/
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - PUID=1000
+      - PGID=1000
+      - UMASK=022
+    restart: unless-stopped
+```
