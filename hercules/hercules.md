@@ -1057,7 +1057,7 @@ Below is the docker-compose I used to launch the container.
     ports:
       - 8084:8080
     healthcheck: 
-      test: wget --no-verbose --tries=1 --spider http://192.168.0.101:8084 || exit 1
+      test: curl -f http://192.168.0.101:8086 || exit 1
       interval: 30s
       timeout: 10s
       retries: 5
