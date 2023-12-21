@@ -2,13 +2,13 @@
 
 ## Proxmox - OS configuration
 
-The following subsections from [Common](./general/general.md#common) section should be performed in this order:
+The following subsections from [Common](../general/general.md#common) section should be performed in this order:
 
-- [SSH configuration](./general/general.md#ssh-configuration)
-- [Update system timezone](./general/general.md#update-system-timezone)
-- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
+- [SSH configuration](../general/general.md#ssh-configuration)
+- [Update system timezone](../general/general.md#update-system-timezone)
+- [Generate Gmail App Password](../general/general.md#generate-gmail-app-password)
+- [Configure Postfix Server to send email through Gmail](../general/general.md#configure-postfix-server-to-send-email-through-gmail)
+- [Mail notifications for SSH dial-in](../general/general.md#mail-notifications-for-ssh-dial-in)
 
 ## Proxmox - NTP time server
 
@@ -159,7 +159,7 @@ After finishing the installation, access the [web page](http://192.168.0.2:3052/
 - **Sender name:** UPS Serenity
 - **Sender email:** personal email address
 - **User name:** personal email address
-- **Pass:** Gmail password. See [Generate Gmail App Password](./general/general.md#generate-gmail-app-password) subsection for details.
+- **Pass:** Gmail password. See [Generate Gmail App Password](../general/general.md#generate-gmail-app-password) subsection for details.
 
 ### SETTING -> SNMP SETTINGS
 

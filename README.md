@@ -21,6 +21,7 @@
   - [Ubuntu - Configure PHP source list](./general/general.md#ubuntu---configure-php-source-list)
   - [Ubuntu - Synchronize time with systemd-timesyncd](./general/general.md#ubuntu---synchronize-time-with-systemd-timesyncd)
   - [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
+  - [Ubuntu - Synchronize time with chrony](./general/general.md#ubuntu---synchronize-time-with-chrony)
   - [Update system timezone](./general/general.md#update-system-timezone)
   - [Correct DNS resolution](./general/general.md#correct-dns-resolution)
   - [Qemu-guest-agent](./general/general.md#qemu-guest-agent)

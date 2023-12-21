@@ -565,7 +565,7 @@ Logs can be checked using the command below
 sudo grep ntpd /var/log/syslog | tail
 ```
 
-### Ubunti - Synchronize time with 
+### Ubuntu - Synchronize time with chrony
 
 Install [chrony](https://chrony-project.org/) using the following command:
 

@@ -4,15 +4,15 @@
 
 ## Hercules - OS Configuration
 
-The following subsections from [General](./general/general.md#general) section should be performed in this order:
+The following subsections from [General](../general/general.md#general) section should be performed in this order:
 
-- [SSH configuration](./general/general.md#ssh-configuration)
-- [Ubuntu - Synchronize time with systemd-timesyncd](./general/general.md#ubuntu---synchronize-time-with-systemd-timesyncd)
-- [Update system timezone](./general/general.md#update-system-timezone)
-- [Correct DNS resolution](./general/general.md#correct-dns-resolution)
-- [Generate Gmail App Password](./general/general.md#generate-gmail-app-password)
-- [Configure Postfix Server to send email through Gmail](./general/general.md#configure-postfix-server-to-send-email-through-gmail)
-- [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
+- [SSH configuration](../general/general.md#ssh-configuration)
+- [Ubuntu - Synchronize time with chrony](../general/general.md#ubuntu---synchronize-time-with-chrony)
+- [Update system timezone](../general/general.md#update-system-timezone)
+- [Correct DNS resolution](../general/general.md#correct-dns-resolution)
+- [Generate Gmail App Password](../general/general.md#generate-gmail-app-password)
+- [Configure Postfix Server to send email through Gmail](../general/general.md#configure-postfix-server-to-send-email-through-gmail)
+- [Mail notifications for SSH dial-in](../general/general.md#mail-notifications-for-ssh-dial-in)
 
 Add the following mounting points to `/etc/fstab/`
 
@@ -694,7 +694,7 @@ I use [MySQL](https://hub.docker.com/_/mysql?tab=description) as a open-source r
 
 - [Authelia](../hercules/hercules.md#hercules---authelia-docker-container)
 - [Librespeed](../hercules/hercules.md#hercules---librespeed-docker-container)
-- [NextCloud](./nextcloud/nextcloud.md#nextcloud---content-collaboration-server)
+- [NextCloud](../nextcloud/nextcloud.md#nextcloud---content-collaboration-server)
 - [WordPress blogs](../wordpress/wordpress.md#wordpress---worpress-server-vm)
 
 The container has:
