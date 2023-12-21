@@ -12,20 +12,26 @@ The following subsections from [Common](./general/general.md#common) section sho
 
 ## Proxmox - NTP time server
 
-Because clock accuracy within a VM is still really bad, I chose the barebone server where the virtualization server is running as my local NTP server. It's not ideal but until I decide to move the firewall from a VM to a dedicated HW this will have to do. I tried running NTP server on the pfSense VM but it acted strange.
+Because clock accuracy within a VM is really bad, I chose the barebone server where the virtualization server is running as my local NTP server. It's not ideal but until I decide to move the firewall from a VM to a dedicated HW this will have to do. I tried running NTP server on the pfSense VM but it acted strange.
 
-Follow the instructions from subsection [Ubuntu - Synchronize time with ntpd](../general/general.md#ubuntu---synchronize-time-with-ntpd) to install NTP server then make the modifications below.
+Since version 8, Porxmox switch from `npt` to `chrony`.
 
-Edit NTP server configuration file
+Install [chrony](https://chrony-project.org/) using the following command:
 
 ```bash
-sudo nano /etc/ntp.conf
+sudo apt install chrony
+```
+
+Edit `chrony` configuration file
+
+```bash
+sudo nano /etc/chrony/chrony.conf
 ```
 
 Replace line
 
 ```bash
-server 192.168.0.2 prefer iburst
+pool 2.debian.pool.ntp.org iburst
 ```
 
 with lines below.
@@ -37,33 +43,32 @@ server time3.google.com iburst
 server time4.google.com iburst
 ```
 
-Add the following lines to provide your current local time as a default should you temporarily lose Internet connectivity.
+Add the following line at the end of the file to provide your current local time as a default if Internet connectivity is temporarly lost.
 
 ```bash
-server 127.127.1.0
-fudge 127.127.1.0 stratum 10
+local stratum 8
 ```
 
-Configure NTP to act as time server for local LAN and VPN
+Configure `chrony` to act as time server for local LAN and VPN
 
 ```bash
 # Allow LAN and VPN machines to synchronize with this ntp server
-restrict 192.168.0.0 mask 255.255.255.0 nomodify notrap
-restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap
+allow 192.168.0.0/24
+allow 192.168.1.0/24
 ```
 
-Restart NTP server and verify that it's running correctly
+Restart `chrony` server and verify that it's running correctly
 
 ```bash
-sudo service ntp stop
-sudo service ntp start
-sudo service ntp status
+sudo service chrony stop
+sudo service chrony start
+sudo service chrony status
 ```
 
 Verify time synchronization status with each defined server or pool and look for `*` near the servers listed by command below. Any server which is not marked with `*` is not syncronized.
 
 ```bash
-ntpq -pn
+chrony sources
 ```
 
 ## Proxmox - PCI Passthrough configuration
