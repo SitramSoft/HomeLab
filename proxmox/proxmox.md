@@ -14,7 +14,7 @@ The following subsections from [Common](./general/general.md#common) section sho
 
 Because clock accuracy within a VM is still really bad, I chose the barebone server where the virtualization server is running as my local NTP server. It's not ideal but until I decide to move the firewall from a VM to a dedicated HW this will have to do. I tried running NTP server on the pfSense VM but it acted strange.
 
-Follow the instructions from subsection [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd) to install NTP server then make the modifications below.
+Follow the instructions from subsection [Ubuntu - Synchronize time with ntpd](../general/general.md#ubuntu---synchronize-time-with-ntpd) to install NTP server then make the modifications below.
 
 Edit NTP server configuration file
 
@@ -111,6 +111,8 @@ Check if IOMMU Interrupt remapping is needed by executing `sudo dmesg | grep 're
 
 ## Proxmox - UPS monitoring software
 
+### CyberPower Panel Business V4 Installation
+
 In order to communicate with existing [ups](https://www.cyberpower.com/eu/ro/product/sku/cp1500epfclcd), I use the business version of the monitoring software offered by CyberPower called `CyberPower Panel Business V4`.
 
 Download and install the latest 64bit version for Linux of [CyberPower Panel Business](https://www.cyberpowersystems.com/products/software/power-panel-business/). At the time this document was written the latest version was 4.9.0. The download link and the name of the script might change.
@@ -141,6 +143,28 @@ After finishing the installation, access the [web page](http://192.168.0.2:3052/
 
 - user: admin
 - pass: admin
+
+### SETTING -> NOTIFICATION CHANNELS
+
+- Enable notification by email
+- **Provider:** Other
+- **SMTP server:** smtp.gmail.com
+- **Connection Security:** SSL
+- **Service port:** 465
+- **Sender name:** UPS Serenity
+- **Sender email:** personal email address
+- **User name:** personal email address
+- **Pass:** Gmail password. See [Generate Gmail App Password](./general/general.md#generate-gmail-app-password) subsection for details.
+
+### SETTING -> SNMP SETTINGS
+
+Enable `SNMPv1` settings and make sure `SNMP Local Port` is `161`.
+
+Create the public and private groups under SNP v1 profiles. Link them to IP address `0.0.0.0` and set them to read/write.
+
+This means any computer on the network can query using SNMP protocol information from the UPS. It is usefull for integrating the UPS in [HomeAssistant - Home automation server](../README.md#homeassistant---home-automation-server).
+
+### CyberPower PowerPanel Personal Software - Installation
 
 In order to configure shutdown of the server in case of low battery and power failure, I installed additionally [CyberPower PowerPanel Personal Software](https://www.cyberpowersystems.com/products/software/power-panel-personal/). It might be reduntant because CyberPower Panel Business has this functionality already built in, but I couldn't figure out how to make it run.
 
@@ -184,25 +208,13 @@ To check the current settings use the following command:
 sudo pwrstat -config
 ```
 
-## SETTING -> NOTIFICATION CHANNELS
+### CyberPower PowerPanel Personal Software -Uninstall
 
-- Enable notification by email
-- **Provider:** Other
-- **SMTP server:** smtp.gmail.com
-- **Connection Security:** SSL
-- **Service port:** 465
-- **Sender name:** UPS Serenity
-- **Sender email:** personal email address
-- **User name:** personal email address
-- **Pass:** Gmail password. See [Generate Gmail App Password](./general/general.md#generate-gmail-app-password) subsection for details.
+Uninstalling [CyberPower PowerPanel Personal Software](https://www.cyberpowersystems.com/products/software/power-panel-personal/) is done by running the following command:
 
-## SETTING -> SNMP SETTINGS
-
-Enable `SNMPv1` settings and make sure `SNMP Local Port` is `161`.
-
-Create the public and private groups under SNP v1 profiles. Link them to IP address `0.0.0.0` and set them to read/write.
-
-This means any computer on the network can query using SNMP protocol information from the UPS. It is usefull for integrating the UPS in [HomeAssistant - Home automation server](../README.md#homeassistant---home-automation-server).
+```bash
+sudo dpkg -r powerpanel
+```
 
 ## Proxmox - VNC client access configuration
 
