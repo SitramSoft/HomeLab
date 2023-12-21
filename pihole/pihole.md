@@ -2,6 +2,26 @@
 
 ## piHole - VM configuration
 
+- VM id: 101
+- HDD: 10GB
+- Sockets: 1
+- Cores: 2
+- RAM:
+  - Min: 512
+  - Max: 4096
+  - Ballooning Devices: enabled
+- Network
+  - MAC address: 62:1B:EA:05:7F:1C
+  - Static ip assigned in pfSense: 192.168.0.103
+  - Local domain record in piHole: pihole.local
+- Options:
+  - Start at boot: enabled
+  - Start/Shutdown: order=2
+  - QEMU Guest agent: enabled - [Qemu-guest-agent](../general/general.md#qemu-guest-agent)
+  - Run guest-trim after a disk move or VM migration: enabled
+- OS: Ubuntu Server 21.04 amd64
+
+
 ## piHole - OS Configuration
 
 The following subsections from [Common](../general/general.md#common) section should be performed in this order:
