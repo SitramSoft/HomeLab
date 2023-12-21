@@ -565,6 +565,40 @@ Logs can be checked using the command below
 sudo grep ntpd /var/log/syslog | tail
 ```
 
+### Ubunti - Synchronize time with 
+
+Install [chrony](https://chrony-project.org/) using the following command:
+
+```bash
+sudo apt install chrony
+```
+
+Edit `chrony` configuration file
+
+```bash
+sudo nano /etc/chrony/chrony.conf
+```
+
+Comment out all lines that contain `pool` and add below the following line which configures the local time server.
+
+```bash
+server 192.168.0.2
+```
+
+Restart `chrony` server and verify that it's running correctly
+
+```bash
+sudo service chrony stop
+sudo service chrony start
+sudo service chrony status
+```
+
+Verify time synchronization status with each defined server or pool and look for `*` near the servers listed by command below. Any server which is not marked with `*` is not syncronized.
+
+```bash
+chronyc sources
+```
+
 ### Update system timezone
 
 In order to list all available timezones, the following command can be used

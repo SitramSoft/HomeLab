@@ -68,7 +68,7 @@ sudo service chrony status
 Verify time synchronization status with each defined server or pool and look for `*` near the servers listed by command below. Any server which is not marked with `*` is not syncronized.
 
 ```bash
-chrony sources
+chronyc sources
 ```
 
 ## Proxmox - PCI Passthrough configuration
