@@ -1,65 +1,12 @@
 # General
 
-## About my Homelab
-
-This repository is intended to record my experience in setting up a HomeLab using a dedicated server running [Proxmox](https://www.proxmox.com/en/) with various services running in several VM's and LXC's. I will be touching topics related to virtualization, hardware passtrough, LXC, Docker and several services which I currently use. This document is a work in progress and will evolve as I gain more experience and find more interesting stuff to do. I do not intend this repository or this document to be taken as a tutorial because I don't consider myself an expert in this area.
-
-Use the information provided in this repository at your own risk. I take no responsibility for any damage to your equipment. Depending on my availability I can support if asked in solving issues with your software but be prepared to troubleshoot stuff that don't work on your own. My recommendation is to take the information that I provide here and adapt it to your own needs and hardware. For any questions please contact me at **adrian.martis (at) gmail . com**
-
-## Introduction
-
-### How I started
-
-Initially I started my adventure in building an HomeLab on an old laptop, where I installed Proxmox and did some testing with several VM's and [HomeAssistant](https://www.home-assistant.io/). It probably would have been enough if it didn't had two annoying issues. Every couple of days, the laptop froze and I had to manually reboot it. The second issue was that BIOS did not support resume to the last power state in case of a power shortage. Because of these two issues, I couldn't run the laptop for more then a few days without having to physically interact with it. Because of this I couldn't have a reliable server for running services or home automation. After struggling with this setup for a couple of months I decided it was time for an upgrade.
-
-I spent several weeks researching about various hardware builds for an HomeLab. I read blogs, joined several channels on Reddit and groups on Facebook dedicated to this topic. The more I spent researching, the more I got frustrated of how easy it was for people living in US, Germany or UK to access all kind of equipment. I either had to make a compromise and buy consumer grade equipment, spent extra money on shipping tax to order, or get lucky and find a good deal in my own country.
-
-In the end, it payed off to be patient, because I got lucky and found a complete system for sale locally. Everyone I talked with, said it was overkill for what I wanted to run in my HomeLab. I diregarded their advices and went with my gut feeling. I payed for the entire server around 800$ and now I had the equipment needed to fulfill any project I wanted.
-
-The server contained the case, PSU, cables, two Intel Xeon CPU's and 192GB of server graded RAM with ECC. I had two 1GB, 2.5', 7200 rpm HDD's in another laptop which I decided to use in RAID 1 to keep some of my data safe. I bought a 1TB M.2 2280 SSD from SWORDFISH to use for host operating system and various VM's. The final purchase was an HPE Ethernet 1GB 2-port 361T adapter which I wanted to passtrough to a VM running a dedicated firewall. Later I added another 750GB old HDD to store movies and tv shows.
-
-### HomeLab architecture
-
-Over time, I added new hardware to my HomeLab, like IoT devices, a range extender to have a better Wifi coverage and an UPS. I have planned to upgrade my storage and perhaps purchase a GPU but they have a low priority due to budget constraints. However, I am always open for suggestions so feel free to reach me over email in case you have one.
-
-The software, services and the overall architecture of my my HomeLab are constantly adapting and evolving. When I learn a new technology or find an interesting software, I decide to incorporate it in my existing architecture or just spin a VM for test.
-
-[Here](HomeLab.jpg) you can find a picture with an overview of the current architecture. I update every time I change something to my HomeLab. The details on the configuration of each VM and service can be seen below.
-
-### Document structure
-
-The document is written in Markdown and structured in 3 main sections.
-
-First section contains a short history, current HomeLab state and structure of the document.
-
-The second section contains general tutorials that are independed to any any VM. Some of the commands assume that either the DHCP or the DNS server is up and running, so please keep this in mind when reading.
-
-The third section contains a chapter for every VM or LXC container I currently run. Inside each chapter there are sections that describe the VM configuration in Proxmox, specific OS configurations, software and services installation and configuration. This is a work in progress so expect that some of these chapters are empty and will be added at a later date, when I have some time available.
-
-### Prerequisites
-
-- [x] Layer 2 Network Switch, preferably one that supports Gigabit Ethernet and has at least 16 ports
-- [x] Dedicated PC that can be used as a PVE Host
-- [x] Internet access for PVE host
-- [x] Network router with Wi-Fi support
-  - Preferably one that supports both 2.4Gz and 5Ghz bands
-- [x] Cabling
-- [x] UPS to allow the network equipment a clean shutdown in case of power failures and prevent damage caused by power fluctuations
-  - I recommend to have a dedicated power circuit for the HomeLab equipment
-
-Optional:
-
-- [x] Network rack to store all homelab equipment
-
-## Common
-
 The following sections apply to all VM's.
 
 Unless the services running on the VM require a dedicated OS, I prefer to use Ubuntu Server. The sections in this chapter are tested on Ubuntu Server but might apply with slight modifications to other Linux based operating systems. For each VM I will specify which chapter from this section applies.
 
 Every VM has user **sitram** configured during installation. The user has **sudo** privileges.
 
-### SSH configuration
+## SSH configuration
 
 I use two keys for my entire HomeLab. One is used for Guacamole, so I can access from any web browser my servers in case I don't have access trough a SSH client. The other is my personal key which I use for accessing trough SSH clients.
 
@@ -105,7 +52,7 @@ Restart sshd to use the new configuration.
 sudo systemctl restart sshd
 ```
 
-### Execute commands using SSH
+## Execute commands using SSH
 
 The SSH client program can be used for logging into a remote machine or server and for executing commands on a remote machine. When a command is specified, it is executed on the remote host/server instead of the login shell of the current machine.
 
@@ -153,7 +100,7 @@ To copy a file from `B` to `A` while logged into `A`:
 scp username@b:/path/to/file /path/to/destination
 ```
 
-### How to fix warning about ECDSA host key
+## How to fix warning about ECDSA host key
 
 When connecting with SSH, the following warning could be displayed in case the IP is reused for a different VM.
 
@@ -167,7 +114,7 @@ In order to get rid of the warning, remove the cached key for ```192.168.1.xxx``
 ssh-keygen -R 192.168.1.xxx
 ```
 
-### Ubuntu - upgrade from older distribution
+## Ubuntu - upgrade from older distribution
 
 ```bash
 sudo apt update
@@ -193,7 +140,7 @@ then update the system with:
 sudo apt-get update && sudo apt-get dist-upgrade
 ```
 
-### Ubuntu - configure unattended upgrades
+## Ubuntu - configure unattended upgrades
 
 Ubuntu provides a unique tool called `unattended-upgrades` in order to automatically retrieve and install security patches and other essential upgrades for a server. Installing the tool can be done with the following commands:
 
@@ -230,7 +177,7 @@ Reload `unattended-upgrades` service:
 sudo systemctl restart unattended-upgrades.service
 ```
 
-### Ubuntu - Clean unnecessary packages
+## Ubuntu - Clean unnecessary packages
 
 Very few server instances utilize these packages and they can be clean to save storage on the VM. Make sure you don't need them before removing them.
 
@@ -254,7 +201,7 @@ Remove orphan packages
 sudo apt autoremove --purge
 ```
 
-### Ubuntu - Remove old kernels
+## Ubuntu - Remove old kernels
 
 After a while, there will be multiple versions of kernel on your system, which take up a lot of storage space. Old kernels and images can be removed with the following command
 
@@ -285,7 +232,7 @@ All-in-one version to remove images and headers (combines the two versions above
 echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs sudo apt-get -y purge
 ```
 
-### Ubuntu - Clean up snap
+## Ubuntu - Clean up snap
 
 List all versions of packages retained by Snap
 
@@ -315,7 +262,7 @@ LANG=en_US.UTF-8 snap list --all | awk '/disabled/{print $1, $3}' |
     done
 ```
 
-### Clear systemd journald logs
+## Clear systemd journald logs
 
 Checking disk usage of all journal files is done with command
 
@@ -361,7 +308,7 @@ Save the file and reload systemd daemon via command:
 sudo systemctl daemon-reload
 ```
 
-### Ubuntu - MariaDB update
+## Ubuntu - MariaDB update
 
 MariaDb distribution repo can be found [here](https://mariadb.org/download/?t=repo-config)
 
@@ -372,7 +319,7 @@ curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
 sudo bash mariadb_repo_setup --os-type=ubuntu  --os-version=focal --mariadb-server-version=10.6
 ```
 
-### Ubuntu - Install nginx
+## Ubuntu - Install nginx
 
 Install the prerequisites:
 
@@ -433,7 +380,7 @@ sudo apt update
 sudo apt install nginx
 ```
 
-### Ubuntu - Configure PHP source list
+## Ubuntu - Configure PHP source list
 
 Add PHP software sources
 
@@ -453,7 +400,7 @@ sudo apt-key del E5267A6C
 sudo apt-get update
 ```
 
-### Ubuntu - Synchronize time with systemd-timesyncd
+## Ubuntu - Synchronize time with systemd-timesyncd
 
 I have a dedicated timeserver which servers all the clients in my HomeLab. Whenever it is possible, I configure each server to use the internal timeserver.
 
@@ -508,7 +455,7 @@ To start troubleshooting, check the logs using the command
 sudo grep systemd-timesyncd /var/log/syslog | tail
 ```
 
-### Ubuntu - Synchronize time with ntpd
+## Ubuntu - Synchronize time with ntpd
 
 Install NTP server and ntpdate. Verify the version of NTP server to make sure it is correctly installed
 
@@ -565,7 +512,7 @@ Logs can be checked using the command below
 sudo grep ntpd /var/log/syslog | tail
 ```
 
-### Ubuntu - Synchronize time with chrony
+## Ubuntu - Synchronize time with chrony
 
 Install [chrony](https://chrony-project.org/) using the following command:
 
@@ -599,7 +546,7 @@ Verify time synchronization status with each defined server or pool and look for
 chronyc sources
 ```
 
-### Update system timezone
+## Update system timezone
 
 In order to list all available timezones, the following command can be used
 
@@ -619,7 +566,7 @@ Check that system timezone, system clock synchronization and NTP services are co
 sudo timedatectl
 ```
 
-### Correct DNS resolution
+## Correct DNS resolution
 
 Edit file `/etc/systemd/resolved.conf` an add the following lines:
 
@@ -644,7 +591,7 @@ Check that both Global and the link for the ethernet/wireless interface has corr
 sudo resolvectl status
 ```
 
-### Qemu-guest-agent
+## Qemu-guest-agent
 
 The qemu-guest-agent is a helper daemon, which is installed in the guest VM. It is used to exchange information between the host and guest, and to execute command in the guest.
 
@@ -658,13 +605,13 @@ guest-agent has to be installed in ech VM and enabled in Proxmox VE GUI or via C
 - GUI: On the VM Options tab, set option 'Enabled' on 'QEMU Guest Agent
 - CLI: `qm set VMID --agent 1`
 
-### Simulate server load
+## Simulate server load
 
 Sometimes you need to discover how the performance of an application is affected when the system is under certain types of load. This means that an artificial load must be created. It is possible to install dedicated tools to do this, but this option isn’t always desirable or possible.
 
 Every Linux distribution comes with all the tools needed to create load. They are not as configurable as dedicated tools but they will always be present and you already know how to use them.
 
-#### CPU
+### CPU
 
 The following command will generate a CPU load by compressing a stream of random data and then sending it to `/dev/null`:
 
@@ -686,7 +633,7 @@ sha512sum /dev/urandom
 
 Use CTRL+C to end the process.
 
-#### RAM
+### RAM
 
 The following process will reduce the amount of free RAM. It does this by creating a file system in RAM and then writing files to it. You can use up as much RAM as you need to by simply writing more files.
 
@@ -708,7 +655,7 @@ The size of the file can be set by changing the following operands:
 - bs= Block Size. This can be set to any number followed B for bytes, K for kilobytes, M for megabytes or G for gigabytes.
 - count= The number of blocks to write.
 
-#### Disk
+### Disk
 
 We will create disk I/O by firstly creating a file, and then use a for loop to repeatedly copy it.
 
@@ -732,7 +679,7 @@ If you prefer the process to run forever until you kill it with CTRL+C use the f
 while true; do cp loadfile loadfile1; done
 ```
 
-### Generate Gmail App Password
+## Generate Gmail App Password
 
 When Two-Factor Authentication (2FA) is enabled, Gmail is preconfigured to refuse connections from applications that don’t provide the second step of authentication. While this is an important security measure that is designed to restrict unauthorized users from accessing your account, it hinders sending mail through some SMTP clients as you’re doing here. Follow these steps to configure Gmail to create a Postfix-specific password:
 
@@ -746,7 +693,7 @@ When Two-Factor Authentication (2FA) is enabled, Gmail is preconfigured to refus
 
 5. The newly generated password will appear. Write it down or save it somewhere secure that you’ll be able to find easily in the next steps, then click `Done`:
 
-### Configure Postfix Server to send email through Gmail
+## Configure Postfix Server to send email through Gmail
 
 Postfix is a Mail Transfer Agent (MTA) that can act as an SMTP server or client to send or receive email. I chose to use this method to avoid getting my mail to be flagged as spam if my current server’s IP has been added to a block list.
 
@@ -834,7 +781,7 @@ Check in a separate sesion the changes as they appear live with command below. U
 sudo tail -f /var/log/syslog
 ```
 
-### Mail notifications for SSH dial-in
+## Mail notifications for SSH dial-in
 
 Install mail client
 
@@ -857,7 +804,7 @@ if [ -n "$SSH_CLIENT" ]; then
 fi
 ```
 
-### Backup folder
+## Backup folder
 
 In Linux, the tar command is one of the essential commands as far as file management is concerned. It’s short for Tape Archive, and it’s used for creating & extracting archive files.  An archive file is a compressed file containing one or multiple files bundled together for more accessible storage and portability. More examples can be found [here](https://linuxhint.com/linux-tar-command/)
 
@@ -878,7 +825,7 @@ The `tar` command provides the following options:
 tar -zcvf folder.tar.gz html
 ```
 
-### Generate random passwords or tokens
+## Generate random passwords or tokens
 
 A random string of variable lenght that can be used for passwords or access tokens can be generated in the following ways:
 

@@ -1,12 +1,68 @@
-# Table of contents
+# About my Homelab
 
-- [About my Homelab](./general/general.md#about-my-homelab)
-- [Introduction](./general/general.md#introduction)
-  - [How I started](./general/general.md#how-i-started)
-  - [HomeLab architecture](./general/general.md#homelab-architecture)
-  - [Document structure](./general/general.md#document-structure)
-  - [Prerequisites](./general/general.md#prerequisites)
-- [Common](./general/general.md#common)
+![HomeLab Architecture](HomeLab.jpg)
+
+This repository is intended to record my experience in setting up a HomeLab using a dedicated server running [Proxmox](https://www.proxmox.com/en/) with various services running in multiple VM's and other IoT equipment. I will be touching topics related to virtualization, hardware passtrough, Docker, NAS, firewall, DNS printers, home automation and many others. This document is a work in progress and will evolve as I gain more experience and find more interesting stuff to experiment with.
+
+Over time, the HomeLab grew by adding IoT devices, Wifi range extender, climate control, UPS, printer and other equipment. Most of the hardware is housed in a rack, mounted on a wall under the staircase in my house. The rack is located in a separate room which I use as a closet. This helps a lot to reduce the discomfort caused by noise and heat. At least once a year, I unplug the equipment and clean it uing compressed air.
+
+I plan to upgrade the main server with additional storage, a dedicated GPU and extend the HomeLab capabilities with additional equipment that adds value. I am always open for suggestions so feel free to reach me over email in case you have one.
+
+The software, services and the overall architecture of my my HomeLab are constantly adapting and evolving when I find some kind of software or an equipment which adds value to my HomeLab.
+
+The purpose of this repository is not to be a tutorial on how to set up a HomeLab. I record configurations and installation instructions in case something wrong happens.
+
+Use the information provided in this repository at your own risk. I take no responsibility for any damage to your equipment. Depending on my availability I can support with software issues. but be prepared to troubleshoot on your own because this is the best way to learn. My recommendation is to take the information that I provide here and adapt it to your own needs and hardware.
+
+I think overall it was a good decision to start my own HomeLab even if the journey is not an easy one. I gained a lot of experience and I added a lot of functionalities which bring value. I learned the importance of having a robust system and the effort it takes to maintain it. I learned the important of documentation and this is the reason why I put so much effort into setting up this repository. Besides having cool functionalities, I  maintaining a HomeLab builds a set of skills which are valuble in other aspects of my life.
+
+My only regret is that I couldn't convince any of my friends or family to become interested in this stuff. Everyone I talked with thinks what I do is cool, but they don't want to get into it. Because of this it's been a rather lonley journey.
+
+The most important thing I learned along the way, was that no matter how awesome my HomeLab is, if the Internet is my house is down because of my stuff, I'm screwed! :)
+
+For any questions please contact me at **adrian.martis (at) gmail . com**
+
+## How I started
+
+Initially I started my adventure in building an HomeLab on an old laptop, where I installed Proxmox and did some testing with several VM's and [HomeAssistant](https://www.home-assistant.io/).
+
+It probably would have been enough if it didn't had two annoying issues. Every couple of days, the laptop froze and I had to manually reboot it. The second issue was that BIOS did not support resuming to the last power state in case of a power shortage. I couldn't run the laptop for more then a few days without having to physically interact with it which meant I couldn't have a reliable server for running services or home automation.
+
+After struggling with this setup for a couple of months I decided it was time for an upgrade.
+
+I spent several weeks researching online about best practices in hardware builds for an HomeLab. I read blogs, joined several channels on Reddit and groups on Facebook dedicated to this topic. The more I spent researching, the more I got frustrated of how easy it was for people living in US, Germany or UK to access all kind of second hand server-grade equipment. I either had to make a compromise and buy consumer grade equipment, spent extra money on shipping tax to order it outise of my own country, or get lucky and find a good deal in my own country.
+
+In the end, it payed off to be patient, because I got lucky and found a complete system for sale locally. Everyone I talked with, said it was overkill for what I wanted to run in my HomeLab. I diregarded their advices and went with my gut feeling. I payed for the entire PC around 800$ and now I had the equipment needed to fulfill any project I wanted.
+
+My future server was a beast:
+
+- Motherboard: ASUS Z10pe-d8
+- CPU: 2x Intel Xeon E5-2640 v3, 2.6Ghz, 8 cores, 16 threads
+- RAM: 192 GB Kingston DDR4 2400MHz with ECC
+- PSU: 750W Segotep 80+ Platinum
+- Black case
+
+I added 3 spare HDD's from old laptops I had laying arround because the PC was sold without any storage. Two of them were configured with ZFS mirror RAID to have some kind of redundancy for some of my critical data, in case one of them failed. The third one I used to store less important data, like tv shows and movies.I bought a 1TB M.2 2280 consumer SSD from SWORDFISH to use for host operating system. The final purchase was an 1 GB Ethernet PCIe card which was asstrough to a VM running a dedicated firewall.With above equipment, I decided it was enough to start my journey into the wonderfull world of building and maintaining a HomeLab.
+
+## Document structure
+
+The document is written in Markdown and structured in 3 main sections.
+
+First section contains a short history, current HomeLab state and structure of the document.
+
+The second section contains general tutorials that are independed to any any VM. Some of the commands assume that either the DHCP or the DNS server is up and running, so please keep this in mind when reading.
+
+The third section contains a chapter for every server, bare-bone or virtualized I run. Inside each chapter there are sections that describe:
+
+- Proxmox VM configuration or HW used
+- OS configuration
+- Installation and configuration of the specific software that runs on that server.
+
+This is a work in progress so expect that some of these chapters are empty and will be added at a later date based on my availability.
+
+## Table of contents
+
+- [General](./general/general.md#general)
   - [SSH configuration](./general/general.md#ssh-configuration)
   - [Execute commands using SSH](./general/general.md#execute-commands-using-ssh)
   - [How to fix warning about ECDSA host key](./general/general.md#how-to-fix-warning-about-ecdsa-host-key)
