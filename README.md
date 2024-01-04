@@ -124,7 +124,7 @@ This is a work in progress so expect that some of these chapters are empty and w
   - [HomeAssistant - Integration of CCTV cameras](./homeassistant/homeassistant.md#homeassistant---integration-of-cctv-cameras)
   - [HomeAssistant - Google Assistant integration](./homeassistant/homeassistant.md#homeassistant---google-assistant-integration)
   - [HomeAssistant - Recorder integration](./homeassistant/homeassistant.md#homeassistant---recorder-integration)
-- [Nextcloud - Content collaboration server](./homeassistant/homeassistant.md#nextcloud---content-collaboration-server)
+- [Nextcloud - Content collaboration server](./nextcloud/nextcloud.md#nextcloud---content-collaboration-server)
   - [Nextcloud - VM configuration](./nextcloud/nextcloud.md#nextcloud---vm-configuration)
   - [Nextcloud - OS Configuration](./nextcloud/nextcloud.md#nextcloud---os-configuration)
   - [Nextcloud - Installation and configuration of nginx web server](./nextcloud/nextcloud.md#nextcloud---installation-and-configuration-of-nginx-web-server)
