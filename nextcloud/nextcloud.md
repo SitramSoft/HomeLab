@@ -905,6 +905,7 @@ array (
 ),
 'cron_log' => true,
 'default_phone_region' => 'RO',
+'defaultapp' => 'files,dashboard',
 'enable_previews' => true,
 'enabledPreviewProviders' => 
 array (
@@ -929,8 +930,9 @@ array (
 'logtimezone' => 'Europe/Bucharest',
 'log_rotate_size' => 104857600,
 'maintenance' => false,
-'memcache.local' => '\OC\Memcache\APCu',
+'memcache.local' => '\OC\Memcache\Redis',
 'memcache.locking' => '\OC\Memcache\Redis',
+'memcache.distributed' => '\OC\Memcache\Redis',
 'overwriteprotocol' => 'https',
 'preview_max_x' => 1024,
 'preview_max_y' => 768,
