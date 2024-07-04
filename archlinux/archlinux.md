@@ -294,8 +294,8 @@ sudo systemctl restart lightdm.service
 - **Zip archiver**: 7-zip
 - **Visual Studio Code**: visual-studio-code-bin
 - **Sublime text editor**: sublime-text-4
-- **icons**: tela-icon-theme
-- **themes**: mint-themes
+- **icons**: tela-icon-theme-git
+- **themes**: mint-themes-git
 - **Optimus Manager for systems with integrated and dedicated GPU + applet**: optimus-manager optimus-manager-qt
 - **Teamviewer**: teamviewer
 - **Nextcloud desktop client**: nextcloud-client
@@ -434,6 +434,27 @@ if [ "$CONNECTION_UUID" = "$WIRED_UUID" ] || [ "$CONNECTION_UUID" = "$WIRELESS_A
             umount -l -a -t nfs4,nfs -f >/dev/null
             ;;
     esac
+fi
+```
+
+In order to turn Wi-Fi on when the LAN cable is unplugged (for example when detaching from a laptop dock), and for Wi-Fi to be automatically disabled, once a LAN cable is plugged in again, create the following dispatcher scripy, replacing `LAN_interface` with the name assigned to the wired interface. The name can be obtained using `nmcli`. The Ethernet (LAN) interfaces start with `en`, e.g. `enp0s5`
+
+```bash
+/etc/NetworkManager/dispatcher.d/wlan_auto_toggle.sh
+
+#!/bin/sh
+
+if [ "$1" = "LAN_interface" ]; then
+    case "$2" in
+        up)
+            nmcli radio wifi off
+            ;;
+        down)
+            nmcli radio wifi on
+            ;;
+    esac
+elif [ "$(nmcli -g GENERAL.STATE device show LAN_interface)" = "20 (unavailable)" ]; then
+    nmcli radio wifi on
 fi
 ```
 
@@ -710,7 +731,7 @@ For the HomeLab I chose [Brother MFC-L2732DW](https://support.brother.com/g/b/sp
 In order to use the printer, the driver needs to be installed. The AUR package for mfc-l2732dw model doesn't work and since the driver is the same as for mfc-l2730dw model, I chose to install this one.
 
 ```bash
-sudo yay -S brother-mfc-l2730dw
+yay -S brother-mfc-l2730dw
 ```
 
 Configure the printer in `CUPS`:
@@ -726,7 +747,7 @@ Now the printer should be configured and it can be tested by printing a test pag
 In order to use the scanner functionality of the device, the corresponding driver has to be installed. There are multiple `brscan` packages in AUR and for the model I chose, `brscan4` contains the correct driver.
 
 ```bash
-sudo yay -S brscan4
+yay -S brscan4
 ```
 
 For network scanners, Brother provides a different configuration tool for each `brscan` version which has to be run with the name, model and the ip specific for the scanner
@@ -740,7 +761,7 @@ Brother has released a tool to enable scanning to be triggered by user interacti
 Brother supplies some default scripts that are executed when a scan type is selected on the keypad. For all options apart from "Scan to email" the resulting output can be found inside `$HOME/brscan`, with `$HOME` the home directory of the user running this tool (so `/srv/brscan-skey` if started via systemd as a systemwide process).
 
 ```bash
-sudo yay -S brscan-skey
+yay -S brscan-skey
 
 systemctl enable brscan-skey.service
 systemctl start brscan-skey.service
