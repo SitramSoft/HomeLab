@@ -90,6 +90,8 @@ This is a work in progress so expect that some of these chapters are empty and w
   - [Mail notifications for SSH dial-in](./general/general.md#mail-notifications-for-ssh-dial-in)
   - [Backup folder](./general/general.md#backup-folder)
   - [Generate random passwords or tokens](./general/general.md#generate-random-passwords-or-tokens)
+  - [Install John the Ripper](./general/general.md#install-john-the-ripper)
+  - [Mysql - recover lost user password](./general/general.md#mysql---recover-lost-user-password)
 - [Proxmox - Virtualization server](./proxmox/proxmox.md#proxmox---virtualization-server)
   - [Proxmox - OS configuration](./proxmox/proxmox.md#proxmox---os-configuration)
   - [Proxmox - NTP time server](./proxmox/proxmox.md#proxmox---ntp-time-server)

@@ -846,3 +846,47 @@ tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 13
 ```bash
 openssl rand -base64 12
 ```
+
+## Install John the Ripper
+
+```bash
+git clone "https://github.com/magnumripper/JohnTheRipper.git" && cd JohnTheRipper/src && ./configure && sudo make -s clean && sudo make -sj4
+```
+
+## Mysql - recover lost user password
+
+In case the root password for an instance has been lost or mysql has been accidentaly upgraded from 8.4.x to 9.x.x and mysql_native_password plugin is no longer available, use the following sequence to recover the connection to the databse.
+
+Add to docker compose file the following option then recreate the container.
+
+```bash
+command: --skip-grant-tables
+```
+
+Connect to `mysql` container shell using `root` user trough portainer web interface or cli.
+
+Type `mysql` then press `Enter` and you should be able to connect to mysql instance.
+
+Show all users that have the `mysql_native_password` plugin
+
+```sql
+FLUSH PRIVILEGES;
+select User,Host,plugin from mysql.user where plugin='mysql_native_password';
+```
+
+For each user and host run the following command:
+
+```sql
+ALTER USER 'user'@'host' IDENTIFIED WITH caching_sha2_password BY 'new_password';
+```
+
+Execute:
+
+```sql
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+Remove from docker-compose file command: `--skip-grant-tables` then recreate the container.
+
+Once the above steps are done, you should be able to connect to the mysql instance again.
