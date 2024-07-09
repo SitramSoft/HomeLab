@@ -890,3 +890,37 @@ EXIT;
 Remove from docker-compose file command: `--skip-grant-tables` then recreate the container.
 
 Once the above steps are done, you should be able to connect to the mysql instance again.
+
+## Find all files containing a specific text (string) on Linux
+
+In order to search all files containing a specific text (string) in Linux the following command can be used:
+
+``` bash
+grep -Rnw '/path/to/somewhere/' -e 'pattern'
+```
+
+- `-r` or `-R` is recursive; use `-R` to search entirely
+- `-n` is line number
+- `-w` stands for match the whole word
+- `-l` (lower-case L) can be added to just give the file name of matching files
+- `-e` is the pattern used during the search
+
+Along with these, `--exclude`, `--include`, `--exclude-dir` flags could be used for efficient searching:
+
+- This will only search through those files which have .c or .h extensions:
+
+```bash
+grep --include=\*.{c,h} -rnw '/path/to/somewhere/' -e "pattern"
+```
+
+- This will exclude searching all the files ending with .o extension:
+
+``` bash
+grep --exclude=\*.o -rnw '/path/to/somewhere/' -e "pattern"
+```
+
+- For directories it's possible to exclude one or more directories using the `--exclude-dir` parameter. For example, this will exclude the dirs `dir1/`, `dir2/` and all of them matching `*.dst/`:
+
+```bash
+grep --exclude-dir={dir1,dir2,*.dst} -rnw '/path/to/search/' -e "pattern"
+```

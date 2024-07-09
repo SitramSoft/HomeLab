@@ -92,6 +92,7 @@ This is a work in progress so expect that some of these chapters are empty and w
   - [Generate random passwords or tokens](./general/general.md#generate-random-passwords-or-tokens)
   - [Install John the Ripper](./general/general.md#install-john-the-ripper)
   - [Mysql - recover lost user password](./general/general.md#mysql---recover-lost-user-password)
+  - [Find all files containing a specific text (string) on Linux](./general/general.md#find-all-files-containing-a-specific-text-string-on-linux)
 - [Proxmox - Virtualization server](./proxmox/proxmox.md#proxmox---virtualization-server)
   - [Proxmox - OS configuration](./proxmox/proxmox.md#proxmox---os-configuration)
   - [Proxmox - NTP time server](./proxmox/proxmox.md#proxmox---ntp-time-server)
