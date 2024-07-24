@@ -189,6 +189,7 @@ This is a work in progress so expect that some of these chapters are empty and w
     - [Desktop environment installation(Gnome)](./archlinux/archlinux.md#desktop-environment-installationgnome)
     - [Desktop environment installation(KDE)](./archlinux/archlinux.md#desktop-environment-installationkde)
     - [Common apps for all desktop environments](./archlinux/archlinux.md#common-apps-for-all-desktop-environments)
+    - [Configure LightDM and Xorg to use NVIDIA driver](./archlinux/archlinux.md#configure-lightdm-and-xorg-to-use-nvidia-driver)
     - [Configure PipeWire multimedia framework](./archlinux/archlinux.md#configure-pipewire-multimedia-framework)
     - [Configure PulseAudio multimedia framework](./archlinux/archlinux.md#configure-pulseaudio-multimedia-framework)
     - [Common AUR packages](./archlinux/archlinux.md#common-aur-packages)

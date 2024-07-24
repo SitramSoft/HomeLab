@@ -201,8 +201,6 @@ sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter l
 - **video player**: smplayer-themes smplayer-skins smtube yt-dlp
 - **video editing software**: shotcut
 - **video transcoder software**: handbrake
-- **Nvidia driver**: nvidia
-- **Nvidia settings applet**: nvidia-settings
 - **wallpapers**: archlinux-wallpaper
 - **wine**: wine
 - **wine packages for applications that depend on Internet Explorer and .NET**: wine-geko wine-mono
@@ -223,7 +221,124 @@ sudo pacman -S xorg-server lightdm lightdm-webkit2-greeter lightdm-gtk-greeter l
 - **Optimize Linux Laptop Battery Life**: tlp
 
 ```bash
-sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs smplayer-themes smplayer-skins smtube yt-dlp shotcut handbrake nvidia nvidia-settings archlinux-wallpaper wine wine-gecko wine-mono lib32-libpulse steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk freerdp udftools tlp
+sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-config-printer libreoffice thunar file-roller thunar-archive-plugin thunar-volman thunar-media-tags-plugin okular qalculate-gtk gimp nomacs smplayer-themes smplayer-skins smtube yt-dlp shotcut handbrake archlinux-wallpaper wine wine-gecko wine-mono lib32-libpulse steam papirus-icon-theme arc-gtk-theme arc-gtk-theme spice-vdagent gvfs gvfs-smb gnome-system-monitor telegram-desktop v4l-utils obs-studio remmina spice-gtk freerdp udftools tlp
+```
+
+### Configure NVIDIA drivers
+
+Install NVIDIA drivers
+
+```bash
+sudo pacman -S nvidia nvidia-settings nvidia-prime nvidia-utils 	xorg-xrandr
+```
+
+Since Nvidia does not support automatic KMS loading, enabling DRM(Direct Rendering Manager) kernel mode setting is requiered.
+
+Edit `/etc/default/grub` and append the existing kernel options between the quotes in the `GRUB_CMDLINE_LINUX_DEFAULT` line the following parameter:
+
+```bash
+GRUB_CMDLINE_LINUX_DEFAULT="nvidia-drm.modeset=1"
+```
+
+Re-generate the `grub.cfg` file with:
+
+```bash
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+Configure early loading of nvidia modules by adding them to the initramfs
+
+Edit `/etc/mkinitcpio.conf` and add under `MODULES` option the following:
+
+```bash
+MODULES=(nvidia)
+```
+
+Regenerate initramfs images based on all existing presets:
+
+```bash
+sudo mkinitcpio -P
+```
+
+After adding the nvidia drivers to the initramfs, do not forget to run `mkinitcpio` every time there is a nvidia driver update. This process can be automated with the following pacman hook below.
+
+```bash
+sudo nano /etc/pacman.d/hooks/nvidia.hook
+```
+
+```bash
+[Trigger]
+Operation=Install
+Operation=Upgrade
+Operation=Remove
+Type=Package
+# Uncomment the installed NVIDIA package
+Target=nvidia
+#Target=nvidia-open
+#Target=nvidia-lts
+# If running a different kernel, modify below to match
+Target=linux
+
+[Action]
+Description=Updating NVIDIA module in initcpio
+Depends=mkinitcpio
+When=PostTransaction
+NeedsTargets
+Exec=/bin/sh -c 'while read -r trg; do case $trg in linux*) exit 0; esac; done; /usr/bin/mkinitcpio -P'
+```
+
+### Configure LightDM and Xorg to use NVIDIA driver
+
+NVIDIA driver can be configured to be the primary rendering provider.
+
+Add the following lines to file `/etc/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf`
+
+```bash
+Section "OutputClass"
+    Identifier "intel"
+    MatchDriver "i915"
+    Driver "modesetting"
+EndSection
+
+Section "OutputClass"
+    Identifier "nvidia"
+    MatchDriver "nvidia-drm"
+    Driver "nvidia"
+    Option "AllowEmptyInitialConfiguration"
+    Option "PrimaryGPU" "yes"
+    ModulePath "/usr/lib/nvidia/xorg"
+    ModulePath "/usr/lib/xorg/modules"
+EndSection
+```
+
+After installing `lightdm`, the greeter can be configured by editing `lightdm.conf`. A list of all greeter-session installed on the system can be found by listing the contents of `/usr/share/xgreeters`
+
+When NVIDIA is configured to be the primary rendering provider, I found out that `lightdm-slick-greeter` works ok and has a nice aestetichs.
+
+```bash
+sudo nano /etc/lightdm/lightdm.conf
+
+# Select the installed greeter
+greeter-session = lightdm-slick-greeter
+#Change display output for VM's only
+display-setup-script=xrandr --output Virtual-1 --mode 1920x1080
+#For laptops with NVIDIA GPU
+display-setup-script=/etc/lightdm/display_setup.sh
+```
+
+The script from `/etc/lightdm/display_setup.sh` is used to configure NVIDIA driver for lightdm. After adding the content below to the file, make the script executable with `sudo chmod +x display_setup.sh`. Make sure this configuration is done after NVIDIA drivers are installed and configured correctly. The name of the driver might vary and can be obtained by running `xrandr --listproviders`
+
+```bash
+#!/bin/sh
+xrandr --setprovideroutputsource modesetting NVIDIA-G0
+xrandr --auto
+xrandr --output eDP-1-1 --primary
+```
+
+Restart `lightdm` service to activate the changes
+
+```bash
+sudo systemctl restart lightdm.service
 ```
 
 ### Configure PipeWire multimedia framework
@@ -269,21 +384,6 @@ Configure [PulseAudio](https://wiki.archlinux.org/title/PulseAudio) multimedia f
 ```bash
 sudo pacman -S pulseaudio pulseaudio-alsa pulseaudio-bluetooth
 yay -S pavucontrol
-```
-
-Configure `lightdm` greeter by editing `lightdm.conf`. A list of all greeter-session installed on the system can be found by listing the contents of `/usr/share/xgreeters`
-
-```bash
-sudo nano /etc/lightdm/lightdm.conf
-
-# Select the installed greeter
-greeter-session = lightdm-webkit2-greeter
-#Change display output for VM's only
-display-setup-script=xrandr --output Virtual-1 --mode 1920x1080
-```
-
-```bash
-sudo systemctl restart lightdm.service
 ```
 
 ### Common AUR packages
