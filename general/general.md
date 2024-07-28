@@ -114,6 +114,14 @@ In order to get rid of the warning, remove the cached key for ```192.168.1.xxx``
 ssh-keygen -R 192.168.1.xxx
 ```
 
+## Ubuntu - Initial setup of an clonned VM
+
+After clonning an template VM running Ubuntu, I use the following script to do change the hostname.
+
+```bash
+sudo bash -c "bash <(wget -qO- https://raw.githubusercontent.com/SitramSoft/HomeLab/main/new_vm.sh)"
+```
+
 ## Ubuntu - upgrade from older distribution
 
 ```bash

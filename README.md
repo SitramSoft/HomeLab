@@ -66,6 +66,7 @@ This is a work in progress so expect that some of these chapters are empty and w
   - [SSH configuration](./general/general.md#ssh-configuration)
   - [Execute commands using SSH](./general/general.md#execute-commands-using-ssh)
   - [How to fix warning about ECDSA host key](./general/general.md#how-to-fix-warning-about-ecdsa-host-key)
+  - [Ubuntu - Initial setup of an clonned VM](./general/general.md#ubuntu---initial-setup-of-an-clonned-vm)
   - [Ubuntu - upgrade from older distribution](./general/general.md#ubuntu---upgrade-from-older-distribution)
   - [Ubuntu - configure unattended upgrades](./general/general.md#ubuntu---configure-unattended-upgrades)
   - [Ubuntu - Clean unnecessary packages](./general/general.md#ubuntu---clean-unnecessary-packages)

@@ -22,9 +22,6 @@ rm -f /etc/machine-id
 dbus-uuidgen --ensure=/etc/machine-id
 ln -s /etc/machine-id /var/lib/dbus/
 
-#TODO Copy SSH keys
-#echo "Copying master SSH keys"
-
 echo "Setting Hostname"
 sed -i "s/$HOSTNAME/$newHostname/g" /etc/hosts
 sed -i "s/$HOSTNAME/$newHostname/g" /etc/hostname
