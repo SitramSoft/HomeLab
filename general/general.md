@@ -408,6 +408,70 @@ sudo apt-key del E5267A6C
 sudo apt-get update
 ```
 
+## Ubuntu - Replace netplan.io with systemd-networkd
+
+Remove netplan.io
+
+```bash
+sudo apt remove --purge netplan.io
+```
+
+Removing netplan.io will also remove `ubuntu-minimal`. According to [this](https://askubuntu.com/questions/1066154/what-is-the-ubuntu-minimal-package-and-do-i-need-it#:~:text=As%20explained%20earlier%2C%20'ubuntu%2D,impact%20on%20currently%20installed%20packages) it has no effect on an installed system. Its purpose is to point to packages required of a minimal install. To keep the dependency `ubuntu-minimal` use:
+
+```bash
+sudo dpkg -r --force-depends netplan.io
+```
+
+After restart the server will have no internet access so run the commands below. If any are not applicable(eg. first two), ingore them.
+
+``` bash
+sudo systemctl disable network-manager
+sudo systemctl stop network-manager
+sudo systemctl enable systemd-networkd
+sudo systemctl start systemd-networkd
+sudo systemctl start systemd-resolved
+sudo systemctl enable systemd-resolved
+sudo rm /etc/resolv.conf
+sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+sudo tee /etc/systemd/network/20-dhcp.network << END
+[Match]
+Name=enp5s0
+
+[Network]
+DHCP=yes
+END
+```
+
+What the last command doing is, it is appending lines in `/etc/systemd/network/20-dhcp.network`. To know what value should be used in `Name=enp5s0`, run `ip -c link` to get the name of the NIC.
+
+If you do not have DHCP and need to use static IP, Replace
+
+```bash
+[Network]
+DHCP=yes
+```
+
+with the specific details (IP Address, Gateway and DNS).
+
+```bash
+[Network]
+Address=10.1.10.9/24
+Gateway=10.1.10.1
+DNS=10.1.10.1
+```
+
+If you are using wifi, you might have to add the line `IgnoreCarrierLoss=3s` under `[Network]`
+
+Now Run
+
+```bash
+sudo systemctl restart systemd-networkd
+sudo systemctl restart systemd-resolved
+```
+
+Additional details can be found by reading [systemd-networkd](https://wiki.archlinux.org/title/systemd-networkd#Required_services_and_setup).
+
 ## Ubuntu - Synchronize time with systemd-timesyncd
 
 I have a dedicated timeserver which servers all the clients in my HomeLab. Whenever it is possible, I configure each server to use the internal timeserver.

@@ -76,6 +76,7 @@ This is a work in progress so expect that some of these chapters are empty and w
   - [Ubuntu - MariaDB update](./general/general.md#ubuntu---mariadb-update)
   - [Ubuntu - Install nginx](./general/general.md#ubuntu---install-nginx)
   - [Ubuntu - Configure PHP source list](./general/general.md#ubuntu---configure-php-source-list)
+  - [Ubuntu - Replace netplan.io with systemd-networkd](./general/general.md#ubuntu---replace-netplanio-with-systemd-networkd)
   - [Ubuntu - Synchronize time with systemd-timesyncd](./general/general.md#ubuntu---synchronize-time-with-systemd-timesyncd)
   - [Ubuntu - Synchronize time with ntpd](./general/general.md#ubuntu---synchronize-time-with-ntpd)
   - [Ubuntu - Synchronize time with chrony](./general/general.md#ubuntu---synchronize-time-with-chrony)
