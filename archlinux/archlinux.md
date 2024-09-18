@@ -229,7 +229,7 @@ sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-conf
 Install NVIDIA drivers
 
 ```bash
-sudo pacman -S nvidia nvidia-settings nvidia-prime nvidia-utils 	xorg-xrandr
+sudo pacman -S nvidia nvidia-settings nvidia-prime nvidia-utils xorg-xrandr
 ```
 
 Since Nvidia does not support automatic KMS loading, enabling DRM(Direct Rendering Manager) kernel mode setting is requiered.
@@ -877,3 +877,126 @@ For a GUI frontend the following two options will be installed
 ```bash
 sudo pacman -S sane xsane xsane-gimp simple-scan
 ```
+
+### ArchLinux - Chrome Remote Desktop
+
+1. Build and install the package from AUR with `yay -S chrome-remote-deskttop`
+2. run crd --setup
+3. (Optional) Configure execution of your preferred window manager in ~/.chrome-remote-desktop-session
+4. Go to [http://remotedesktop.google.com/headless](http://remotedesktop.google.com/headless)
+5. Click "next" and "authorize" through each instruction
+6. Copy/paste and run the provided "Debian" command, which should look like the following: `DISPLAY= /opt/google/chrome-remote-desktop/start-host --code="<UNIQUE_CODE>" --redirect-url="<https://remotedesktop.google.com/_/oauthredirect>" --name=`
+7. Set up a name and PIN
+8. Wait for successful output containing `"Host ready to receive connections."`
+9. Run `crd --start`
+
+More details can be found on Victor Mendonca's [blog](https://blog.victormendonca.com/2020/04/02/how-to-install-chrome-remote-desktop-on-arch/). Please keep in mind that these instructions might get outdated so be prepared for some troubleshooting in case some of the instructions don't apoply anymore.
+
+#### ArchLinux - Chrome Remote Desktop - newer version issue
+
+In case of a version missmatch error, run the following command to get the latest version of `chrome-remote-desktop`
+
+```bash
+curl -qs https://dl.google.com/linux/chrome-remote-desktop/deb/dists/stable/main/binary-amd64/Packages | grep "^Version\|^SHA256" | awk '{print $2}'
+```
+
+Edit `~/.cache/yay/chrome-remote-desktop/PKGBUILD` and modify `pkgver` with the newest version.
+
+Build and install the package locally without checking the checksums `~/.cache/yay/chrome-remote-desktop/makepkg -si --skipchecksums`
+
+Resume configuration from point 2 in [ArchLinux - Chrome Remote Desktop](#archlinux---chrome-remote-desktop)
+
+#### ArchLinux - Chrome Remote Desktop - missing json file
+
+In case `systemctl --user status chrome-remote-desktop` shows an error related to missing `.json` file in `/home/<username>/.config/chrome-remote-desktop/host#*.json`, try adding your user to `chrome-remote-desktop` with
+
+```bash
+usermod -aG chrome-remote-desktop $USER
+```
+
+#### ArchLinux - Chrome Remote Desktop - invalid escape sequence '\s'
+
+In case `systemctl --user status chrome-remote-desktop` shows an error related to `invalid escape sequence '\s'`, try the next fix.
+
+```bash
+systemd[1469]: Starting "Chrome Remote Desktop host daemon"...
+crd[276834]: /opt/google/chrome-remote-desktop/chrome-remote-desktop:2529: SyntaxWarning: invalid escape sequence '\s'
+crd[276834]:   re.split('\s+', os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip())
+pkexec[276835]: pam_unix(polkit-1:session): session opened for user root(uid=0) by sitram(uid=1000)
+crd[276914]: /opt/google/chrome-remote-desktop/chrome-remote-desktop:2529: SyntaxWarning: invalid escape sequence '\s'
+crd[276914]:   re.split('\s+', os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip())
+crd[276914]: Killing process 276908
+systemd[1469]: Started "Chrome Remote Desktop host daemon".
+```
+
+Replace the `\s` with `\\s` in `/opt/google/chrome-remote-desktop/chrome-remote-desktop`
+
+```python
+2562: extra_start_host_args = []
+2527:  if HOST_EXTRA_PARAMS_ENV_VAR in os.environ:
+2528:      extra_start_host_args = \
+2529:          re.split('\\s+', os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip())
+```
+
+After restarting the `chrome--remote-desktop` service, the status showed that the daemon is successfully started
+
+```bash
+systemctl --user status chrome-remote-desktop.service
+○ chrome-remote-desktop.service - "Chrome Remote Desktop host daemon"
+     Loaded: loaded (/usr/lib/systemd/user/chrome-remote-desktop.service; enabled; preset: enabled)
+     Active: inactive (dead) since Wed 2024-09-18 10:40:11 EEST; 3s ago
+ Invocation: b1f776d453fa4b2aaf5cab4acbb8f3ab
+    Process: 285042 ExecStart=/usr/bin/crd --start (code=exited, status=0/SUCCESS)
+    Process: 285118 ExecStop=/usr/bin/crd --stop (code=exited, status=0/SUCCESS)
+   Mem peak: 16.3M
+        CPU: 332ms
+
+systemd[1469]: Starting "Chrome Remote Desktop host daemon"...
+pkexec[285047]: pam_unix(polkit-1:session): session opened for user root(uid=0) by sitram(uid=1000)
+crd[285122]: Killing process 285116
+systemd[1469]: Started "Chrome Remote Desktop host daemon".
+```
+
+#### ArchLinux - Chrome Remote Desktop - connect to an existing session
+
+With default installation `chrome-remote-desktop` created a new session. Use the following configuration to connect to an existing session isntead of creating a new one so you can access all your open tabs from each monitor.
+
+Find what display number X is using
+
+```bash
+echo $DISPLAY
+:0
+```
+
+Create a file in `~/.config/chrome-remote-desktop/Xsession` with the display value
+
+```bash
+echo "0" > ~/.config/chrome-remote-desktop/Xsession
+```
+
+Stop the c`hrome-remote-desktop.service`
+
+```bash
+systemctl --user stop chrome-remote-desktop.service
+```
+
+Check if it stopped with `crd --status`. If it did not, stop it with `crd --stop`
+
+```bash
+rd --status
+CRD status: STOPPED
+```
+
+Take a backup of `/opt/google/chrome-remote-desktop/chrome-remote-desktop`
+
+Download the patched `/opt/google/chrome-remote-desktop/chrome-remote-desktop` to the same location, or follow the instructions to manually modify your file [here](https://gist.github.com/nightuser/2ec1b91a66ec33ef0a0a67b6c570eb40#file-use_existing_session-patch).
+
+Note: The patched version was tested with chrome-remote-desktop `128.0.6613.44`
+
+One-liner for all the steps above:
+
+```bash
+cho $DISPLAY | tr -d ':' >> ~/.config/chrome-remote-desktop/Xsession && cd /opt/google/chrome-remote-desktop && sudo cp chrome-remote-desktop chrome-remote-desktop_bak && sudo wget -qO- "https://gist.githubusercontent.com/nightuser/2ec1b91a66ec33ef0a0a67b6c570eb40/raw/b09250dcc9a28f09de93192a948dffb4963c2aca/use_existing_session.patch" | tail -n +5 > ~/use_existing_session.patch && sudo patch -Np1 -i ~/use_existing_session.patch && rm ~/ use_existing_session.patch && systemctl --user restart chrome-remote-desktop.service && systemctl --user status chrome-remote-desktop.service
+```
+
+If a host had been already configured before applying the patch above and for some reason it no longer appears in [https://remotedesktop.google.com/access](https://remotedesktop.google.com/access), do again the entire process from [https://remotedesktop.google.com/headless](https://remotedesktop.google.com/headless) and it should work.
