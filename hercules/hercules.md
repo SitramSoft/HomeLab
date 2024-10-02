@@ -33,7 +33,87 @@ echo COMPOSE_PROJECT_NAME=serenity >> /home/sitram/data/.env
 
 The configuration of each container is stored in `/home/sitram/docker` in a folder named after each container. I have a job running on the host server, which periodically creates a backup of this VM to a Raid 1 so I should be protected in case of some failures.
 
-[TODO] move the containers docker configuration to my tank1 in order to reduce the wear on the SSD.
+## Hercules - Move docker container configuration folder to NAS
+
+The average amount of data reported by Proxmox is between 200kb and 350kb a day. Because `/home/sitram/docker` is located on hercules root partition which is allocated on Serenity's SSD, this causes wearing on the SSD over time.
+
+In order to reduce the wearing, below I will describe the steps I did to move the contents of `/home/sitram/docker` to `tank1` pool on my NAS.
+
+- Create a backup of Hercules VM in Proxmox before the entire process starts in order to be able to undo all changes in case something breaks.
+
+- Create `docker_data` share in `TrueNAS`
+
+```bash
+cd /mnt/tank1
+mkdir docker_data
+chown sitram:sitram docker_data
+```
+
+- Mount `docker_data` share in a temporary location on Hercules VM
+
+```bash
+mkdir /home/sitram/docker_data
+sudo mount -t nfs 192.168.0.114:/mnt/tank1/docker_data /home/sitram/docker_data/
+```
+
+- Stop VM's which depend on services provided by Hercules VM
+
+```bash
+ssh -t sitram@wordpress.local sudo shutdown -h now
+ssh -t sitram@nextcloud.local sudo shutdown -h now
+```
+
+- Stop docker service and check that the service is inactive
+
+```bash
+sudo systemctl stop docker.service 
+sudo systemctl status docker.service
+```
+
+- Copy contents of `/home/sitram/docker/` to `/home/sitram/docker_data/` keeping the owners and permissions intact. Depending on the amount of that that the containers have acumulated over time, this is the longest step. Progress can be checked periodically with `watch` command. Checking how many files are left to be copied can be done with the second to last `diff` command. Once the copy command is done, check differences between the two folders using `diff` command.
+
+```bash
+sudo cp -rp /home/sitram/docker/. /home/sitram/docker_data/
+watch "sudo du -hs docker ; sudo du -hs docker_data"
+
+diff -y --suppress-common-lines <( sudo find ~/docker -maxdepth 1 -type d | while read -r dir; do printf "%s:\t" "$dir"; sudo find "$dir" -type f | wc -l; done | sort -n -r -k2 ) <( sudo find ~/docker_data -maxdepth 1 -type d | while read -r dir; do printf "%s:\t" "$dir"; sudo find "$dir" -type f | wc -l; done | sort -n -r -k2 )
+
+sudo diff -qr --no-dereference /home/sitram/docker/ /home/sitram/docker_data/
+```
+
+- Rename existing `docker` folder to `docker_bkp_02.10.2024`
+
+```bash
+sudo mv docker docker_bkp_02.10.2024
+```
+
+- Umount `docker_data` and check that the folder is not longer mounted.
+
+```bash
+sudo umount docker_data
+```
+
+- Add the following line to `/etc/fstab` to mount the share automatically at startup.
+
+```bash
+...
+192.168.0.114:/mnt/tank1/docker_data        /home/sitram/docker nfs rw 0 0
+...
+```
+
+- Mount the new share
+
+```bash
+sudo mount -a
+```
+
+- Start docker service and check the logs of the service. If there are no errors reported, check the for errors in the log of every container.
+
+```bash
+sudo systemctl start docker.service
+sudo systemctl status docker.service
+```
+
 
 ## Hercules - Remove docker packages from Ubuntu repository
 

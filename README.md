@@ -153,6 +153,7 @@ This is a work in progress so expect that some of these chapters are empty and w
 - [Hercules - HomeLab services VM](./hercules/hercules.md./hercules/hercules.md#hercules---homelab-services-vm)
   - [Hercules - VM configuration](./hercules/hercules.md#hercules---vm-configuration)
   - [Hercules - OS Configuration](./hercules/hercules.md#hercules---os-configuration)
+  - [Hercules - Move docker container configuration folder to NAS](./hercules/hercules.md#hercules---move-docker-container-configuration-folder-to-nas)
   - [Hercules - Docker installation and docker-compose](./hercules/hercules.md#hercules---docker-installation-and-docker-compose)
     - [Hercules - Remove docker packages from Ubuntu repository](./hercules/hercules.md#hercules---remove-docker-packages-from-ubuntu-repository)
     - [Hercules - set up Docker repository](./hercules/hercules.md#hercules---set-up-docker-repository)
