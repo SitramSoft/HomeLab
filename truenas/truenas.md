@@ -92,27 +92,33 @@ Once the installation is completed, open the web interface and continue the rest
 
 Make the following configuration in each page below.
 
-## System Settings -> General
+### System Settings -> General
 
 Remove existing NTP servers and add local NPT server(192.168.0.2) with only option selected `iBurst` and Min/Max Pool set to 6/10.
 
 Change `Timezone` in `Localication` to `Europe/Bucharest`
 
-## System Settings -> Services
+### System Settings -> Services
 
 Activate `SSH` service and make sure it is marked to be started automatically. Press the configure button and make sure `Log in as Root with Password` and `Allow Password Authentication` are unckeched.
 
-## Credentials -> Local Users
+### System Settings -> Advanced
+
+Open `Syslog` to change `Syslog Server` to `192.168.0.116:5514` in order to send the logs to HomeLab log server.
+
+Open the `System Dataset Pool` and chose the value `tank1` instead of of `boot-pool` for option `Sepect Pool` to move the system dataseet from the boot pool which is located to Serenity SSD to tank1. This reduces the wear of the SSD.
+
+### Credentials -> Local Users
 
 Add a new user called `sitram` with UID `1000`
 
 Add my personal public key to user `root` so that I can log is with SSH securely.
 
-## Credentials -> Local Groups
+### Credentials -> Local Groups
 
 Add a new group called `sitram` with GID `1000`
 
-## Network
+### Network
 
 In `Global Configuration` section change
 
@@ -121,17 +127,17 @@ In `Global Configuration` section change
 - DNS: `192.168.0.101` and `8.8.8.8`
 - Default Gateway: `192.168.0.1`
 
-## Shares
+### Shares
 
 - Windows (SMB) Shares
   - Share 1
-    - Name: `data`
-    - Path: `/mnt/tank1/data`
-    - Description: `Storage for critical data`
-  - Share 2
     - Name: `media`
     - Path: `/mnt/tank2/media`
     - Description: `Storage for various media files(movies, tv series, music, torrents etc)`
+  - Share 2
+    - Name: `data`
+    - Path: `/mnt/tank1/data`
+    - Description: `Storage for critical data`
 - Unix (NFS) Shares
   - Share 1
     - Path: `/mnt/tank1/backup`
@@ -146,11 +152,11 @@ In `Global Configuration` section change
     - Maproot Group: `root`
     - Authorized Hosts and IP address: `192.168.0.101` and `192.168.0.2` and `192.168.0.102` and `192.168.0.105` and `192.168.0.115` and `192.168.0.5` and `192.168.0.4`
   - Share 3
-    - Path: `/mnt/tank2/media`
-    - Description: `Storage for various media files(movies, tv series, music, torrents etc)`
+    - Path: `/mnt/nicusor`
+    - Description: `Personal storage for Nicusor Maciu`
     - Maproot User: `root`
     - Maproot Group: `root`
-    - Authorized Hosts and IP address: ``
+    - Authorized Hosts and IP address: `192.168.0.102` and `192.168.0.2` and `192.168.0.5` and `192.168.0.4` and `192.168.0.105`
   - Share 4
     - Path: `/mnt/tank2/proxmox`
     - Description: `Storage for ISO and CT for Proxmox`
@@ -158,8 +164,20 @@ In `Global Configuration` section change
     - Maproot Group: `root`
     - Authorized Hosts and IP address: `192.168.0.2`
   - Share 5
-    - Path: `/mnt/nicusor`
-    - Description: `Personal storage for Nicusor Maciu`
+    - Path: `/mnt/tank2/media`
+    - Description: `Storage for various media files(movies, tv series, music, torrents etc)`
     - Maproot User: `root`
     - Maproot Group: `root`
-    - Authorized Hosts and IP address: `192.168.0.102` and `192.168.0.2` and `192.168.0.5` and `192.168.0.4` and `192.168.0.105`
+    - Authorized Hosts and IP address: ``
+  - Share 6
+    - Path: `/mnt/tank1/logs/graylog` && `/mnt/tank1/logs/opensearch`
+    - Description: `Storage for logs from various systems`
+    - Maproot User: `root`
+    - Maproot Group: `root`
+    - Authorized Hosts and IP address: `192.168.0.116`
+  - Share 7
+    - Path: `/mnt/tank1/docker_data`
+    - Description: `Storage for docker containers data`
+    - Maproot User: `root`
+    - Maproot Group: `root`
+    - Authorized Hosts and IP address: `192.168.0.116` and `192.168.0.4` and `192.168.0.5`

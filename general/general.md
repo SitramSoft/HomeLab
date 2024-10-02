@@ -996,3 +996,113 @@ grep --exclude=\*.o -rnw '/path/to/somewhere/' -e "pattern"
 ```bash
 grep --exclude-dir={dir1,dir2,*.dst} -rnw '/path/to/search/' -e "pattern"
 ```
+
+## Indication of disk failures
+
+Modern disks are so packed with data that the `Raw_Read_Error_Rate` is usually fairly high - after applying [error correction](http://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction), no problems arise with data access/reliability.
+
+Focus on the the following 3 values reported in SMART data to get an indication if the drive shows signs of failure.
+
+```bash
+196 Reallocated_Event_Count 0x0032   100   100   000    Old_age   Always       -0
+197 Current_Pending_Sector  0x0032   100   100   000    Old_age   Always       -0
+198 Offline_Uncorrectable   0x0030   100   100   000    Old_age   Offline      -0
+```
+
+These are the number of sectors reallocated, waiting to be reallocated, and unable to be reallocated, respectively.
+
+When the head hits a bad sector and reading fails, it becomes a `Current_Pending_Sector`. The next time you try to write to it, it either works (everything goes back to normal, and the sector is reallocated) or it fails again. If there is reallocation space available from the pool, it will be reallocated. (`Reallocated_Event_Count` + 1). If the pool is used up, the sector becomes `Offline_Uncorrectable` and no further read/writes are possible.
+
+The drives that report raw read error rates will also report uncorrectable errors and it should only be concearned if the uncorrectable error counter increases.
+
+Uncorrectable errors can also be caused by factors outside of the drive itself like bad SATA cables, bad cable connection, faulty RAM, faulty DMI bus or faulty controller.
+
+If uncorrectable errors increases but reallocated sectors don't increase, first thing to do is try a different cable, ideally also on a different port as well. Make sure not to overclock anyhting on the board, using out of the box voltages for the board, ram and cpu. If the errors persist, then at that point you might consider there could be an issue with the drive (uncorrectable errors not raw read error rate).
+
+Current pending sectors. This increases when some data failed to read and the sectors will stay pending until they are written to again. If the write succeeds they will be removed and nothing else happens, if the write fails, then they will be reallocated. They will also be removed if another read attempt is made and it succeeds. If pending sectors is increased, it is a good idea to run `chkdsk /r` on the drive.
+
+Reallocated sector count goes up when the drive has determined a sector is broken, it deactivates the sector and uses a backup sector instead. This is usually a sign of upcoming failure and at this point the HDD is probably on borrowed time. There is only a limited amount of backup sectors so eventually there will be no backup ones left to use. Once the values increases to 1 or more, it tends to go up until point of failure.
+
+When `Raw_Read_Error_Rate` and `Raw_Read_Error_Rate` increase, the drive is not having any issue with sectors, only the standard, modern, data-density `Raw_Read_Error_Rate`.
+
+Make sure the drives have backups.
+
+## Methods ot execute commands in parallel
+
+Below is how different operators work when executing multiple commands in parallel:
+
+```bash
+c1 & c2  # Run both commands parallelly
+c1 ; c2  # Run both commands one by one
+c1 && c2 # Run c2 only if c1 exits successfully
+c1 || c2 # Run c2 only if c1 fails
+```
+
+## Count files and folders reqursively trough directories
+
+In order to count all the files recursively through directories use the following command:
+
+```bash
+sudo find . -maxdepth 1 -type d | while read -r dir do printf "%s:\t" "$dir"; sudo find "$dir" -type f | wc -l; done | sort -n -r -k2
+```
+
+The first part: `sudo find . -maxdepth 1 -type d` will return a list of all directories in the current working directory. I used `sudo` to include directories which are not owned by the current user. This is piped to...
+
+The second part: `while read -r dir; do` begins a while loop as long as the pipe coming into the while is open (which is until the entire list of directories is sent). The read command will place the next line into the variable dir. Then it continues...
+
+The third part: `printf "%s:\t" "$dir"` will print the string in `$dir` (which is holding one of the directory names) followed by a colon and a tab (but not a newline).
+
+The fourth part: `sudo find "$dir" -type f` makes a list of all the files inside the directory whose name is held in `$dir`. I used `sudo` to include directories that are not owned by the current user. This list is sent to...
+
+The fifth part: `wc -l` counts the number of lines that are sent into its standard input.
+
+The sixth part: `done` simply ends the while loop. This is piped to...
+
+The final part: `sort -n -r -k2` which compares according to string numerical value(`-n`), reversing the result of the comparison (`-r`) from second filed(`-k2`). This will otput the silt of directories sorted in reverse order by the number of files in them.
+
+So we get a list of all the directories in the current directory. For each of those directories, we generate a list of all the files in it so that we can count them all using `wc -l`. The result will look like:
+
+```bash
+./dir1: 2199
+./dir2: 23
+./dir3: 11
+...
+```
+
+Here's a compilation of some useful variations of the listing commands:
+
+List folders with file count:
+
+```bash
+find -maxdepth 1 -type d | sort | while read -r dir; do n=$(find "$dir" -type f | wc -l); printf "%4d : %s\n" $n "$dir"; done
+```
+
+List folders with non-zero file count:
+
+```bash
+find -maxdepth 1 -type d | sort | while read -r dir; do n=$(find "$dir" -type f | wc -l); if [ $n -gt 0 ]; then printf "%4d : %s\n" $n "$dir"; fi; done
+```
+
+List folders with sub-folder count:
+
+```bash
+find -maxdepth 1 -type d | sort | while read -r dir; do n=$(find "$dir" -type d | wc -l); let n--; printf "%4d : %s\n" $n "$dir"; done
+```
+
+List folders with non-zero sub-folder count:
+
+```bash
+find -maxdepth 1 -type d | sort | while read -r dir; do n=$(find "$dir" -type d | wc -l); let n--; if [ $n -gt 0 ]; then printf "%4d : %s\n" $n "$dir"; fi; done
+```
+
+List empty folders:
+
+```bash
+find -maxdepth 1 -type d | sort | while read -r dir; do n=$(find "$dir" | wc -l); let n--; if [ $n -eq 0 ]; then printf "%4d : %s\n" $n "$dir"; fi; done
+```
+
+List non-empty folders with content count:
+
+```bash
+find -maxdepth 1 -type d | sort | while read -r dir; do n=$(find "$dir" | wc -l); 
+```
