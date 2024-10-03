@@ -190,7 +190,7 @@ sudo systemctl restart unattended-upgrades.service
 Very few server instances utilize these packages and they can be clean to save storage on the VM. Make sure you don't need them before removing them.
 
 ```bash
-sudo apt purge --auto-remove snapd squashfs-tools friendly-recovery apport at cloud-init
+sudo apt purge --auto-remove snapd squashfs-tools friendly-recovery apport at cloud-init thermald polkitd
 ```
 
 Remove the `unattended-upgrades` package and the associated services which are responsible for automatically updating packages in the system in case this functionality is not used in your HomeLab.
@@ -1043,7 +1043,7 @@ c1 || c2 # Run c2 only if c1 fails
 In order to count all the files recursively through directories use the following command:
 
 ```bash
-sudo find . -maxdepth 1 -type d | while read -r dir do printf "%s:\t" "$dir"; sudo find "$dir" -type f | wc -l; done | sort -n -r -k2
+sudo find . -maxdepth 1 -type d | while read -r dir; do printf "%s:\t" "$dir"; sudo find "$dir" -type f | wc -l; done | sort -n -r -k2
 ```
 
 The first part: `sudo find . -maxdepth 1 -type d` will return a list of all directories in the current working directory. I used `sudo` to include directories which are not owned by the current user. This is piped to...
