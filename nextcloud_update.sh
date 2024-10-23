@@ -25,6 +25,7 @@ sudo -u www-data php /var/www/nextcloud/occ db:add-missing-primary-keys
 sudo -u www-data php /var/www/nextcloud/occ db:add-missing-indices
 sudo -u www-data php /var/www/nextcloud/occ db:add-missing-columns
 sudo -u www-data php /var/www/nextcloud/occ db:convert-filecache-bigint
+sudo -u www-data php /var/www/nextcloud/occ maintenance:repair --include-expensive
 
 # Make sure the user.ini has the needed modification
 echo "Make sure the user.ini has the needed modifications"
@@ -46,7 +47,7 @@ sudo -u www-data php /var/www/nextcloud/occ app:update --all
 
 # Restart PHP and Web server
 echo "Restart PHP and Web server"
-sudo /usr/sbin/service php8.0-fpm restart
+sudo /usr/sbin/service php8.2-fpm restart
 sudo /usr/sbin/service nginx restart
 
 exit 0
