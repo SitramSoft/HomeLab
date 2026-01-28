@@ -34,12 +34,14 @@ The following subsections from [Common](../general/general.md#common) section sh
 - [Configure Postfix Server to send email through Gmail](../general/general.md#configure-postfix-server-to-send-email-through-gmail)
 - [Mail notifications for SSH dial-in](../general/general.md#mail-notifications-for-ssh-dial-in)
 
+## piHole - Configure static IP
+
 ## piHole - Setup
 
 Run the following command to install [PiHole](https://docs.pi-hole.net/)
 
 ```bash
-curl -sSL https://install.pi-hole.net | bash
+curl -sSL https://install.pi-hole.net | sudo bash
 ```
 
 ## piHole - Unbound as a recursive DNS server
@@ -54,10 +56,10 @@ Download the current root hints file (the list of primary root servers which are
 
 ```bash
 wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
-sudo chown unbound:unbound root.hints 
+sudo chown unbound:unbound /var/lib/unbound/root.hints 
 ```
 
-Create pi-hole configuration for for `unbound`
+Create pi-hole configuration for `unbound`
 
 ```bash
 sudo nano -w /etc/unbound/unbound.conf.d/pi-hole.conf
@@ -189,7 +191,7 @@ The first query may be quite slow, but subsequent queries, also to other domains
 
 Disable `resolvconf.conf` entry for unbound (Required for Debian Bullseye+ releases)
 
-Check if the service is enabled fby running the following command. It will show either `active` or `inactive` or it might not even be installed resulting in a `could not be found` message:
+Check if the service is enabled by running the following command. It will show either `active` or `inactive` or it might not even be installed resulting in a `could not be found` message:
 
 ```bash
 systemctl is-active unbound-resolvconf.service
