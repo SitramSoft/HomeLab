@@ -226,10 +226,28 @@ sudo pacman -S alsa-utils flameshot network-manager-applet blueberry system-conf
 
 ### Configure NVIDIA drivers
 
-Install NVIDIA drivers
+Find the family of your nvidia card with the command below then go to [ArchLinux Wiki](https://wiki.archlinux.org/title/NVIDIA) and fing the appropiate driver for your card
 
 ```bash
-sudo pacman -S nvidia nvidia-settings nvidia-prime nvidia-utils xorg-xrandr
+lspci -k -d ::03xx
+```
+
+For Blackwell(GBXXX) or newer use the official NVIDIA drivers
+
+```bash
+sudo pacman -S nvidia nvidia-settings nvidia-prime nvidia-utils
+```
+
+In case of Maxwell(GMxxx) GPU family, use legacy packages from AUR
+
+```bash
+yay -S nvidia-580xx-dkms nvidia-580xx-utils lib32-nvidia-580xx-utils nvidia-580xx-setting
+```
+
+Install xorg-xrandr used for changing screen resolution, refresh rate, orientation and to extend or mirrior to another minotor.
+
+```bash
+sudo pacman -S xorg-xrandr
 ```
 
 Since Nvidia does not support automatic KMS loading, enabling DRM(Direct Rendering Manager) kernel mode setting is requiered.
